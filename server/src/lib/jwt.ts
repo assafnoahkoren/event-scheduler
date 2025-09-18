@@ -3,7 +3,7 @@
  */
 
 import jwt from 'jsonwebtoken'
-import { User } from '@prisma/client'
+import type { User } from '@prisma/client'
 
 // Token configuration from environment variables
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production'

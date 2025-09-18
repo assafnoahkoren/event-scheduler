@@ -2,14 +2,15 @@
  * Authentication service for handling user authentication
  */
 
-import { PrismaClient, User } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
+import type { User } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import {
   generateAccessToken,
   generateRefreshToken,
   verifyToken,
   isRefreshToken,
-  TokenPayload
+  type TokenPayload
 } from '../lib/jwt'
 
 const prisma = new PrismaClient()

@@ -21,7 +21,7 @@ app.use('/trpc', createExpressMiddleware({
   createContext
 }));
 
-app.get('/health', (req, res) => {
+app.get('/health', (_, res) => {
   res.json({ status: 'healthy' });
 });
 

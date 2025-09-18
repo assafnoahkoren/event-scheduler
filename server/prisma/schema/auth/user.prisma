@@ -21,6 +21,7 @@ model User {
   lastLoginAt   DateTime? @map("last_login_at")
   lastLoginIp   String?   @map("last_login_ip")
   loginCount    Int       @default(0) @map("login_count")
+  passwordChangedAt DateTime? @map("password_changed_at")
 
   // Timestamps
   createdAt     DateTime  @default(now()) @map("created_at")
