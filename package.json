@@ -1,0 +1,13 @@
+{
+  "name": "event-scheduler",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "webapp",
+    "server"
+  ],
+  "scripts": {
+    "dev:webapp": "npm run dev -w webapp",
+    "build:webapp": "npm run build -w webapp"
+  }
+}
