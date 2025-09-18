@@ -1,7 +1,12 @@
-import { router, publicProcedure } from '../trpc';
+import { router, publicProcedure, protectedProcedure } from '../trpc';
 import { z } from 'zod';
+import { authRouter } from './auth.router';
 
 export const appRouter = router({
+  // Auth routes
+  auth: authRouter,
+
+  // Public routes
   ping: publicProcedure
     .query(() => {
       return {
@@ -17,6 +22,15 @@ export const appRouter = router({
     .query(({ input }) => {
       return {
         message: `Hello, ${input.name}!`
+      };
+    }),
+
+  // Protected route example
+  protected: protectedProcedure
+    .query(({ ctx }) => {
+      return {
+        message: `Hello ${ctx.user.username}, you are authenticated!`,
+        user: ctx.user
       };
     })
 });

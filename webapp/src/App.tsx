@@ -7,6 +7,7 @@ import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react'
 function App() {
   const pingQuery = trpc.ping.useQuery()
   const helloQuery = trpc.hello.useQuery({ name: 'tRPC' })
+  const protectedQuery = trpc.protected.useQuery()
   const { direction } = useDirection()
 
   return (
@@ -66,6 +67,19 @@ function App() {
                   <>
                     <CheckCircle className="text-green-500 mt-1" />
                     <p className="font-medium">{helloQuery.data?.message}</p>
+                  </>
+                )}
+              </div>
+
+              <div className="flex items-start gap-3">
+                {protectedQuery.isLoading ? (
+                  <div className="text-muted-foreground">Loading protected...</div>
+                ) : protectedQuery.error ? (
+                  <div className="text-destructive">Error: {protectedQuery.error.message}</div>
+                ) : (
+                  <>
+                    <CheckCircle className="text-green-500 mt-1" />
+                    <p className="font-medium">Protected: {protectedQuery.data?.message}</p>
                   </>
                 )}
               </div>

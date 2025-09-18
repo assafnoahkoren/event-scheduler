@@ -1,19 +1,24 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import { appRouter } from './routers/appRouter';
+import { createContext } from './trpc';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'],
+  origin: '*',
   credentials: true
 }));
 
+app.use(cookieParser());
+app.use(express.json());
+
 app.use('/trpc', createExpressMiddleware({
   router: appRouter,
-  createContext: () => ({})
+  createContext
 }));
 
 app.get('/health', (req, res) => {

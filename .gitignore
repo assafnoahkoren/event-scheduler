@@ -49,3 +49,8 @@ desktop.ini
 
 # Playwright screenshots
 .playwright-mcp/
+
+# Authentication and cookies
+cookies.txt
+*.cookie
+*.cookies
