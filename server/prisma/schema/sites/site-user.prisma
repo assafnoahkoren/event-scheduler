@@ -1,0 +1,36 @@
+// Join table for users belonging to sites with roles
+
+enum SiteRole {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+model SiteUser {
+  id        String   @id @default(uuid())
+
+  // User relationship
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Site relationship
+  siteId    String   @map("site_id")
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  // Role and permissions
+  role      SiteRole @default(VIEWER)
+
+  // User status in site
+  isActive  Boolean  @default(true) @map("is_active")
+  joinedAt  DateTime @default(now()) @map("joined_at")
+
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, siteId])
+  @@index([userId])
+  @@index([siteId])
+  @@map("site_users")
+}

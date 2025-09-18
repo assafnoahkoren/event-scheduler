@@ -1,0 +1,48 @@
+// Event model tied to sites
+
+model Event {
+  id          String   @id @default(uuid())
+
+  // Site this event belongs to
+  siteId      String   @map("site_id")
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  // Event details
+  title       String
+  description String?
+  location    String?
+
+  // Timing
+  startDate   DateTime @map("start_date")
+  endDate     DateTime @map("end_date")
+  timezone    String   @default("UTC")
+  isAllDay    Boolean  @default(false) @map("is_all_day")
+
+  // Recurrence (simple for now)
+  isRecurring Boolean  @default(false) @map("is_recurring")
+  recurrenceRule String? @map("recurrence_rule") // RRULE format
+
+  // Status
+  status      EventStatus @default(SCHEDULED)
+
+  // Created by
+  createdBy   String   @map("created_by")
+  creator     User     @relation(fields: [createdBy], references: [id])
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([siteId])
+  @@index([startDate])
+  @@index([createdBy])
+  @@map("events")
+}
+
+enum EventStatus {
+  DRAFT
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}

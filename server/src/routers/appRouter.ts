@@ -1,10 +1,14 @@
 import { router, publicProcedure, protectedProcedure } from '../trpc';
 import { z } from 'zod';
 import { authRouter } from './auth.router';
+import { siteRouter } from './site.router';
 
 export const appRouter = router({
   // Auth routes
   auth: authRouter,
+
+  // Site management routes
+  sites: siteRouter,
 
   // Public routes
   ping: publicProcedure

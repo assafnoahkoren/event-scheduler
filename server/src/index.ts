@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: (origin, callback) => {
+  origin: (_origin, callback) => {
     // Allow all origins
     callback(null, true)
   },

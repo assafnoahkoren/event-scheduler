@@ -9,7 +9,7 @@ import { authService } from '../services/auth.service';
 import { getTokenExpiryTimes } from '../lib/jwt';
 
 const registerSchema = z.object({
-  email: z.string().email('Invalid email format'),
+  email: z.email('Invalid email format'),
   username: z.string()
     .min(3, 'Username must be at least 3 characters')
     .max(30, 'Username must not exceed 30 characters')
@@ -38,11 +38,11 @@ const changePasswordSchema = z.object({
 });
 
 const requestPasswordResetSchema = z.object({
-  email: z.string().email('Invalid email format'),
+  email: z.email('Invalid email format'),
 });
 
 const resetPasswordSchema = z.object({
-  token: z.string().uuid('Invalid reset token'),
+  token: z.uuid('Invalid reset token'),
   newPassword: z.string()
     .min(6, 'New password must be at least 6 characters')
     .max(100, 'New password must not exceed 100 characters'),

@@ -33,6 +33,13 @@ model User {
   passwordResets PasswordReset[]
   assetPermissions UserAssetPermission[]
 
+  // Site relations
+  ownedSites    Site[]           @relation("OwnedSites")
+  siteUsers     SiteUser[]
+  sentInvitations    SiteInvitation[] @relation("SentInvitations")
+  acceptedInvitations SiteInvitation[] @relation("AcceptedInvitations")
+  events        Event[]
+
   @@index([email])
   @@index([username])
   @@map("users")

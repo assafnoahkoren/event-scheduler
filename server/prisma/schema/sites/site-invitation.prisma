@@ -1,0 +1,50 @@
+// Invitation model for inviting users to sites
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  CANCELLED
+}
+
+model SiteInvitation {
+  id        String           @id @default(uuid())
+
+  // Site being invited to
+  siteId    String           @map("site_id")
+  site      Site             @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  // Email to invite (user might not exist yet)
+  email     String
+
+  // Role to assign when accepted
+  role      SiteRole         @default(VIEWER)
+
+  // Who sent the invitation
+  invitedBy String           @map("invited_by")
+  inviter   User             @relation("SentInvitations", fields: [invitedBy], references: [id])
+
+  // Invitation details
+  status    InvitationStatus @default(PENDING)
+  token     String           @unique @default(uuid())
+  message   String?
+
+  // Expiration
+  expiresAt DateTime         @map("expires_at")
+
+  // When invitation was accepted
+  acceptedBy String?         @map("accepted_by")
+  acceptedUser User?         @relation("AcceptedInvitations", fields: [acceptedBy], references: [id])
+  acceptedAt DateTime?       @map("accepted_at")
+
+  // Timestamps
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  @@unique([siteId, email])
+  @@index([token])
+  @@index([email])
+  @@index([siteId])
+  @@map("site_invitations")
+}
