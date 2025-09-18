@@ -1,0 +1,34 @@
+// Client model tied to sites
+
+model Client {
+  id          String   @id @default(uuid())
+
+  // Site this client belongs to
+  siteId      String   @map("site_id")
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  // Client information
+  name        String
+  email       String?
+  phone       String?
+  address     String?
+  notes       String?
+
+  // Status
+  isActive    Boolean  @default(true) @map("is_active")
+
+  // Events for this client
+  events      Event[]
+
+  // Created by
+  createdBy   String   @map("created_by")
+  creator     User     @relation(fields: [createdBy], references: [id])
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([siteId])
+  @@index([createdBy])
+  @@map("clients")
+}

@@ -19,6 +19,7 @@ model Site {
   siteUsers   SiteUser[]
   invitations SiteInvitation[]
   events      Event[]
+  clients     Client[]
 
   @@index([ownerId])
   @@map("sites")

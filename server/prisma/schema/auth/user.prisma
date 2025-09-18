@@ -39,6 +39,7 @@ model User {
   sentInvitations    SiteInvitation[] @relation("SentInvitations")
   acceptedInvitations SiteInvitation[] @relation("AcceptedInvitations")
   events        Event[]
+  clients       Client[]
 
   @@index([email])
   @@index([username])
