@@ -30,6 +30,7 @@ model User {
   sessions      Session[]
   refreshTokens RefreshToken[]
   passwordResets PasswordReset[]
+  assetPermissions UserAssetPermission[]
 
   @@index([email])
   @@index([username])
