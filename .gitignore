@@ -46,3 +46,6 @@ desktop.ini
 
 # TypeScript
 *.tsbuildinfo
+
+# Playwright screenshots
+.playwright-mcp/
