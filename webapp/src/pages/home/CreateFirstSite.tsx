@@ -22,7 +22,7 @@ export function CreateFirstSite() {
   // Show call-to-action for creating first site
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <Card className="max-w-lg w-full">
+      <Card className="max-w-lg w-full border-0 shadow-none">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
             <Sparkles className="h-6 w-6 text-primary" />
