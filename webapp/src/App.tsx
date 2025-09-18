@@ -27,7 +27,7 @@ function App() {
             </div>
             <div className="flex gap-3">
               <Button variant="default">
-                {direction === 'ltr' ? <ArrowRight className="me-2" /> : <ArrowLeft className="ms-2" />}
+                {direction === 'ltr' ? <ArrowRight className="me-2" /> : <ArrowLeft className="me-2" />}
                 Primary Button
               </Button>
               <Button variant="secondary">Secondary</Button>
