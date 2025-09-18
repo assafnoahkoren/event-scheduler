@@ -5,10 +5,13 @@ import { SiteSwitcher } from '@/components/sites/SiteSwitcher'
 import { LogOut, Calendar } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CreateFirstSite } from './CreateFirstSite'
+import { EventCalendar } from '@/components/EventCalendar'
+import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 
 export function Home() {
   const { logout } = useAuth()
   const { t } = useTranslation()
+  const { currentSite } = useCurrentSite()
 
   const handleLogout = async () => {
     try {
@@ -41,8 +44,12 @@ export function Home() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <CreateFirstSite />
+      <main className="container mx-auto px-4 pb-8">
+        {currentSite ? (
+          <EventCalendar />
+        ) : (
+          <CreateFirstSite />
+        )}
       </main>
     </div>
   )

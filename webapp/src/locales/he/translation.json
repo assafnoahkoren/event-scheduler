@@ -18,6 +18,22 @@
     "create": "צור",
     "back": "חזור"
   },
+  "calendar": {
+    "months": {
+      "january": "ינואר",
+      "february": "פברואר",
+      "march": "מרץ",
+      "april": "אפריל",
+      "may": "מאי",
+      "june": "יוני",
+      "july": "יולי",
+      "august": "אוגוסט",
+      "september": "ספטמבר",
+      "october": "אוקטובר",
+      "november": "נובמבר",
+      "december": "דצמבר"
+    }
+  },
   "auth": {
     "loginTitle": "התחברות",
     "loginDescription": "הכנס את האימייל והסיסמה שלך כדי לגשת לחשבון שלך",

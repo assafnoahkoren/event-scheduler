@@ -18,6 +18,22 @@ export const enTranslation = {
     create: "Create",
     back: "Back"
   },
+  calendar: {
+    months: {
+      january: "January",
+      february: "February",
+      march: "March",
+      april: "April",
+      may: "May",
+      june: "June",
+      july: "July",
+      august: "August",
+      september: "September",
+      october: "October",
+      november: "November",
+      december: "December"
+    }
+  },
   auth: {
     loginTitle: "Login",
     loginDescription: "Enter your email and password to access your account",
@@ -71,7 +87,8 @@ export const enTranslation = {
     eventLocation: "Location",
     startDate: "Start Date",
     endDate: "End Date",
-    allDay: "All Day"
+    allDay: "All Day",
+    untitledEvent: "Untitled Event"
   },
   navigation: {
     home: "Home",

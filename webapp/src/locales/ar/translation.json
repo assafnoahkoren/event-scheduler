@@ -18,6 +18,22 @@
     "create": "إنشاء",
     "back": "رجوع"
   },
+  "calendar": {
+    "months": {
+      "january": "يناير",
+      "february": "فبراير",
+      "march": "مارس",
+      "april": "أبريل",
+      "may": "مايو",
+      "june": "يونيو",
+      "july": "يوليو",
+      "august": "أغسطس",
+      "september": "سبتمبر",
+      "october": "أكتوبر",
+      "november": "نوفمبر",
+      "december": "ديسمبر"
+    }
+  },
   "auth": {
     "loginTitle": "تسجيل الدخول",
     "loginDescription": "أدخل بريدك الإلكتروني وكلمة المرور للوصول إلى حسابك",
