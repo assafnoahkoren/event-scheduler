@@ -39,9 +39,14 @@
     "welcomeDescription": "ابدأ بإنشاء موقعك الأول. الموقع هو مساحة العمل الخاصة بك حيث يمكنك إدارة الأحداث ودعوة أعضاء الفريق وتنظيم جدولك.",
     "createFirstSite": "إنشاء موقعك الأول",
     "siteName": "اسم الموقع",
+    "siteNamePlaceholder": "موقعي الرائع",
     "siteSlug": "رابط الموقع",
+    "siteSlugPlaceholder": "my-awesome-site",
+    "siteSlugHelp": "سيكون هذا هو معرف URL الفريد لموقعك. استخدم فقط الأحرف الصغيرة والأرقام والشرطات.",
     "siteDescription": "الوصف",
+    "siteDescriptionPlaceholder": "صف غرض موقعك (اختياري)",
     "createSite": "إنشاء موقع",
+    "editSite": "تعديل الموقع",
     "mySites": "مواقعي",
     "noSites": "لا توجد مواقع بعد",
     "siteSettings": "إعدادات الموقع",
@@ -70,5 +75,9 @@
     "calendar": "التقويم",
     "settings": "الإعدادات",
     "profile": "الملف الشخصي"
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "slugFormat": "يُسمح فقط بالأحرف الصغيرة والأرقام والشرطات"
   }
 }

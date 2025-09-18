@@ -71,7 +71,6 @@ class InvitationService {
           select: {
             id: true,
             name: true,
-            slug: true,
           },
         },
         inviter: {
@@ -138,8 +137,6 @@ class InvitationService {
           select: {
             id: true,
             name: true,
-            slug: true,
-            description: true,
           },
         },
         inviter: {
@@ -317,7 +314,6 @@ class InvitationService {
           select: {
             id: true,
             name: true,
-            slug: true,
           },
         },
         inviter: {

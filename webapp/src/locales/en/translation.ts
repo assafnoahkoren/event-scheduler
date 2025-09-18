@@ -39,9 +39,14 @@ export const enTranslation = {
     welcomeDescription: "Get started by creating your first site. A site is your workspace where you can manage events, invite team members, and organize your schedule.",
     createFirstSite: "Create Your First Site",
     siteName: "Site Name",
+    siteNamePlaceholder: "My Awesome Site",
     siteSlug: "Site URL",
+    siteSlugPlaceholder: "my-awesome-site",
+    siteSlugHelp: "This will be your site's unique URL identifier. Use only lowercase letters, numbers, and hyphens.",
     siteDescription: "Description",
+    siteDescriptionPlaceholder: "Describe your site's purpose (optional)",
     createSite: "Create Site",
+    editSite: "Edit Site",
     mySites: "My Sites",
     noSites: "No sites yet",
     siteSettings: "Site Settings",
@@ -70,5 +75,9 @@ export const enTranslation = {
     calendar: "Calendar",
     settings: "Settings",
     profile: "Profile"
+  },
+  validation: {
+    required: "This field is required",
+    slugFormat: "Only lowercase letters, numbers, and hyphens are allowed"
   }
 } as const

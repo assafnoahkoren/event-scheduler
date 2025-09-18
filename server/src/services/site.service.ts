@@ -10,19 +10,10 @@ const prisma = new PrismaClient()
 // Schema definitions
 export const createSiteSchema = z.object({
   name: z.string().min(1).max(100),
-  slug: z.string()
-    .min(3)
-    .max(50)
-    .regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
-  description: z.string().max(500).optional(),
-  timezone: z.string().default('UTC'),
 })
 
 export const updateSiteSchema = z.object({
   name: z.string().min(1).max(100).optional(),
-  description: z.string().max(500).optional(),
-  timezone: z.string().optional(),
-  logo: z.url().optional(),
 })
 
 // Type inference from schemas
@@ -34,19 +25,10 @@ class SiteService {
    * Create a new site
    */
   async createSite(userId: string, input: CreateSiteInput) {
-    // Check if slug is already taken
-    const existingSite = await prisma.site.findUnique({
-      where: { slug: input.slug },
-    })
-
-    if (existingSite) {
-      throw new Error('A site with this slug already exists')
-    }
-
     // Create site with owner
     const site = await prisma.site.create({
       data: {
-        ...input,
+        name: input.name,
         ownerId: userId,
         siteUsers: {
           create: {
