@@ -9,7 +9,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: '*',
+  origin: (origin, callback) => {
+    // Allow all origins
+    callback(null, true)
+  },
   credentials: true
 }));
 
