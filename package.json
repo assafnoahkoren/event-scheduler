@@ -8,6 +8,8 @@
   ],
   "scripts": {
     "dev:webapp": "npm run dev -w webapp",
-    "build:webapp": "npm run build -w webapp"
+    "dev:server": "npm run dev -w server",
+    "build:webapp": "npm run build -w webapp",
+    "build:server": "npm run build -w server"
   }
 }
