@@ -56,7 +56,10 @@
     "owner": "בעלים",
     "admin": "מנהל",
     "editor": "עורך",
-    "viewer": "צופה"
+    "viewer": "צופה",
+    "switchSite": "החלף אתר",
+    "switchSiteDescription": "בחר אתר לעבודה",
+    "onlyOneSite": "יש לך רק אתר אחד"
   },
   "events": {
     "events": "אירועים",

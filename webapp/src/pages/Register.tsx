@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate, Navigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
@@ -15,13 +15,8 @@ export function Register() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const { register, user } = useAuth()
+  const { register } = useAuth()
   const navigate = useNavigate()
-
-  // Redirect to home if already authenticated
-  if (user) {
-    return <Navigate to="/" replace />
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

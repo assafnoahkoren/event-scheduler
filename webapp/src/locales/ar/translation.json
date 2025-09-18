@@ -56,7 +56,10 @@
     "owner": "المالك",
     "admin": "مدير",
     "editor": "محرر",
-    "viewer": "مشاهد"
+    "viewer": "مشاهد",
+    "switchSite": "تبديل الموقع",
+    "switchSiteDescription": "اختر موقعاً للعمل معه",
+    "onlyOneSite": "لديك موقع واحد فقط"
   },
   "events": {
     "events": "الأحداث",

@@ -1,23 +1,22 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { SiteSwitcher } from '@/components/sites/SiteSwitcher'
 import { LogOut, Calendar } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { CreateFirstSite } from './CreateFirstSite'
 
 export function Home() {
   const { logout } = useAuth()
-  const navigate = useNavigate()
   const { t } = useTranslation()
 
   const handleLogout = async () => {
     try {
       await logout()
-      navigate('/login')
     } catch (error) {
       console.error('Failed to logout:', error)
     }
+    // Navigation is handled in the logout function
   }
 
   return (
@@ -27,6 +26,9 @@ export function Home() {
           <div className="flex items-center gap-4">
             <Calendar className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-bold">{t('common.appName')}</h1>
+            <div className="ms-4 ps-4 border-s">
+              <SiteSwitcher />
+            </div>
           </div>
 
           <div className="flex items-center gap-2">

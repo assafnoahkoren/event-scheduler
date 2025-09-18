@@ -22,8 +22,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [accessToken, setAccessToken] = useState<string | null>(() => localStorage.getItem('accessToken'))
+  const [accessToken, setAccessToken] = useState<string | null>(() => {
+    // Check localStorage for token on initial load
+    const storedToken = localStorage.getItem('accessToken')
+    return storedToken || null
+  })
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const utils = trpc.useUtils()
   const loginMutation = trpc.auth.login.useMutation()
@@ -31,9 +36,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logoutMutation = trpc.auth.logout.useMutation()
   const refreshMutation = trpc.auth.refresh.useMutation()
 
-  // Query for getting current user - only enabled when we have a token
+  // Query for getting current user - only enabled when we have a token and not logging out
   const meQuery = trpc.auth.me.useQuery(undefined, {
-    enabled: !!accessToken,
+    enabled: !!accessToken && !isLoggingOut,
     retry: false,
   })
 
@@ -41,11 +46,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (meQuery.data) {
       setUser(meQuery.data.user)
+      setIsLoading(false)
     } else if (meQuery.error && accessToken) {
       // Token is invalid
       localStorage.removeItem('accessToken')
       setAccessToken(null)
       setUser(null)
+      setIsLoading(false)
     }
   }, [meQuery.data, meQuery.error, accessToken])
 
@@ -54,12 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // If not, we're done loading
     if (!accessToken) {
       setIsLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    // Update loading state based on meQuery
-    if (accessToken && !meQuery.isLoading) {
+    } else if (accessToken && !meQuery.isLoading) {
       setIsLoading(false)
     }
   }, [accessToken, meQuery.isLoading])
@@ -69,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(result.user)
     setAccessToken(result.accessToken)
     localStorage.setItem('accessToken', result.accessToken)
+    setIsLoading(false) // Ensure loading is false after login
     await utils.invalidate()
   }
 
@@ -77,15 +80,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(result.user)
     setAccessToken(result.accessToken)
     localStorage.setItem('accessToken', result.accessToken)
+    setIsLoading(false) // Ensure loading is false after register
     await utils.invalidate()
   }
 
   const logout = async () => {
-    await logoutMutation.mutateAsync()
+    // Set logging out flag to prevent queries
+    setIsLoggingOut(true)
+
+    // Store token before clearing
+    const token = accessToken
+
+    // Clear all local storage first to ensure it's gone before reload
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('currentSiteId')
+
+    // Clear state
     setUser(null)
     setAccessToken(null)
-    localStorage.removeItem('accessToken')
-    await utils.invalidate()
+
+    // Try to logout on the server (don't await to avoid delays)
+    if (token) {
+      logoutMutation.mutate(undefined, {
+        onError: (error) => {
+          console.error('Logout error:', error)
+        }
+      })
+    }
+
+    // Small delay to ensure localStorage is cleared before navigation
+    setTimeout(() => {
+      window.location.href = '/login'
+    }, 100)
   }
 
   const refreshAuth = async () => {

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { trpc } from '@/utils/trpc'
+import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -11,16 +12,19 @@ export function CreateFirstSite() {
   const [siteName, setSiteName] = useState('')
   const [error, setError] = useState('')
   const utils = trpc.useUtils()
+  const { setCurrentSite } = useCurrentSite()
 
   // Fetch user's sites
   const { data: sites, isLoading } = trpc.sites.list.useQuery()
 
   // Create site mutation
   const createMutation = trpc.sites.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (newSite) => {
       utils.sites.list.invalidate()
       setSiteName('')
       setError('')
+      // Set the newly created site as current
+      setCurrentSite(newSite as any)
     },
     onError: (error) => {
       setError(error.message)

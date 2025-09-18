@@ -56,7 +56,10 @@ export const enTranslation = {
     owner: "Owner",
     admin: "Admin",
     editor: "Editor",
-    viewer: "Viewer"
+    viewer: "Viewer",
+    switchSite: "Switch Site",
+    switchSiteDescription: "Select a site to work with",
+    onlyOneSite: "You only have one site"
   },
   events: {
     events: "Events",
