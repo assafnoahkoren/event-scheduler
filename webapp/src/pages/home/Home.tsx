@@ -1,13 +1,15 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
-import { DirectionToggle } from '@/components/DirectionToggle'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { LogOut, Calendar } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { CreateFirstSite } from './CreateFirstSite'
 
 export function Home() {
   const { logout } = useAuth()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const handleLogout = async () => {
     try {
@@ -24,14 +26,14 @@ export function Home() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Calendar className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">Event Scheduler</h1>
+            <h1 className="text-2xl font-bold">{t('common.appName')}</h1>
           </div>
 
-          <div className="flex items-center gap-4">
-            <DirectionToggle />
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 me-2" />
-              Logout
+              {t('common.logout')}
             </Button>
           </div>
         </div>

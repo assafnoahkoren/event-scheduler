@@ -1,5 +1,68 @@
 # Frontend-Specific Claude Instructions
 
+## Internationalization (i18n) and Translations
+
+### Translation System Architecture
+The app uses i18next with TypeScript for type-safe translations:
+
+#### File Structure:
+```
+src/
+  locales/
+    en/translation.ts    - English translations (TypeScript, source of truth for types)
+    ar/translation.json  - Arabic translations (JSON)
+    he/translation.json  - Hebrew translations (JSON)
+  i18n/
+    index.ts            - i18next configuration
+    i18n-types.ts      - Type definitions (inferred from English)
+    i18next.d.ts        - TypeScript declarations for i18next
+```
+
+#### Adding New Translations:
+1. **Add to English file first** (`src/locales/en/translation.ts`):
+   ```typescript
+   export const enTranslation = {
+     section: {
+       newKey: "New translation text"
+     }
+   } as const
+   ```
+
+2. **Types are automatically inferred** - No need to update type definitions
+
+3. **Add to other language files** (`ar/translation.json`, `he/translation.json`):
+   ```json
+   {
+     "section": {
+       "newKey": "ترجمة جديدة"
+     }
+   }
+   ```
+
+#### Using Translations in Components:
+```typescript
+import { useTranslation } from 'react-i18next'
+
+function Component() {
+  const { t } = useTranslation()
+
+  // Type-safe with autocomplete
+  return <h1>{t('sites.welcomeTitle')}</h1>
+}
+```
+
+#### Key Features:
+- **Type Safety**: The `t()` function provides autocomplete and type checking
+- **RTL Support**: Arabic and Hebrew automatically set `dir="rtl"` on the HTML element
+- **Language Detection**: Automatically detects user's preferred language
+- **Persistence**: Language preference saved to localStorage
+
+#### Important Notes:
+- Always define new translations in the English file first (it's the source of types)
+- The English file is TypeScript (`.ts`), others are JSON for simplicity
+- Types are inferred from `enTranslation` object, ensuring they always match
+- If you get type errors after adding translations, run `npm run tsc` to verify
+
 ## React Architecture
 
 ### Component Guidelines

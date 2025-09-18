@@ -2,8 +2,10 @@ import { trpc } from '@/utils/trpc'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Plus, Sparkles } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function CreateFirstSite() {
+  const { t } = useTranslation()
   // Fetch user's sites
   const { data: sites, isLoading } = trpc.sites.list.useQuery()
 
@@ -25,16 +27,15 @@ export function CreateFirstSite() {
           <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
             <Sparkles className="h-6 w-6 text-primary" />
           </div>
-          <CardTitle className="text-2xl">Welcome to Event Scheduler!</CardTitle>
+          <CardTitle className="text-2xl">{t('sites.welcomeTitle')}</CardTitle>
           <CardDescription className="text-base mt-2">
-            Get started by creating your first site. A site is your workspace where you can manage events,
-            invite team members, and organize your schedule.
+            {t('sites.welcomeDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center pb-6">
           <Button size="lg" className="gap-2">
             <Plus className="h-5 w-5" />
-            Create Your First Site
+            {t('sites.createFirstSite')}
           </Button>
         </CardContent>
       </Card>
