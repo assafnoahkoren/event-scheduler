@@ -130,8 +130,6 @@ export function EventCalendar() {
           "flex items-center justify-center w-8 h-8 rounded-full",
           // Today styling - border instead of background
           isToday && "border-2 border-blue-500",
-          // Selected styling
-          isSelected && !isToday && "bg-primary text-primary-foreground"
         )}>
           {format(date, 'd')}
         </span>
