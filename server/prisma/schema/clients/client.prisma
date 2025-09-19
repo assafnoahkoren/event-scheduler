@@ -35,5 +35,7 @@ model Client {
 
   @@index([siteId])
   @@index([createdBy])
+  @@index([isDeleted])
+  @@index([siteId, isDeleted]) // Composite index for common query
   @@map("clients")
 }

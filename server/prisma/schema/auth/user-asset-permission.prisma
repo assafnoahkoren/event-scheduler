@@ -28,6 +28,7 @@ model UserAssetPermission {
   @@index([userId])
   @@index([assetType, assetId])
   @@index([expiresAt])
+  @@index([isDeleted])
 
   @@map("user_asset_permissions")
 }

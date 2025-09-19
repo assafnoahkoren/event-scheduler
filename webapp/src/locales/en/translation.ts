@@ -96,7 +96,13 @@ export const enTranslation = {
     scheduled: "Scheduled",
     inProgress: "In Progress",
     completed: "Completed",
-    cancelled: "Cancelled"
+    cancelled: "Cancelled",
+    deleteEvent: "Delete Event",
+    confirmDeleteTitle: "Delete Event",
+    confirmDeleteDescription: "Are you sure you want to delete this event? This action cannot be undone.",
+    deleting: "Deleting...",
+    deleteSuccess: "Event deleted successfully",
+    deleteFailed: "Failed to delete event"
   },
   navigation: {
     home: "Home",

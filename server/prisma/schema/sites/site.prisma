@@ -27,5 +27,6 @@ model Site {
   clients     Client[]
 
   @@index([ownerId])
+  @@index([isDeleted])
   @@map("sites")
 }

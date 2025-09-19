@@ -42,6 +42,8 @@ model Event {
   @@index([startDate])
   @@index([createdBy])
   @@index([clientId])
+  @@index([isDeleted])
+  @@index([siteId, isDeleted]) // Composite index for common query
   @@map("events")
 }
 

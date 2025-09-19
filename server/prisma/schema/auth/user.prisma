@@ -48,5 +48,6 @@ model User {
 
   @@index([email])
   @@index([username])
+  @@index([isDeleted])
   @@map("users")
 }

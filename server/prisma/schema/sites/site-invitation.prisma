@@ -51,5 +51,7 @@ model SiteInvitation {
   @@index([token])
   @@index([email])
   @@index([siteId])
+  @@index([isDeleted])
+  @@index([siteId, isDeleted]) // Composite index for common query
   @@map("site_invitations")
 }

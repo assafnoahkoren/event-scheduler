@@ -63,5 +63,13 @@ All models in the schema have soft delete fields:
 - Soft-deleted records are excluded from all queries by default
 - To permanently delete (hard delete), you would need to use raw SQL queries
 
+### Performance Optimization
+All models have indexes on the `isDeleted` field for optimal query performance:
+- Single column index: `@@index([isDeleted])`
+- Composite indexes for common queries like: `@@index([siteId, isDeleted])`
+
+These indexes ensure that filtering soft-deleted records (which happens on every query) is fast and efficient.
+
 ### Migration History
 - Migration: `20250919122848_add_soft_delete_to_all_models` - Added soft delete fields to all models
+- Migration: `20250919125602_add_isdeleted_indexes` - Added indexes for isDeleted field on all models

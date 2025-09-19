@@ -8,134 +8,136 @@ import { Prisma } from '@prisma/client'
  */
 
 export function softDeleteExtension(userId?: string | null) {
-  return Prisma.defineExtension({
-    name: 'softDelete',
-    query: {
-      $allModels: {
-        async delete({ args, query }: any) {
-          // Convert delete to update with soft delete fields
-          return query({
-            ...args,
-            data: {
-              isDeleted: true,
-              deletedAt: new Date(),
-              ...(userId !== undefined && { deletedBy: userId })
+  return Prisma.defineExtension((client) => {
+    return client.$extends({
+      name: 'softDelete',
+      query: {
+        $allModels: {
+          async delete({ model, args }: any) {
+            // Instead of delete, perform an update
+            return (client as any)[model].update({
+              where: args.where,
+              data: {
+                isDeleted: true,
+                deletedAt: new Date(),
+                ...(userId !== undefined && { deletedBy: userId })
+              }
+            })
+          },
+
+          async deleteMany({ model, args }: any) {
+            // Instead of deleteMany, perform updateMany
+            return (client as any)[model].updateMany({
+              where: args.where,
+              data: {
+                isDeleted: true,
+                deletedAt: new Date(),
+                ...(userId !== undefined && { deletedBy: userId })
+              }
+            })
+          },
+
+          async findFirst({ args, query }: any) {
+            // Add filter to exclude soft deleted records
+            args.where = {
+              ...args.where,
+              isDeleted: false
             }
-          })
-        },
+            return query(args)
+          },
 
-        async deleteMany({ args, query }: any) {
-          // Convert deleteMany to updateMany with soft delete fields
-          return query({
-            ...args,
-            data: {
-              isDeleted: true,
-              deletedAt: new Date(),
-              ...(userId !== undefined && { deletedBy: userId })
+          async findUnique({ args, query }: any) {
+            // Add filter to exclude soft deleted records
+            args.where = {
+              ...args.where,
+              isDeleted: false
             }
-          })
-        },
+            return query(args)
+          },
 
-        async findFirst({ args, query }: any) {
-          // Add filter to exclude soft deleted records
-          args.where = {
-            ...args.where,
-            isDeleted: false
-          }
-          return query(args)
-        },
+          async findMany({ args, query }: any) {
+            // Add filter to exclude soft deleted records
+            if (!args.where) {
+              args.where = {}
+            }
+            if (args.where.isDeleted === undefined) {
+              args.where.isDeleted = false
+            }
+            return query(args)
+          },
 
-        async findUnique({ args, query }: any) {
-          // Change to findFirst to allow filtering by isDeleted
-          args.where = {
-            ...args.where,
-            isDeleted: false
-          }
-          return query(args)
-        },
+          async findUniqueOrThrow({ args, query }: any) {
+            // Add filter to exclude soft deleted records
+            args.where = {
+              ...args.where,
+              isDeleted: false
+            }
+            return query(args)
+          },
 
-        async findMany({ args, query }: any) {
-          // Add filter to exclude soft deleted records
-          if (!args.where) {
-            args.where = {}
-          }
-          if (args.where.isDeleted === undefined) {
-            args.where.isDeleted = false
-          }
-          return query(args)
-        },
+          async findFirstOrThrow({ args, query }: any) {
+            // Add filter to exclude soft deleted records
+            args.where = {
+              ...args.where,
+              isDeleted: false
+            }
+            return query(args)
+          },
 
-        async findUniqueOrThrow({ args, query }: any) {
-          // Add filter to exclude soft deleted records
-          args.where = {
-            ...args.where,
-            isDeleted: false
-          }
-          return query(args)
-        },
+          async count({ args, query }: any) {
+            // Add filter to exclude soft deleted records
+            if (!args.where) {
+              args.where = {}
+            }
+            if (args.where.isDeleted === undefined) {
+              args.where.isDeleted = false
+            }
+            return query(args)
+          },
 
-        async findFirstOrThrow({ args, query }: any) {
-          // Add filter to exclude soft deleted records
-          args.where = {
-            ...args.where,
-            isDeleted: false
-          }
-          return query(args)
-        },
+          async aggregate({ args, query }: any) {
+            // Add filter to exclude soft deleted records
+            if (!args.where) {
+              args.where = {}
+            }
+            if (args.where.isDeleted === undefined) {
+              args.where.isDeleted = false
+            }
+            return query(args)
+          },
 
-        async count({ args, query }: any) {
-          // Add filter to exclude soft deleted records
-          if (!args.where) {
-            args.where = {}
-          }
-          if (args.where.isDeleted === undefined) {
-            args.where.isDeleted = false
-          }
-          return query(args)
-        },
+          async groupBy({ args, query }: any) {
+            // Add filter to exclude soft deleted records
+            if (!args.where) {
+              args.where = {}
+            }
+            if (args.where.isDeleted === undefined) {
+              args.where.isDeleted = false
+            }
+            return query(args)
+          },
 
-        async aggregate({ args, query }: any) {
-          // Add filter to exclude soft deleted records
-          if (!args.where) {
-            args.where = {}
-          }
-          if (args.where.isDeleted === undefined) {
-            args.where.isDeleted = false
-          }
-          return query(args)
-        },
+          async update({ args, query }: any) {
+            // Add filter to prevent updating soft deleted records
+            args.where = {
+              ...args.where,
+              isDeleted: false
+            }
+            return query(args)
+          },
 
-        async groupBy({ args, query }: any) {
-          // Add filter to exclude soft deleted records
-          if (!args.where) {
-            args.where = {}
+          async updateMany({ args, query }: any) {
+            // Add filter to prevent updating soft deleted records
+            if (!args.where) {
+              args.where = {}
+            }
+            if (args.where.isDeleted === undefined) {
+              args.where.isDeleted = false
+            }
+            return query(args)
           }
-          if (args.where.isDeleted === undefined) {
-            args.where.isDeleted = false
-          }
-          return query(args)
-        },
-
-        async update({ args, query }: any) {
-          // Add filter to prevent updating soft deleted records
-          args.where = {
-            ...args.where,
-            isDeleted: false
-          }
-          return query(args)
-        },
-
-        async updateMany({ args, query }: any) {
-          // Add filter to prevent updating soft deleted records
-          if (!args.where) {
-            args.where = {}
-          }
-          if (args.where.isDeleted === undefined) {
-            args.where.isDeleted = false
-          }
-          return query(args)
         }
       }
-    }
+    })
   })
 }

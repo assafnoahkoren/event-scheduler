@@ -96,7 +96,13 @@
     "scheduled": "מתוכנן",
     "inProgress": "בתהליך",
     "completed": "הושלם",
-    "cancelled": "בוטל"
+    "cancelled": "בוטל",
+    "deleteEvent": "מחק אירוע",
+    "confirmDeleteTitle": "מחיקת אירוע",
+    "confirmDeleteDescription": "האם אתה בטוח שברצונך למחוק אירוע זה? פעולה זו אינה ניתנת לביטול.",
+    "deleting": "מוחק...",
+    "deleteSuccess": "האירוע נמחק בהצלחה",
+    "deleteFailed": "מחיקת האירוע נכשלה"
   },
   "navigation": {
     "home": "בית",

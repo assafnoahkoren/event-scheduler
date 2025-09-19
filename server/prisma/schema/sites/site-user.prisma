@@ -37,5 +37,7 @@ model SiteUser {
   @@unique([userId, siteId])
   @@index([userId])
   @@index([siteId])
+  @@index([isDeleted])
+  @@index([siteId, isDeleted]) // Composite index for common query
   @@map("site_users")
 }

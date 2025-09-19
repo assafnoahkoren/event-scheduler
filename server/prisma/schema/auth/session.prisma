@@ -20,5 +20,6 @@ model Session {
   @@index([userId])
   @@index([token])
   @@index([expiresAt])
+  @@index([isDeleted])
   @@map("sessions")
 }
