@@ -34,10 +34,6 @@ export function EventCard({ event, onClick }: EventCardProps) {
         return 'bg-blue-100 text-blue-800'
       case 'SCHEDULED':
         return 'bg-green-100 text-green-800'
-      case 'IN_PROGRESS':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'COMPLETED':
-        return 'bg-gray-100 text-gray-800'
       case 'CANCELLED':
         return 'bg-red-100 text-red-800'
       default:
@@ -51,10 +47,6 @@ export function EventCard({ event, onClick }: EventCardProps) {
         return t('events.draft')
       case 'SCHEDULED':
         return t('events.scheduled')
-      case 'IN_PROGRESS':
-        return t('events.inProgress')
-      case 'COMPLETED':
-        return t('events.completed')
       case 'CANCELLED':
         return t('events.cancelled')
       default:

@@ -140,5 +140,8 @@ export const heTranslation: TranslationType = {
     notesPlaceholder: "הערות נוספות על הלקוח...",
     phoneCall: "התקשר ללקוח",
     whatsappMessage: "שלח הודעת וואטסאפ"
+  },
+  profile: {
+    title: "פרופיל"
   }
 } as const

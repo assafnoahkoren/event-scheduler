@@ -138,5 +138,8 @@ export const enTranslation = {
     notesPlaceholder: "Additional notes about this client...",
     phoneCall: "Call client",
     whatsappMessage: "Send WhatsApp message"
+  },
+  profile: {
+    title: "Profile"
   }
 } as const

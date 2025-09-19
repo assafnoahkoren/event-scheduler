@@ -140,5 +140,8 @@ export const arTranslation: TranslationType = {
     notesPlaceholder: "ملاحظات إضافية حول هذا العميل...",
     phoneCall: "اتصل بالعميل",
     whatsappMessage: "أرسل رسالة واتساب"
+  },
+  profile: {
+    title: "الملف الشخصي"
   }
 } as const
