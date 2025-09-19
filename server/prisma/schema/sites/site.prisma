@@ -11,6 +11,11 @@ model Site {
   ownerId     String   @map("owner_id")
   owner       User     @relation("OwnedSites", fields: [ownerId], references: [id])
 
+  // Soft delete
+  deletedAt   DateTime? @map("deleted_at")
+  deletedBy   String?   @map("deleted_by")
+  isDeleted   Boolean   @default(false) @map("is_deleted")
+
   // Timestamps
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")

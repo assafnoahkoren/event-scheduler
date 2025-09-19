@@ -42,6 +42,11 @@ model SiteInvitation {
   createdAt DateTime         @default(now()) @map("created_at")
   updatedAt DateTime         @updatedAt @map("updated_at")
 
+  // Soft delete
+  deletedAt DateTime?        @map("deleted_at")
+  deletedBy String?          @map("deleted_by")
+  isDeleted Boolean          @default(false) @map("is_deleted")
+
   @@unique([siteId, email])
   @@index([token])
   @@index([email])

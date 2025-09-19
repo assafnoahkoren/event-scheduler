@@ -29,6 +29,11 @@ model SiteUser {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  // Soft delete
+  deletedAt DateTime? @map("deleted_at")
+  deletedBy String?   @map("deleted_by")
+  isDeleted Boolean   @default(false) @map("is_deleted")
+
   @@unique([userId, siteId])
   @@index([userId])
   @@index([siteId])
