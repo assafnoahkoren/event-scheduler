@@ -88,6 +88,7 @@ export const enTranslation = {
     eventTitle: "Event Title",
     eventDescription: "Description",
     eventLocation: "Location",
+    date: "Date",
     startDate: "Start Date",
     endDate: "End Date",
     allDay: "All Day",

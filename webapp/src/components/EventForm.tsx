@@ -25,7 +25,6 @@ interface EventFormProps {
 export interface EventFormData {
   title: string
   description?: string
-  location?: string
   startDate: Date
   endDate?: Date
   isAllDay: boolean
@@ -45,7 +44,6 @@ export function EventForm({
   // Form state
   const [title, setTitle] = useState(event?.title || '')
   const [description, setDescription] = useState(event?.description || '')
-  const [location, setLocation] = useState(event?.location || '')
   const [startDate, setStartDate] = useState(
     event?.startDate ? new Date(event.startDate) : (initialDate || new Date())
   )
@@ -89,7 +87,6 @@ export function EventForm({
     onSubmit({
       title: title.trim(),
       description: description.trim() || undefined,
-      location: location.trim() || undefined,
       startDate,
       endDate,
       isAllDay,
@@ -153,86 +150,14 @@ export function EventForm({
         </div>
       )}
 
-      {/* Start Date */}
+      {/* Date */}
       <div className="space-y-2">
-        <Label htmlFor="startDate">{t('events.startDate')}</Label>
-        <div className="flex gap-2">
-          <Input
-            id="startDate"
-            type="date"
-            value={format(startDate, 'yyyy-MM-dd')}
-            onChange={(e) => setStartDate(new Date(e.target.value))}
-            disabled={isSubmitting}
-            className="flex-1"
-          />
-          {!isAllDay && (
-            <Input
-              type="time"
-              value={format(startDate, 'HH:mm')}
-              onChange={(e) => {
-                const [hours, minutes] = e.target.value.split(':')
-                const newDate = new Date(startDate)
-                newDate.setHours(parseInt(hours), parseInt(minutes))
-                setStartDate(newDate)
-              }}
-              disabled={isSubmitting}
-            />
-          )}
-        </div>
-      </div>
-
-      {/* End Date */}
-      <div className="space-y-2">
-        <Label htmlFor="endDate">{t('events.endDate')}</Label>
-        <div className="flex gap-2">
-          <Input
-            id="endDate"
-            type="date"
-            value={endDate ? format(endDate, 'yyyy-MM-dd') : ''}
-            onChange={(e) => setEndDate(e.target.value ? new Date(e.target.value) : undefined)}
-            disabled={isSubmitting}
-            className="flex-1"
-          />
-          {!isAllDay && endDate && (
-            <Input
-              type="time"
-              value={endDate ? format(endDate, 'HH:mm') : ''}
-              onChange={(e) => {
-                if (!endDate) return
-                const [hours, minutes] = e.target.value.split(':')
-                const newDate = new Date(endDate)
-                newDate.setHours(parseInt(hours), parseInt(minutes))
-                setEndDate(newDate)
-              }}
-              disabled={isSubmitting}
-            />
-          )}
-        </div>
-      </div>
-
-      {/* All Day */}
-      <div className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          id="allDay"
-          checked={isAllDay}
-          onChange={(e) => setIsAllDay(e.target.checked)}
-          disabled={isSubmitting}
-          className="h-4 w-4"
-        />
-        <Label htmlFor="allDay" className="cursor-pointer">
-          {t('events.allDay')}
-        </Label>
-      </div>
-
-      {/* Location */}
-      <div className="space-y-2">
-        <Label htmlFor="location">{t('events.eventLocation')}</Label>
+        <Label htmlFor="date">{t('events.date')}</Label>
         <Input
-          id="location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          placeholder={t('events.eventLocation')}
+          id="date"
+          type="date"
+          value={format(startDate, 'yyyy-MM-dd')}
+          onChange={(e) => setStartDate(new Date(e.target.value))}
           disabled={isSubmitting}
         />
       </div>
