@@ -2,10 +2,9 @@
  * Site service for managing multi-tenant sites
  */
 
-import { PrismaClient, SiteRole } from '@prisma/client'
+import { SiteRole } from '@prisma/client'
 import { z } from 'zod'
-
-const prisma = new PrismaClient()
+import { prisma } from '../db'
 
 // Schema definitions
 export const createSiteSchema = z.object({

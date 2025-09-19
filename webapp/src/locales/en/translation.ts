@@ -16,7 +16,8 @@ export const enTranslation = {
     delete: "Delete",
     edit: "Edit",
     create: "Create",
-    back: "Back"
+    back: "Back",
+    you: "You"
   },
   calendar: {
     months: {
@@ -68,8 +69,11 @@ export const enTranslation = {
     mySites: "My Sites",
     noSites: "No sites yet",
     siteSettings: "Site Settings",
+    siteSettingsDescription: "Manage your site settings and preferences",
     inviteMembers: "Invite Members",
     members: "Members",
+    teamMembers: "Team Members",
+    teamMembersDescription: "Manage who has access to this site",
     role: "Role",
     owner: "Owner",
     admin: "Admin",
@@ -77,7 +81,18 @@ export const enTranslation = {
     viewer: "Viewer",
     switchSite: "Switch Site",
     switchSiteDescription: "Select a site to work with",
-    onlyOneSite: "You only have one site"
+    onlyOneSite: "You only have one site",
+    noSiteSelected: "No site selected",
+    general: "General",
+    dangerZone: "Danger Zone",
+    dangerZoneDescription: "Actions here cannot be undone. Please proceed with caution.",
+    siteInformation: "Site Information",
+    siteInformationDescription: "Basic information about your site",
+    siteId: "Site ID",
+    createdAt: "Created At",
+    deleteSite: "Delete Site",
+    confirmDelete: "Delete Site",
+    confirmDeleteDescription: "Are you sure you want to delete {{siteName}}? This action cannot be undone and will permanently delete all events and data associated with this site."
   },
   events: {
     events: "Events",

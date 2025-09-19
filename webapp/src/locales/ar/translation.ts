@@ -18,7 +18,8 @@ export const arTranslation: TranslationType = {
     delete: "حذف",
     edit: "تعديل",
     create: "إنشاء",
-    back: "رجوع"
+    back: "رجوع",
+    you: "أنت"
   },
   calendar: {
     months: {
@@ -70,8 +71,11 @@ export const arTranslation: TranslationType = {
     mySites: "مواقعي",
     noSites: "لا توجد مواقع بعد",
     siteSettings: "إعدادات الموقع",
+    siteSettingsDescription: "إدارة إعدادات وتفضيلات الموقع",
     inviteMembers: "دعوة الأعضاء",
     members: "الأعضاء",
+    teamMembers: "أعضاء الفريق",
+    teamMembersDescription: "إدارة من لديه حق الوصول إلى هذا الموقع",
     role: "الدور",
     owner: "المالك",
     admin: "مدير",
@@ -79,7 +83,18 @@ export const arTranslation: TranslationType = {
     viewer: "مشاهد",
     switchSite: "تبديل الموقع",
     switchSiteDescription: "اختر موقعاً للعمل معه",
-    onlyOneSite: "لديك موقع واحد فقط"
+    onlyOneSite: "لديك موقع واحد فقط",
+    noSiteSelected: "لم يتم اختيار موقع",
+    general: "عام",
+    dangerZone: "منطقة خطرة",
+    dangerZoneDescription: "الإجراءات هنا لا يمكن التراجع عنها. يرجى المتابعة بحذر.",
+    siteInformation: "معلومات الموقع",
+    siteInformationDescription: "معلومات أساسية عن موقعك",
+    siteId: "معرف الموقع",
+    createdAt: "تاريخ الإنشاء",
+    deleteSite: "حذف الموقع",
+    confirmDelete: "حذف الموقع",
+    confirmDeleteDescription: "هل أنت متأكد من رغبتك في حذف {{siteName}}؟ هذا الإجراء لا يمكن التراجع عنه وسيحذف نهائياً جميع الأحداث والبيانات المرتبطة بهذا الموقع."
   },
   events: {
     events: "الأحداث",

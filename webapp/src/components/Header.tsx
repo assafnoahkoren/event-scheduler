@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { SiteSwitcher } from '@/components/sites/SiteSwitcher'
-import { User, ArrowLeft } from 'lucide-react'
+import { User, ArrowLeft, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 export function Header() {
@@ -14,6 +14,10 @@ export function Header() {
 
   const handleProfile = () => {
     navigate('/profile')
+  }
+
+  const handleSettings = () => {
+    navigate('/sites/settings')
   }
 
   const handleBack = () => {
@@ -35,8 +39,16 @@ export function Header() {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
-            <div className="border-e pe-4">
+            <div className="border-e pe-4 flex items-center gap-2">
               <SiteSwitcher />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleSettings}
+                title={t('navigation.settings')}
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
             </div>
           </div>
 

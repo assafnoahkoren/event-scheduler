@@ -15,6 +15,13 @@ Services should handle all business logic and database operations:
 - Include proper indexes in Prisma schema
 - Run migrations with descriptive names
 
+### CRITICAL: Prisma Client Import
+**NEVER create a new PrismaClient instance in services!**
+- ❌ WRONG: `const prisma = new PrismaClient()`
+- ✅ CORRECT: `import { prisma } from '../db'`
+
+The `db.ts` file exports an extended Prisma client with soft delete functionality. Creating a new instance will bypass the soft delete extension and cause records to be permanently deleted instead of soft deleted.
+
 ### API Design
 - Use descriptive names for tRPC procedures
 - Group related endpoints in routers

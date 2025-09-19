@@ -2,11 +2,10 @@
  * Invitation service for managing site invitations
  */
 
-import { PrismaClient, SiteRole, InvitationStatus } from '@prisma/client'
+import { SiteRole, InvitationStatus } from '@prisma/client'
 import { siteService } from './site.service'
 import { z } from 'zod'
-
-const prisma = new PrismaClient()
+import { prisma } from '../db'
 
 // Schema definitions
 export const createInvitationSchema = z.object({

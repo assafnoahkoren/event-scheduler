@@ -22,13 +22,14 @@ interface CurrentSiteProviderProps {
 
 export function CurrentSiteProvider({ children }: CurrentSiteProviderProps) {
   const [currentSite, setCurrentSite] = useState<Site | null>(null)
+  const [hasInitialized, setHasInitialized] = useState(false)
 
   // Fetch all user's sites
   const { data: sites, isLoading } = trpc.sites.list.useQuery()
 
   // Set the first site as current when sites are loaded
   useEffect(() => {
-    if (sites && sites.length > 0 && !currentSite) {
+    if (sites && sites.length > 0 && !hasInitialized) {
       // Try to load saved site from localStorage
       const savedSiteId = localStorage.getItem('currentSiteId')
       const savedSite = sites.find(site => site.id === savedSiteId)
@@ -40,8 +41,9 @@ export function CurrentSiteProvider({ children }: CurrentSiteProviderProps) {
         setCurrentSite(sites[0])
         localStorage.setItem('currentSiteId', sites[0].id)
       }
+      setHasInitialized(true)
     }
-  }, [sites, currentSite])
+  }, [sites, hasInitialized])
 
   // Update localStorage when current site changes
   useEffect(() => {

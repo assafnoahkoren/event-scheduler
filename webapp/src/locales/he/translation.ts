@@ -18,7 +18,8 @@ export const heTranslation: TranslationType = {
     delete: "מחק",
     edit: "ערוך",
     create: "צור",
-    back: "חזור"
+    back: "חזור",
+    you: "אתה"
   },
   calendar: {
     months: {
@@ -70,8 +71,11 @@ export const heTranslation: TranslationType = {
     mySites: "האתרים שלי",
     noSites: "אין אתרים עדיין",
     siteSettings: "הגדרות אתר",
+    siteSettingsDescription: "נהל את הגדרות והעדפות האתר שלך",
     inviteMembers: "הזמן חברים",
     members: "חברים",
+    teamMembers: "חברי צוות",
+    teamMembersDescription: "נהל למי יש גישה לאתר זה",
     role: "תפקיד",
     owner: "בעלים",
     admin: "מנהל",
@@ -79,7 +83,18 @@ export const heTranslation: TranslationType = {
     viewer: "צופה",
     switchSite: "החלף אתר",
     switchSiteDescription: "בחר אתר לעבודה",
-    onlyOneSite: "יש לך רק אתר אחד"
+    onlyOneSite: "יש לך רק אתר אחד",
+    noSiteSelected: "לא נבחר אתר",
+    general: "כללי",
+    dangerZone: "אזור מסוכן",
+    dangerZoneDescription: "פעולות כאן לא ניתנות לביטול. אנא המשך בזהירות.",
+    siteInformation: "מידע על האתר",
+    siteInformationDescription: "מידע בסיסי על האתר שלך",
+    siteId: "מזהה אתר",
+    createdAt: "נוצר בתאריך",
+    deleteSite: "מחק אתר",
+    confirmDelete: "מחק אתר",
+    confirmDeleteDescription: "האם אתה בטוח שברצונך למחוק את {{siteName}}? פעולה זו לא ניתנת לביטול ותמחק לצמיתות את כל האירועים והנתונים הקשורים לאתר זה."
   },
   events: {
     events: "אירועים",

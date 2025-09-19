@@ -2,7 +2,6 @@
  * Authentication service for handling user authentication
  */
 
-import { PrismaClient } from '@prisma/client'
 import type { User } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import {
@@ -12,8 +11,7 @@ import {
   isRefreshToken,
   type TokenPayload
 } from '../lib/jwt'
-
-const prisma = new PrismaClient()
+import { prisma } from '../db'
 
 export interface LoginResult {
   user: Omit<User, 'passwordHash'>

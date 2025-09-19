@@ -7,6 +7,7 @@ import { Register } from '@/pages/Register'
 import { Home } from '@/pages/home/Home'
 import { Event } from '@/pages/Event'
 import { NewSite } from '@/pages/sites/NewSite'
+import { SiteSettings } from '@/pages/sites/SiteSettings'
 import { Profile } from '@/pages/Profile'
 import '@/styles/swiper-custom.css'
 
@@ -24,6 +25,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/event/:eventId" element={<Event />} />
             <Route path="/sites/new" element={<NewSite />} />
+            <Route path="/sites/settings" element={<SiteSettings />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
         </Route>
