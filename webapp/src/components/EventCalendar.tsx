@@ -1,10 +1,12 @@
 import { useState, useMemo } from 'react'
 import { SimpleCalendar } from '@/components/SimpleCalendar'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { format, startOfMonth, endOfMonth, isSameDay } from 'date-fns'
 import { cn } from '@/lib/utils'
+import { navigateToEvent } from '@/utils/navigation'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,6 +15,7 @@ import { Label } from '@/components/ui/label'
 export function EventCalendar() {
   const { i18n, t } = useTranslation()
   const { currentSite } = useCurrentSite()
+  const navigate = useNavigate()
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [viewMonth, setViewMonth] = useState(new Date())
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -76,9 +79,8 @@ export function EventCalendar() {
       const existingEvents = eventsByDate.get(dateKey)
 
       if (existingEvents && existingEvents.length > 0) {
-        // If events exist, log them for now
-        console.log(`Events on ${dateKey}:`, existingEvents)
-        // TODO: Show event list or edit dialog
+        // If events exist, navigate to the first event
+        navigateToEvent(navigate, existingEvents[0].id)
       } else {
         // No events, open creation dialog
         setEventDate(date)

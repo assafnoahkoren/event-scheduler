@@ -1,9 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { GlobalStateProvider } from '@/providers/GlobalStateProvider'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { Shell } from '@/components/layouts/Shell'
 import { Login } from '@/pages/Login'
 import { Register } from '@/pages/Register'
 import { Home } from '@/pages/home/Home'
+import { Event } from '@/pages/Event'
 import '@/styles/swiper-custom.css'
 
 function App() {
@@ -16,7 +18,10 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Home />} />
+          <Route element={<Shell />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/event/:eventId" element={<Event />} />
+          </Route>
         </Route>
 
         {/* Catch all redirect */}

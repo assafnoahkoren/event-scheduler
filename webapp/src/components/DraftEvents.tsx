@@ -87,12 +87,10 @@ export function DraftEvents() {
                     <div className="space-y-3 ms-4">
                       <EventCard
                         event={event}
-                        onClick={() => console.log('Draft event clicked:', event)}
                       />
                       {draftEvents[index + 1] && (
                         <EventCard
                           event={draftEvents[index + 1]}
-                          onClick={() => console.log('Draft event clicked:', draftEvents[index + 1])}
                         />
                       )}
                     </div>

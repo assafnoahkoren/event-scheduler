@@ -3,6 +3,8 @@ import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { CalendarIcon, MapPinIcon, UserIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
+import { navigateToEvent } from '@/utils/navigation'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
@@ -16,6 +18,15 @@ interface EventCardProps {
 
 export function EventCard({ event, onClick }: EventCardProps) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick()
+    } else {
+      navigateToEvent(navigate, event.id)
+    }
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -53,7 +64,7 @@ export function EventCard({ event, onClick }: EventCardProps) {
 
   return (
     <div
-      onClick={onClick}
+      onClick={handleClick}
       className="border rounded-lg p-3 hover:bg-accent/50 transition-colors cursor-pointer"
     >
       <div className="flex items-center justify-between gap-2">

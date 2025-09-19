@@ -48,7 +48,9 @@
     "passwordMinLength": "הסיסמה חייבת להיות לפחות 6 תווים",
     "passwordsDoNotMatch": "הסיסמאות לא תואמות",
     "loginFailed": "ההתחברות נכשלה",
-    "registerFailed": "ההרשמה נכשלה"
+    "registerFailed": "ההרשמה נכשלה",
+    "confirmLogout": "אישור התנתקות",
+    "confirmLogoutDescription": "האם אתה בטוח שברצונך להתנתק? תצטרך להתחבר שוב כדי לגשת לחשבון שלך."
   },
   "sites": {
     "welcomeTitle": "ברוך הבא למארגן האירועים!",

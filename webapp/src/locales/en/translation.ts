@@ -48,7 +48,9 @@ export const enTranslation = {
     passwordMinLength: "Password must be at least 6 characters",
     passwordsDoNotMatch: "Passwords do not match",
     loginFailed: "Failed to login",
-    registerFailed: "Failed to register"
+    registerFailed: "Failed to register",
+    confirmLogout: "Confirm Logout",
+    confirmLogoutDescription: "Are you sure you want to logout? You will need to login again to access your account."
   },
   sites: {
     welcomeTitle: "Welcome to Event Scheduler!",

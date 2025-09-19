@@ -93,12 +93,10 @@ export function UpcomingEvents() {
                     <div className="space-y-3 ms-4">
                       <EventCard
                         event={event}
-                        onClick={() => console.log('Event clicked:', event)}
                       />
                       {upcomingEvents[index + 1] && (
                         <EventCard
                           event={upcomingEvents[index + 1]}
-                          onClick={() => console.log('Event clicked:', upcomingEvents[index + 1])}
                         />
                       )}
                     </div>

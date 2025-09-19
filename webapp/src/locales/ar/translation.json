@@ -48,7 +48,9 @@
     "passwordMinLength": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
     "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
     "loginFailed": "فشل تسجيل الدخول",
-    "registerFailed": "فشل إنشاء الحساب"
+    "registerFailed": "فشل إنشاء الحساب",
+    "confirmLogout": "تأكيد تسجيل الخروج",
+    "confirmLogoutDescription": "هل أنت متأكد أنك تريد تسجيل الخروج؟ ستحتاج إلى تسجيل الدخول مرة أخرى للوصول إلى حسابك."
   },
   "sites": {
     "welcomeTitle": "مرحباً بك في منظم الأحداث!",
