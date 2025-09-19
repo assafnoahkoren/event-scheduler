@@ -1,24 +1,10 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import { trpc } from '@/utils/trpc'
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '../../../server/src/routers/appRouter'
 
-interface Site {
-  id: string
-  name: string
-  isActive: boolean
-  ownerId: string
-  createdAt: string
-  updatedAt: string
-  owner: {
-    id: string
-    email: string
-    username: string
-  }
-  userRole: string | null
-  _count: {
-    siteUsers: number
-    events: number
-  }
-}
+type RouterOutput = inferRouterOutputs<AppRouter>
+type Site = RouterOutput['sites']['list'][0]
 
 interface CurrentSiteContextType {
   currentSite: Site | null

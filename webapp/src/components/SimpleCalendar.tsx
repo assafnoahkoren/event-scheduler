@@ -110,7 +110,7 @@ export function SimpleCalendar({
   }
 
   return (
-    <div className={cn("p-3 rounded-md bg-background", className)} dir={dir}>
+    <div className={cn("p-3 rounded-md", className)} dir={dir}>
       {/* Header with month navigation */}
       <div className="flex items-center justify-between mb-4">
         <Button

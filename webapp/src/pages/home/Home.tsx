@@ -6,6 +6,8 @@ import { LogOut, Calendar } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CreateFirstSite } from './CreateFirstSite'
 import { EventCalendar } from '@/components/EventCalendar'
+import { DraftEvents } from '@/components/DraftEvents'
+import { UpcomingEvents } from '@/components/UpcomingEvents'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 
 export function Home() {
@@ -44,9 +46,13 @@ export function Home() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 pb-8">
+      <main className="container mx-auto pb-8">
         {currentSite ? (
-          <EventCalendar />
+          <div className="space-y-0">
+            <EventCalendar />
+            <DraftEvents />
+            <UpcomingEvents />
+          </div>
         ) : (
           <CreateFirstSite />
         )}

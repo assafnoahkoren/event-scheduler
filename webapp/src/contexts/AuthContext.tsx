@@ -1,12 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { trpc } from '@/utils/trpc'
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '../../../server/src/routers/appRouter'
 
-interface User {
-  id: string
-  email: string
-  username: string
-}
+type RouterOutput = inferRouterOutputs<AppRouter>
+type User = RouterOutput['auth']['me']['user']
 
 interface AuthContextType {
   user: User | null

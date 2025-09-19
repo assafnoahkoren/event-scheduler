@@ -80,6 +80,7 @@
   "events": {
     "events": "الأحداث",
     "upcomingEvents": "الأحداث القادمة",
+    "draftEvents": "الأحداث المسودة",
     "noEvents": "لا توجد أحداث مجدولة بعد",
     "createEvent": "إنشاء حدث",
     "eventTitle": "عنوان الحدث",
@@ -87,7 +88,13 @@
     "eventLocation": "الموقع",
     "startDate": "تاريخ البداية",
     "endDate": "تاريخ النهاية",
-    "allDay": "طوال اليوم"
+    "allDay": "طوال اليوم",
+    "untitledEvent": "حدث بدون عنوان",
+    "draft": "مسودة",
+    "scheduled": "مجدول",
+    "inProgress": "قيد التنفيذ",
+    "completed": "مكتمل",
+    "cancelled": "ملغى"
   },
   "navigation": {
     "home": "الرئيسية",

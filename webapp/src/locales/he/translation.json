@@ -80,6 +80,7 @@
   "events": {
     "events": "אירועים",
     "upcomingEvents": "אירועים קרובים",
+    "draftEvents": "אירועים בטיוטה",
     "noEvents": "אין אירועים מתוכננים עדיין",
     "createEvent": "צור אירוע",
     "eventTitle": "כותרת האירוע",
@@ -87,7 +88,13 @@
     "eventLocation": "מיקום",
     "startDate": "תאריך התחלה",
     "endDate": "תאריך סיום",
-    "allDay": "כל היום"
+    "allDay": "כל היום",
+    "untitledEvent": "אירוע ללא כותרת",
+    "draft": "טיוטה",
+    "scheduled": "מתוכנן",
+    "inProgress": "בתהליך",
+    "completed": "הושלם",
+    "cancelled": "בוטל"
   },
   "navigation": {
     "home": "בית",

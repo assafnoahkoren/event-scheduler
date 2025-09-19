@@ -94,6 +94,10 @@ function Component() {
 - Use tRPC's type inference for API calls
 - Avoid using `any` type
 - Prefer type inference over explicit types when possible
+- **IMPORTANT: Always use actual types from tRPC router outputs instead of hardcoded interfaces**
+  - Use `inferRouterOutputs<AppRouter>` to get types from API responses
+  - Example: `type Event = RouterOutput['events']['list'][0]` instead of manually defining an Event interface
+  - This ensures type safety and automatic updates when backend types change
 
 ## Component Structure
 ```

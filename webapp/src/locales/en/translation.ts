@@ -80,6 +80,7 @@ export const enTranslation = {
   events: {
     events: "Events",
     upcomingEvents: "Upcoming Events",
+    draftEvents: "Draft Events",
     noEvents: "No events scheduled yet",
     createEvent: "Create Event",
     eventTitle: "Event Title",
@@ -88,7 +89,12 @@ export const enTranslation = {
     startDate: "Start Date",
     endDate: "End Date",
     allDay: "All Day",
-    untitledEvent: "Untitled Event"
+    untitledEvent: "Untitled Event",
+    draft: "Draft",
+    scheduled: "Scheduled",
+    inProgress: "In Progress",
+    completed: "Completed",
+    cancelled: "Cancelled"
   },
   navigation: {
     home: "Home",
