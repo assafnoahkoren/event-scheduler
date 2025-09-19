@@ -3,9 +3,9 @@ import { Header } from '@/components/Header'
 
 export function Shell() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="container mx-auto pb-8">
+      <main className="container flex-1 flex flex-col">
         <Outlet />
       </main>
     </div>

@@ -71,9 +71,9 @@ export function Event() {
   }
 
   return (
-    <div className="py-8">
+    <div>
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow-sm">
+        <div className="rounded-lg p-6">
           <h1 className="text-3xl font-bold mb-4">
             {event.title || t('events.untitledEvent')}
           </h1>
