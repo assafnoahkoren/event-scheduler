@@ -6,6 +6,7 @@ import { Login } from '@/pages/Login'
 import { Register } from '@/pages/Register'
 import { Home } from '@/pages/home/Home'
 import { Event } from '@/pages/Event'
+import { NewSite } from '@/pages/sites/NewSite'
 import '@/styles/swiper-custom.css'
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route element={<Shell />}>
             <Route path="/" element={<Home />} />
             <Route path="/event/:eventId" element={<Event />} />
+            <Route path="/sites/new" element={<NewSite />} />
           </Route>
         </Route>
 

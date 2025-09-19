@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -9,11 +10,12 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Card } from '@/components/ui/card'
-import { Check, ChevronDown, Building2, Users, Calendar, Loader2 } from 'lucide-react'
+import { Check, ChevronDown, Building2, Users, Calendar, Loader2, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 export function SiteSwitcher() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { currentSite, sites, switchSite, isLoading } = useCurrentSite()
   const [dialogOpen, setDialogOpen] = useState(false)
 
@@ -94,6 +96,19 @@ export function SiteSwitcher() {
                 </div>
               </Card>
             ))}
+
+            {/* Create new site button */}
+            <Button
+              variant="outline"
+              className="w-full justify-start gap-2 mt-2"
+              onClick={() => {
+                setDialogOpen(false)
+                navigate('/sites/new')
+              }}
+            >
+              <Plus className="h-4 w-4" />
+              {t('sites.createSite')}
+            </Button>
           </div>
 
           {sites.length === 1 && (
