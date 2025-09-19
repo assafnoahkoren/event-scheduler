@@ -104,7 +104,7 @@ export function UpcomingEvents() {
                 )
               }
               return slides
-            }, [] as JSX.Element[])}
+            }, [] as React.ReactElement[])}
           </Swiper>
         )}
       </CardContent>

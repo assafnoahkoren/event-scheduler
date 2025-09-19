@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
-import { CalendarIcon, MapPinIcon, UserIcon } from 'lucide-react'
+import { MapPinIcon, UserIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { navigateToEvent } from '@/utils/navigation'

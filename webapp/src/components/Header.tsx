@@ -48,12 +48,12 @@ export function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={handleBack}
-                className="mr-2"
+                className="me-2"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
-            <div className="border-r pr-4">
+            <div className="border-e pe-4">
               <SiteSwitcher />
             </div>
           </div>

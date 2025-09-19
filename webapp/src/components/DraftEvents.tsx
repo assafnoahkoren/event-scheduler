@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
-import { startOfToday, endOfMonth, addMonths, parseISO } from 'date-fns'
+import { startOfToday, endOfMonth, addMonths } from 'date-fns'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EventCard } from '@/components/EventCard'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -98,7 +98,7 @@ export function DraftEvents() {
                 )
               }
               return slides
-            }, [] as JSX.Element[])}
+            }, [] as React.ReactElement[])}
           </Swiper>
         )}
       </CardContent>

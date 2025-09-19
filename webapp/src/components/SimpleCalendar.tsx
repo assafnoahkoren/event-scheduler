@@ -106,7 +106,7 @@ export function SimpleCalendar({
       'january', 'february', 'march', 'april', 'may', 'june',
       'july', 'august', 'september', 'october', 'november', 'december'
     ]
-    return t(`calendar.months.${monthKeys[monthIndex]}`)
+    return t(`calendar.months.${monthKeys[monthIndex]}` as any)
   }
 
   return (
@@ -169,10 +169,10 @@ export function SimpleCalendar({
                 )}
               >
                 {renderCell(day, {
-                  isSelected,
+                  isSelected: !!isSelected,
                   isCurrentMonth,
                   isToday: isTodayDate,
-                  hasEvent,
+                  hasEvent: !!hasEvent,
                 })}
               </div>
             )

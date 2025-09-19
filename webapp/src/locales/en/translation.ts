@@ -113,5 +113,25 @@ export const enTranslation = {
   validation: {
     required: "This field is required",
     slugFormat: "Only lowercase letters, numbers, and hyphens are allowed"
+  },
+  clients: {
+    clients: "Clients",
+    selectClient: "Select client",
+    searchClients: "Search clients...",
+    noClientsFound: "No clients found",
+    createClient: "Create \"{{name}}\"",
+    creating: "Creating...",
+    client: "Client",
+    newClient: "New Client",
+    name: "Name",
+    namePlaceholder: "Enter client name",
+    email: "Email",
+    emailPlaceholder: "client@example.com",
+    phone: "Phone",
+    phonePlaceholder: "+1 (555) 123-4567",
+    address: "Address",
+    addressPlaceholder: "123 Main St, City, State 12345",
+    notes: "Notes",
+    notesPlaceholder: "Additional notes about this client..."
   }
 } as const

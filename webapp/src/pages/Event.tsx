@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { trpc } from '@/utils/trpc'
-import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
@@ -15,6 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { EventForm, type EventFormData } from '@/components/EventForm'
 
 export function Event() {
   const { eventId } = useParams<{ eventId: string }>()
@@ -29,6 +29,17 @@ export function Event() {
 
   const utils = trpc.useUtils()
 
+  const updateMutation = trpc.events.update.useMutation({
+    onSuccess: () => {
+      // Invalidate and refetch
+      utils.events.get.invalidate({ id: eventId })
+      utils.events.list.invalidate()
+    },
+    onError: (error) => {
+      console.error('Failed to update event:', error)
+    }
+  })
+
   const deleteMutation = trpc.events.delete.useMutation({
     onSuccess: () => {
       // Invalidate and refetch events
@@ -40,6 +51,21 @@ export function Event() {
       console.error('Failed to delete event:', error)
     }
   })
+
+  const handleUpdate = (formData: EventFormData) => {
+    if (!eventId) return
+
+    updateMutation.mutate({
+      id: eventId,
+      title: formData.title,
+      description: formData.description || undefined,
+      location: formData.location || undefined,
+      startDate: formData.startDate.toISOString(),
+      endDate: formData.endDate?.toISOString() || undefined,
+      isAllDay: formData.isAllDay,
+      clientId: formData.clientId || undefined,
+    })
+  }
 
   const handleDelete = () => {
     if (eventId) {
@@ -74,46 +100,29 @@ export function Event() {
     <div>
       <div className="max-w-2xl mx-auto">
         <div className="rounded-lg p-6">
-          <h1 className="text-3xl font-bold mb-4">
-            {event.title || t('events.untitledEvent')}
-          </h1>
-
-          <div className="text-lg text-muted-foreground mb-6">
-            {format(new Date(event.startDate), 'PPPP')}
-          </div>
-
-          {event.description && (
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-2">{t('events.eventDescription')}</h2>
-              <p className="text-muted-foreground">{event.description}</p>
-            </div>
-          )}
-
-          {event.location && (
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-2">{t('events.eventLocation')}</h2>
-              <p className="text-muted-foreground">{event.location}</p>
-            </div>
-          )}
-
-          {/* Delete button at the bottom */}
-          <div className="mt-8 pt-6 border-t">
+          <div className="flex justify-between items-start mb-6">
+            <h1 className="text-3xl font-bold">
+              {event.title || t('events.untitledEvent')}
+            </h1>
             <Button
               variant="destructive"
+              size="icon"
               onClick={() => setShowDeleteDialog(true)}
               disabled={deleteMutation.isPending}
-              className="w-full sm:w-auto"
             >
               {deleteMutation.isPending ? (
-                <>{t('events.deleting')}</>
+                <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
               ) : (
-                <>
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  {t('events.deleteEvent')}
-                </>
+                <Trash2 className="h-4 w-4" />
               )}
             </Button>
           </div>
+
+          <EventForm
+            event={event}
+            onSubmit={handleUpdate}
+            isSubmitting={updateMutation.isPending}
+          />
         </div>
       </div>
 

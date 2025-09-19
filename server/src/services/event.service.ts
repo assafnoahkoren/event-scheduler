@@ -113,12 +113,21 @@ export class EventService {
       siteId: input.siteId,
     }
 
-    if (input.startDate) {
-      where.startDate = { gte: new Date(input.startDate) }
-    }
-
-    if (input.endDate) {
-      where.endDate = { lte: new Date(input.endDate) }
+    // Get events that start before the end of the range
+    // and end after the start of the range (or have no end date)
+    if (input.startDate && input.endDate) {
+      where.startDate = { lte: new Date(input.endDate) }
+      where.OR = [
+        { endDate: { gte: new Date(input.startDate) } },
+        { endDate: null }
+      ]
+    } else if (input.startDate) {
+      where.OR = [
+        { endDate: { gte: new Date(input.startDate) } },
+        { endDate: null }
+      ]
+    } else if (input.endDate) {
+      where.startDate = { lte: new Date(input.endDate) }
     }
 
     if (input.clientId) {

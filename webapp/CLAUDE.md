@@ -1,5 +1,15 @@
 # Frontend-Specific Claude Instructions
 
+## RTL Support Guidelines
+- **IMPORTANT**: Always use logical properties for spacing and positioning
+- Use `ms-x` (margin-start) instead of `ml-x` (margin-left)
+- Use `me-x` (margin-end) instead of `mr-x` (margin-right)
+- Use `ps-x` (padding-start) instead of `pl-x` (padding-left)
+- Use `pe-x` (padding-end) instead of `pr-x` (padding-right)
+- Use `start-x` instead of `left-x`
+- Use `end-x` instead of `right-x`
+- This ensures proper support for RTL languages (Arabic, Hebrew)
+
 ## Internationalization (i18n) and Translations
 
 ### Translation System Architecture

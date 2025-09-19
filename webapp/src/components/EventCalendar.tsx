@@ -4,13 +4,11 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
-import { format, startOfMonth, endOfMonth, isSameDay } from 'date-fns'
+import { format, startOfMonth, endOfMonth } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { navigateToEvent } from '@/utils/navigation'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { EventForm, type EventFormData } from '@/components/EventForm'
 
 export function EventCalendar() {
   const { i18n, t } = useTranslation()
@@ -19,7 +17,6 @@ export function EventCalendar() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [viewMonth, setViewMonth] = useState(new Date())
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [eventTitle, setEventTitle] = useState('')
   const [eventDate, setEventDate] = useState<Date>(new Date())
 
   const utils = trpc.useUtils()
@@ -41,9 +38,8 @@ export function EventCalendar() {
     onSuccess: () => {
       // Invalidate and refetch events
       utils.events.list.invalidate()
-      // Close dialog and reset form
+      // Close dialog
       setIsDialogOpen(false)
-      setEventTitle('')
     },
     onError: (error) => {
       console.error('Failed to create event:', error)
@@ -84,59 +80,59 @@ export function EventCalendar() {
       } else {
         // No events, open creation dialog
         setEventDate(date)
-        setEventTitle('')
         setIsDialogOpen(true)
       }
     }
-    // Don't set selected date to avoid focus styling
+    setSelectedDate(date)
   }
 
   // Handle event creation
-  const handleCreateEvent = () => {
-    if (!currentSite?.id || !eventTitle.trim()) return
+  const handleCreateEvent = (formData: EventFormData) => {
+    if (!currentSite?.id) return
 
     createEventMutation.mutate({
       siteId: currentSite.id,
-      title: eventTitle.trim(),
-      startDate: eventDate.toISOString(),
-      endDate: eventDate.toISOString(), // Same as start date for now
+      title: formData.title,
+      description: formData.description,
+      location: formData.location,
+      startDate: formData.startDate.toISOString(),
+      endDate: formData.endDate?.toISOString(),
+      isAllDay: formData.isAllDay,
+      clientId: formData.clientId || undefined,
       status: 'DRAFT' as const,
     })
   }
 
   // Custom cell render function
-  const renderCell = (date: Date, { isSelected, isCurrentMonth, isToday, hasEvent }: {
+  const renderCell = (date: Date, { isSelected, isCurrentMonth, isToday }: {
     isSelected: boolean
     isCurrentMonth: boolean
     isToday: boolean
     hasEvent: boolean
   }) => {
     const dayEvents = eventsByDate.get(format(date, 'yyyy-MM-dd')) || []
-    const eventCount = dayEvents.length
 
     // Check if any events are drafts
     const hasDraftEvent = dayEvents.some(event => event.status === 'DRAFT')
     const hasScheduledEvent = dayEvents.some(event => event.status !== 'DRAFT')
 
     return (
-      <div className={cn(
-        "relative h-full w-full min-h-[20px] flex items-center justify-center text-sm rounded-md transition-colors",
-        {
-          // Blue for draft events, green for scheduled/other events
-          "bg-blue-100 hover:bg-blue-200": hasDraftEvent && isCurrentMonth,
-          "bg-green-100 hover:bg-green-200": !hasDraftEvent && hasScheduledEvent && isCurrentMonth,
-          "text-muted-foreground": !isCurrentMonth,
-          "hover:bg-accent hover:text-accent-foreground": !hasEvent && isCurrentMonth,
-        }
-      )}>
+      <div
+        className={cn(
+          "h-full w-full flex items-center justify-center relative p-1",
+          // Background colors for events
+          hasDraftEvent && isCurrentMonth && "bg-blue-100 hover:bg-blue-200",
+          !hasDraftEvent && hasScheduledEvent && isCurrentMonth && "bg-green-100 hover:bg-green-200",
+          // Disabled styling
+          !isCurrentMonth && "text-gray-400"
+        )}
+      >
         <span className={cn(
-          "text-center text-lg flex items-center justify-center w-10 h-10 rounded-full",
-          {
-            "font-bold border-2 border-blue-500": isToday,
-            "text-blue-800": hasDraftEvent && isCurrentMonth,
-            "text-green-800": !hasDraftEvent && hasScheduledEvent && isCurrentMonth,
-            "text-primary": isToday && !hasEvent,
-          }
+          "flex items-center justify-center w-8 h-8 rounded-full",
+          // Today styling - border instead of background
+          isToday && "border-2 border-blue-500",
+          // Selected styling
+          isSelected && !isToday && "bg-primary text-primary-foreground"
         )}>
           {format(date, 'd')}
         </span>
@@ -169,51 +165,18 @@ export function EventCalendar() {
 
       {/* Event Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
             <DialogTitle>{t('events.createEvent')}</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
-                {t('events.eventTitle')}
-              </Label>
-              <Input
-                id="title"
-                value={eventTitle}
-                onChange={(e) => setEventTitle(e.target.value)}
-                className="col-span-3"
-                placeholder={t('events.eventTitle')}
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="date" className="text-right">
-                {t('events.startDate')}
-              </Label>
-              <Input
-                id="date"
-                type="date"
-                value={format(eventDate, 'yyyy-MM-dd')}
-                onChange={(e) => setEventDate(new Date(e.target.value))}
-                className="col-span-3"
-              />
-            </div>
+          <div className="py-4">
+            <EventForm
+              initialDate={eventDate}
+              onSubmit={handleCreateEvent}
+              onCancel={() => setIsDialogOpen(false)}
+              isSubmitting={createEventMutation.isPending}
+            />
           </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsDialogOpen(false)}
-              disabled={createEventMutation.isPending}
-            >
-              {t('common.cancel')}
-            </Button>
-            <Button
-              onClick={handleCreateEvent}
-              disabled={!eventTitle.trim() || createEventMutation.isPending}
-            >
-              {createEventMutation.isPending ? t('common.loading') : t('common.create')}
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

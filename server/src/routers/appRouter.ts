@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { authRouter } from './auth.router';
 import { siteRouter } from './site.router';
 import { eventRouter } from './event.router';
+import { clientRouter } from './client.router';
 
 export const appRouter = router({
   // Auth routes
@@ -13,6 +14,9 @@ export const appRouter = router({
 
   // Event management routes
   events: eventRouter,
+
+  // Client management routes
+  clients: clientRouter,
 
   // Public routes
   ping: publicProcedure

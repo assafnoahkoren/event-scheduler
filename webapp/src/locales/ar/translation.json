@@ -113,5 +113,15 @@
   "validation": {
     "required": "هذا الحقل مطلوب",
     "slugFormat": "يُسمح فقط بالأحرف الصغيرة والأرقام والشرطات"
+  },
+  "clients": {
+    "clients": "العملاء",
+    "selectClient": "اختر عميل",
+    "searchClients": "البحث عن العملاء...",
+    "noClientsFound": "لم يتم العثور على عملاء",
+    "createClient": "إنشاء \"{{name}}\"",
+    "creating": "جاري الإنشاء...",
+    "client": "عميل",
+    "newClient": "عميل جديد"
   }
 }

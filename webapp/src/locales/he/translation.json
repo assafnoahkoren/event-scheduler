@@ -113,5 +113,15 @@
   "validation": {
     "required": "שדה זה חובה",
     "slugFormat": "מותרות רק אותיות קטנות, מספרים ומקפים"
+  },
+  "clients": {
+    "clients": "לקוחות",
+    "selectClient": "בחר לקוח",
+    "searchClients": "חיפוש לקוחות...",
+    "noClientsFound": "לא נמצאו לקוחות",
+    "createClient": "צור \"{{name}}\"",
+    "creating": "יוצר...",
+    "client": "לקוח",
+    "newClient": "לקוח חדש"
   }
 }
