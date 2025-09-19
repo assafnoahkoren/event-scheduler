@@ -7,8 +7,8 @@ import type { User } from '@prisma/client'
 
 // Token configuration from environment variables
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production'
-const ACCESS_TOKEN_EXPIRES_IN = '15m' // 15 minutes
-const REFRESH_TOKEN_EXPIRES_IN = '7d' // 7 days
+const ACCESS_TOKEN_EXPIRES_IN = '30d' // 30 days (1 month)
+const REFRESH_TOKEN_EXPIRES_IN = '90d' // 90 days (3 months)
 
 // Token payload types
 export interface AccessTokenPayload {
@@ -130,7 +130,7 @@ export function getTokenExpiryTimes() {
     accessTokenExpiresIn: ACCESS_TOKEN_EXPIRES_IN,
     refreshTokenExpiresIn: REFRESH_TOKEN_EXPIRES_IN,
     // Convert to milliseconds for cookies
-    accessTokenMaxAge: 15 * 60 * 1000, // 15 minutes
-    refreshTokenMaxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    accessTokenMaxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    refreshTokenMaxAge: 90 * 24 * 60 * 60 * 1000, // 90 days
   }
 }

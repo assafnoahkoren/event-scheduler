@@ -59,7 +59,7 @@ export function EventCard({ event, onClick }: EventCardProps) {
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <div className="text-sm text-muted-foreground whitespace-nowrap">
-            {format(new Date(event.startDate), 'MM/dd/yy')}
+            {format(new Date(event.startDate), 'MM/dd')}
           </div>
           <h3 className="font-medium truncate">
             {event.title || t('events.untitledEvent')}
