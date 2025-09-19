@@ -144,7 +144,7 @@ export function EventForm({
             onClick={() => setShowClientForm(!showClientForm)}
             disabled={isSubmitting}
           >
-            {showClientForm ? t('common.cancel') : t('common.edit')} {t('clients.client')}
+            {showClientForm && t('common.cancel')} {t('common.edit')} {t('clients.client')}
           </Button>
         )}
       </div>

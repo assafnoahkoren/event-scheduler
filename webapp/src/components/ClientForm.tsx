@@ -78,19 +78,6 @@ export function ClientForm({
         />
       </div>
 
-      {/* Email */}
-      <div className="space-y-2">
-        <Label htmlFor="email">{t('clients.email')}</Label>
-        <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder={t('clients.emailPlaceholder')}
-          disabled={isSubmitting}
-        />
-      </div>
-
       {/* Phone */}
       <div className="space-y-2">
         <Label htmlFor="phone">{t('clients.phone')}</Label>
@@ -100,18 +87,6 @@ export function ClientForm({
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder={t('clients.phonePlaceholder')}
-          disabled={isSubmitting}
-        />
-      </div>
-
-      {/* Address */}
-      <div className="space-y-2">
-        <Label htmlFor="address">{t('clients.address')}</Label>
-        <Input
-          id="address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          placeholder={t('clients.addressPlaceholder')}
           disabled={isSubmitting}
         />
       </div>
