@@ -44,7 +44,6 @@ model SiteInvitation {
 
   // Soft delete
   deletedAt DateTime?        @map("deleted_at")
-  deletedBy String?          @map("deleted_by")
   isDeleted Boolean          @default(false) @map("is_deleted")
 
   @@unique([siteId, email])

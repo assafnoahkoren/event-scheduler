@@ -6,11 +6,10 @@
 All models in the database use soft deletion instead of hard deletion. This means records are never physically removed from the database, but are instead marked as deleted.
 
 ### Soft Delete Fields
-Every model includes these three fields for soft deletion:
+Every model includes these two fields for soft deletion:
 ```prisma
 // Soft delete
 deletedAt   DateTime? @map("deleted_at")
-deletedBy   String?   @map("deleted_by")
 isDeleted   Boolean   @default(false) @map("is_deleted")
 ```
 
@@ -18,7 +17,6 @@ isDeleted   Boolean   @default(false) @map("is_deleted")
 1. **Delete Operations**: When `delete()` or `deleteMany()` is called on any model, the Prisma extension automatically converts it to an update operation that sets:
    - `isDeleted = true`
    - `deletedAt = current timestamp`
-   - `deletedBy = userId` (if provided)
 
 2. **Query Filtering**: All find operations (`findMany`, `findFirst`, `findUnique`, etc.) automatically filter out soft-deleted records by adding `isDeleted: false` to the where clause.
 
@@ -59,7 +57,6 @@ All models in the schema have soft delete fields:
 
 ### Important Notes
 - Never manually implement delete logic - the extension handles it automatically
-- The `deletedBy` field is optional to support system-initiated deletions
 - Soft-deleted records are excluded from all queries by default
 - To permanently delete (hard delete), you would need to use raw SQL queries
 
@@ -73,3 +70,4 @@ These indexes ensure that filtering soft-deleted records (which happens on every
 ### Migration History
 - Migration: `20250919122848_add_soft_delete_to_all_models` - Added soft delete fields to all models
 - Migration: `20250919125602_add_isdeleted_indexes` - Added indexes for isDeleted field on all models
+- Migration: `20250919130028_remove_deletedby_column` - Removed deletedBy column from all models

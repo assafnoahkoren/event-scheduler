@@ -10,7 +10,7 @@ const prismaClientSingleton = () => {
     log: ['error', 'warn'],
   })
 
-  // Apply soft delete extension with no userId (system operations)
+  // Apply soft delete extension
   return client.$extends(softDeleteExtension())
 }
 

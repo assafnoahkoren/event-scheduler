@@ -2,12 +2,12 @@ import { Prisma } from '@prisma/client'
 
 /**
  * Prisma Client extension for soft deletes
- * Automatically applies to all models that have soft delete fields (isDeleted, deletedAt, deletedBy)
+ * Automatically applies to all models that have soft delete fields (isDeleted, deletedAt)
  * Intercepts delete operations and converts them to updates
  * Also filters out soft-deleted records from queries
  */
 
-export function softDeleteExtension(userId?: string | null) {
+export function softDeleteExtension() {
   return Prisma.defineExtension((client) => {
     return client.$extends({
       name: 'softDelete',
@@ -19,8 +19,7 @@ export function softDeleteExtension(userId?: string | null) {
               where: args.where,
               data: {
                 isDeleted: true,
-                deletedAt: new Date(),
-                ...(userId !== undefined && { deletedBy: userId })
+                deletedAt: new Date()
               }
             })
           },
@@ -31,8 +30,7 @@ export function softDeleteExtension(userId?: string | null) {
               where: args.where,
               data: {
                 isDeleted: true,
-                deletedAt: new Date(),
-                ...(userId !== undefined && { deletedBy: userId })
+                deletedAt: new Date()
               }
             })
           },
