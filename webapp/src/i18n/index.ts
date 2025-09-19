@@ -5,8 +5,8 @@ import './i18next.d.ts' // Import type declarations
 
 // Import translations
 import { enTranslation } from '../locales/en/translation'
-import arTranslation from '../locales/ar/translation.json'
-import heTranslation from '../locales/he/translation.json'
+import { arTranslation } from '../locales/ar/translation'
+import { heTranslation } from '../locales/he/translation'
 
 export const languages = {
   en: {
