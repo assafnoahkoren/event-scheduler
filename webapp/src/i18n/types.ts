@@ -4,7 +4,7 @@
 import { enTranslation } from '../locales/en/translation'
 
 // Recursive type to extract the shape of the translation object
-type TranslationShape<T> = T extends readonly string
+type TranslationShape<T> = T extends string
   ? string
   : T extends readonly (infer U)[]
   ? readonly U[]
