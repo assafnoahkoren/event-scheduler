@@ -5,6 +5,10 @@ import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { format, startOfToday, endOfMonth, addMonths, isAfter, parseISO } from 'date-fns'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EventCard } from '@/components/EventCard'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/pagination'
 
 export function UpcomingEvents() {
   const { t } = useTranslation()
@@ -51,7 +55,7 @@ export function UpcomingEvents() {
       <CardHeader>
         <CardTitle>{t('events.upcomingEvents')}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className='px-0'>
         {isLoading ? (
           <div className="text-center py-4 text-muted-foreground">
             {t('common.loading')}
@@ -61,15 +65,49 @@ export function UpcomingEvents() {
             {t('events.noEvents')}
           </div>
         ) : (
-          <div className="space-y-4">
-            {upcomingEvents.map((event) => (
-              <EventCard
-                key={event.id}
-                event={event}
-                onClick={() => console.log('Event clicked:', event)}
-              />
-            ))}
-          </div>
+          <Swiper
+            modules={[Pagination]}
+            spaceBetween={0}
+            slidesPerView={1.3}
+            pagination={{ clickable: true }}
+            breakpoints={{
+              640: {
+                slidesPerView: 1.3,
+                spaceBetween: 16,
+              },
+              768: {
+                slidesPerView: 2.3,
+                spaceBetween: 16,
+              },
+              1024: {
+                slidesPerView: 2.3,
+                spaceBetween: 20,
+              },
+            }}
+            className="!pb-10"
+          >
+            {upcomingEvents.reduce((slides, event, index) => {
+              if (index % 2 === 0) {
+                slides.push(
+                  <SwiperSlide key={`slide-${index}`}>
+                    <div className="space-y-3 ms-4">
+                      <EventCard
+                        event={event}
+                        onClick={() => console.log('Event clicked:', event)}
+                      />
+                      {upcomingEvents[index + 1] && (
+                        <EventCard
+                          event={upcomingEvents[index + 1]}
+                          onClick={() => console.log('Event clicked:', upcomingEvents[index + 1])}
+                        />
+                      )}
+                    </div>
+                  </SwiperSlide>
+                )
+              }
+              return slides
+            }, [] as JSX.Element[])}
+          </Swiper>
         )}
       </CardContent>
     </Card>

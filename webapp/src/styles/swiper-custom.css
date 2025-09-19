@@ -1,0 +1,55 @@
+/* Custom Swiper styles */
+.swiper {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  width: 32px;
+  height: 32px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 14px;
+  font-weight: bold;
+  color: #666;
+}
+
+.swiper-button-disabled {
+  opacity: 0.35;
+}
+
+.swiper-pagination-bullet {
+  background: #cbd5e0;
+  opacity: 1;
+}
+
+.swiper-pagination-bullet-active {
+  background: #3b82f6;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .swiper-button-next,
+  .swiper-button-prev {
+    background-color: #374151;
+  }
+
+  .swiper-button-next:after,
+  .swiper-button-prev:after {
+    color: #d1d5db;
+  }
+
+  .swiper-pagination-bullet {
+    background: #4b5563;
+  }
+
+  .swiper-pagination-bullet-active {
+    background: #3b82f6;
+  }
+}
