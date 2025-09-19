@@ -54,48 +54,38 @@ export function EventCard({ event, onClick }: EventCardProps) {
   return (
     <div
       onClick={onClick}
-      className="border rounded-lg p-4 hover:bg-accent/50 transition-colors cursor-pointer"
+      className="border rounded-lg p-3 hover:bg-accent/50 transition-colors cursor-pointer"
     >
-      <div className="flex items-start justify-between mb-2">
-        <h3 className="font-semibold text-lg">
-          {event.title || t('events.untitledEvent')}
-        </h3>
-        <Badge className={cn("ml-2", getStatusColor(event.status))}>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="text-sm text-muted-foreground whitespace-nowrap">
+            {format(new Date(event.startDate), 'MM/dd/yy')}
+          </div>
+          <h3 className="font-medium truncate">
+            {event.title || t('events.untitledEvent')}
+          </h3>
+        </div>
+        <Badge className={cn("text-xs", getStatusColor(event.status))}>
           {getStatusLabel(event.status)}
         </Badge>
       </div>
 
-      <div className="space-y-2 text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="w-4 h-4" />
-          <span>
-            {format(new Date(event.startDate), 'PPP')}
-            {event.endDate && event.endDate !== event.startDate && (
-              <> - {format(new Date(event.endDate), 'PPP')}</>
-            )}
-          </span>
+      {(event.location || event.client) && (
+        <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+          {event.location && (
+            <div className="flex items-center gap-1">
+              <MapPinIcon className="w-3 h-3" />
+              <span className="truncate">{event.location}</span>
+            </div>
+          )}
+          {event.client && (
+            <div className="flex items-center gap-1">
+              <UserIcon className="w-3 h-3" />
+              <span className="truncate">{event.client.name}</span>
+            </div>
+          )}
         </div>
-
-        {event.location && (
-          <div className="flex items-center gap-2">
-            <MapPinIcon className="w-4 h-4" />
-            <span>{event.location}</span>
-          </div>
-        )}
-
-        {event.client && (
-          <div className="flex items-center gap-2">
-            <UserIcon className="w-4 h-4" />
-            <span>{event.client.name}</span>
-          </div>
-        )}
-
-        {event.description && (
-          <p className="mt-2 text-foreground line-clamp-2">
-            {event.description}
-          </p>
-        )}
-      </div>
+      )}
     </div>
   )
 }
