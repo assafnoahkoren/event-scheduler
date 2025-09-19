@@ -94,12 +94,11 @@ export function EventCalendar() {
       siteId: currentSite.id,
       title: formData.title,
       description: formData.description,
-      location: formData.location,
       startDate: formData.startDate.toISOString(),
       endDate: formData.endDate?.toISOString(),
       isAllDay: formData.isAllDay,
       clientId: formData.clientId || undefined,
-      status: 'DRAFT' as const,
+      status: formData.status || 'SCHEDULED',
     })
   }
 

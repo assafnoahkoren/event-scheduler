@@ -5,6 +5,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { ClientCombobox } from '@/components/ClientCombobox'
 import { ClientForm, type ClientFormData } from '@/components/ClientForm'
 import { trpc } from '@/utils/trpc'
@@ -29,6 +36,7 @@ export interface EventFormData {
   endDate?: Date
   isAllDay: boolean
   clientId?: string | null
+  status?: 'DRAFT' | 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
 }
 
 export function EventForm({
@@ -52,6 +60,9 @@ export function EventForm({
   )
   const [isAllDay, setIsAllDay] = useState(event?.isAllDay || false)
   const [clientId, setClientId] = useState<string | null>(event?.clientId || null)
+  const [status, setStatus] = useState<'DRAFT' | 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'>(
+    event?.status || 'SCHEDULED'
+  )
   const [showClientForm, setShowClientForm] = useState(false)
 
   // Fetch selected client details
@@ -90,7 +101,8 @@ export function EventForm({
       startDate,
       endDate,
       isAllDay,
-      clientId
+      clientId,
+      status
     })
   }
 
@@ -160,6 +172,23 @@ export function EventForm({
           onChange={(e) => setStartDate(new Date(e.target.value))}
           disabled={isSubmitting}
         />
+      </div>
+
+      {/* Status */}
+      <div className="space-y-2">
+        <Label htmlFor="status">{t('events.status')}</Label>
+        <Select value={status} onValueChange={(value: any) => setStatus(value)} disabled={isSubmitting}>
+          <SelectTrigger id="status">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="DRAFT">{t('events.draft')}</SelectItem>
+            <SelectItem value="SCHEDULED">{t('events.scheduled')}</SelectItem>
+            <SelectItem value="IN_PROGRESS">{t('events.inProgress')}</SelectItem>
+            <SelectItem value="COMPLETED">{t('events.completed')}</SelectItem>
+            <SelectItem value="CANCELLED">{t('events.cancelled')}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Description */}

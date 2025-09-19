@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { Check, ChevronsUpDown, UserPlus, Search, Phone, MessageCircle } from 'lucide-react'
+import { Check, ChevronsUpDown, UserPlus, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,6 +19,8 @@ import { useTranslation } from 'react-i18next'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { useDebounce } from '@/hooks/useDebounce'
 import { ClientForm, type ClientFormData } from '@/components/ClientForm'
+import { PhoneCallButton } from '@/components/PhoneCallButton'
+import { WhatsAppButton } from '@/components/WhatsAppButton'
 
 interface ClientComboboxProps {
   value?: string | null
@@ -98,20 +100,6 @@ export function ClientCombobox({
   }, [value, onValueChange])
 
   const displayValue = selectedClient?.name || ''
-
-  const handlePhoneCall = useCallback(() => {
-    if (selectedClient?.phone) {
-      window.location.href = `tel:${selectedClient.phone}`
-    }
-  }, [selectedClient])
-
-  const handleWhatsApp = useCallback(() => {
-    if (selectedClient?.phone) {
-      // Remove non-numeric characters and add country code if needed
-      const phoneNumber = selectedClient.phone.replace(/\D/g, '')
-      window.open(`https://wa.me/${phoneNumber}`, '_blank')
-    }
-  }, [selectedClient])
 
   return (
     <>
@@ -207,36 +195,14 @@ export function ClientCombobox({
       {/* Action buttons for selected client */}
       {selectedClient && (
         <>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handlePhoneCall}
-            disabled={disabled || !selectedClient.phone}
-            title={t('clients.phoneCall')}
-            className={cn(
-              selectedClient.phone && "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300"
-            )}
-          >
-            <Phone className={cn(
-              "h-4 w-4",
-              selectedClient.phone ? "text-blue-600" : "text-muted-foreground"
-            )} />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleWhatsApp}
-            disabled={disabled || !selectedClient.phone}
-            title={t('clients.whatsappMessage')}
-            className={cn(
-              selectedClient.phone && "hover:bg-green-50 hover:text-green-600 hover:border-green-300"
-            )}
-          >
-            <MessageCircle className={cn(
-              "h-4 w-4",
-              selectedClient.phone ? "text-green-600" : "text-muted-foreground"
-            )} />
-          </Button>
+          <PhoneCallButton
+            phone={selectedClient.phone}
+            disabled={disabled}
+          />
+          <WhatsAppButton
+            phone={selectedClient.phone}
+            disabled={disabled}
+          />
         </>
       )}
       </div>

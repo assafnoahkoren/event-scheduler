@@ -53,7 +53,7 @@ export function DraftEvents() {
       <CardHeader>
         <CardTitle>{t('events.draftEvents')}</CardTitle>
       </CardHeader>
-      <CardContent className='px-0'>
+      <CardContent className='p-0'>
         {isLoading ? (
           <div className="text-center py-4 text-muted-foreground">
             {t('common.loading')}
@@ -84,7 +84,7 @@ export function DraftEvents() {
               if (index % 2 === 0) {
                 slides.push(
                   <SwiperSlide key={`slide-${index}`}>
-                    <div className="space-y-3 ms-4">
+                    <div className="space-y-4 ms-4">
                       <EventCard
                         event={event}
                       />

@@ -90,7 +90,7 @@ export function UpcomingEvents() {
               if (index % 2 === 0) {
                 slides.push(
                   <SwiperSlide key={`slide-${index}`}>
-                    <div className="space-y-3 ms-4">
+                    <div className="space-y-4 ms-4">
                       <EventCard
                         event={event}
                       />

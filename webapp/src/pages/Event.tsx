@@ -59,11 +59,11 @@ export function Event() {
       id: eventId,
       title: formData.title,
       description: formData.description || undefined,
-      location: formData.location || undefined,
       startDate: formData.startDate.toISOString(),
       endDate: formData.endDate?.toISOString() || undefined,
       isAllDay: formData.isAllDay,
       clientId: formData.clientId || undefined,
+      status: formData.status,
     })
   }
 

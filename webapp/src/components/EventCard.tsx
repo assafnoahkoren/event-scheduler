@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
-import { MapPinIcon, UserIcon } from 'lucide-react'
+import { UserIcon, Phone, MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { navigateToEvent } from '@/utils/navigation'
@@ -62,41 +62,70 @@ export function EventCard({ event, onClick }: EventCardProps) {
     }
   }
 
-  return (
-    <div
-      onClick={handleClick}
-      className="border rounded-lg p-3 hover:bg-accent/50 transition-colors cursor-pointer"
-    >
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="text-sm text-muted-foreground whitespace-nowrap">
-            {format(new Date(event.startDate), 'MM/dd')}
-          </div>
-          <h3 className="font-medium truncate">
-            {event.title || t('events.untitledEvent')}
-          </h3>
-        </div>
-        <Badge className={cn("text-xs", getStatusColor(event.status))}>
-          {getStatusLabel(event.status)}
-        </Badge>
-      </div>
+  const hasPhone = !!event.client?.phone
 
-      {(event.location || event.client) && (
-        <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-          {event.location && (
-            <div className="flex items-center gap-1">
-              <MapPinIcon className="w-3 h-3" />
-              <span className="truncate">{event.location}</span>
+  return (
+    <div className="relative mt-3">
+      {/* Floating status badge */}
+      <Badge
+        className={cn(
+          "absolute -top-3 start-3 z-10 text-xs",
+          getStatusColor(event.status)
+        )}
+      >
+        {getStatusLabel(event.status)}
+      </Badge>
+
+      <div className="border rounded-lg overflow-hidden hover:bg-accent/50 transition-colors">
+        <div className="flex">
+          {/* Main content area */}
+          <div
+            onClick={handleClick}
+            className="flex-1 p-3 cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <div className="text-sm text-muted-foreground whitespace-nowrap">
+                {format(new Date(event.startDate), 'MM/dd')}
+              </div>
+              <h3 className="font-medium truncate">
+                {event.title || t('events.untitledEvent')}
+              </h3>
             </div>
-          )}
-          {event.client && (
-            <div className="flex items-center gap-1">
-              <UserIcon className="w-3 h-3" />
-              <span className="truncate">{event.client.name}</span>
+
+            <div className="flex gap-4 text-xs text-muted-foreground mt-2">
+              <div className="flex items-center gap-1">
+                <UserIcon className="w-3 h-3" />
+                <span className="truncate">
+                  {event.client ? event.client.name : t('clients.noClient')}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Action buttons - full height */}
+          {hasPhone && (
+            <div className="flex" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={() => window.location.href = `tel:${event.client!.phone}`}
+                className="px-3 bg-blue-50 hover:bg-blue-100 border-s flex items-center justify-center transition-colors"
+                title={t('clients.phoneCall')}
+              >
+                <Phone className="h-4 w-4 text-blue-600" />
+              </button>
+              <button
+                onClick={() => {
+                  const phoneNumber = event.client!.phone!.replace(/\D/g, '')
+                  window.open(`https://wa.me/${phoneNumber}`, '_blank')
+                }}
+                className="px-3 bg-green-50 hover:bg-green-100 border-s flex items-center justify-center transition-colors"
+                title={t('clients.whatsappMessage')}
+              >
+                <MessageCircle className="h-4 w-4 text-green-600" />
+              </button>
             </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

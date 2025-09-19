@@ -8,7 +8,6 @@ export const createEventSchema = z.object({
   siteId: z.string().uuid(),
   title: z.string().optional(),
   description: z.string().optional(),
-  location: z.string().optional(),
   clientId: z.string().uuid().optional(),
   startDate: z.string().datetime(),
   endDate: z.string().datetime().optional(),
