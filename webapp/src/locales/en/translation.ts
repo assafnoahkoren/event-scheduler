@@ -132,6 +132,8 @@ export const enTranslation = {
     address: "Address",
     addressPlaceholder: "123 Main St, City, State 12345",
     notes: "Notes",
-    notesPlaceholder: "Additional notes about this client..."
+    notesPlaceholder: "Additional notes about this client...",
+    phoneCall: "Call client",
+    whatsappMessage: "Send WhatsApp message"
   }
 } as const

@@ -42,8 +42,8 @@ export function ClientForm({
   const [address, setAddress] = useState(client?.address || '')
   const [notes, setNotes] = useState(client?.notes || '')
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault()
 
     onSubmit({
       name: name.trim(),
@@ -56,8 +56,14 @@ export function ClientForm({
 
   const isValid = name.trim().length > 0
 
+  // Check if this is being used inside another form (like EventForm)
+  const isNested = !!(onCancel && client)
+
+  const FormWrapper = isNested ? 'div' : 'form'
+  const formProps = isNested ? { className: "space-y-4" } : { onSubmit: handleSubmit, className: "space-y-4" }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <FormWrapper {...formProps}>
       {/* Name */}
       <div className="space-y-2">
         <Label htmlFor="name">{t('clients.name')}</Label>
@@ -136,12 +142,13 @@ export function ClientForm({
           </Button>
         )}
         <Button
-          type="submit"
+          type={isNested ? "button" : "submit"}
+          onClick={isNested ? () => handleSubmit() : undefined}
           disabled={!isValid || isSubmitting}
         >
           {isSubmitting ? t('common.loading') : (client ? t('common.save') : t('common.create'))}
         </Button>
       </div>
-    </form>
+    </FormWrapper>
   )
 }

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { Check, ChevronsUpDown, UserPlus, Search } from 'lucide-react'
+import { Check, ChevronsUpDown, UserPlus, Search, Phone, MessageCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -99,21 +99,36 @@ export function ClientCombobox({
 
   const displayValue = selectedClient?.name || ''
 
+  const handlePhoneCall = useCallback(() => {
+    if (selectedClient?.phone) {
+      window.location.href = `tel:${selectedClient.phone}`
+    }
+  }, [selectedClient])
+
+  const handleWhatsApp = useCallback(() => {
+    if (selectedClient?.phone) {
+      // Remove non-numeric characters and add country code if needed
+      const phoneNumber = selectedClient.phone.replace(/\D/g, '')
+      window.open(`https://wa.me/${phoneNumber}`, '_blank')
+    }
+  }, [selectedClient])
+
   return (
     <>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="w-full justify-between"
-            disabled={disabled}
-          >
-            {displayValue || placeholder || t('clients.selectClient')}
-            <ChevronsUpDown className="ms-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
+      <div className="flex gap-2">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="flex-1 justify-between"
+              disabled={disabled}
+            >
+              {displayValue || placeholder || t('clients.selectClient')}
+              <ChevronsUpDown className="ms-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
         <PopoverContent className="w-full p-2" align="start">
           <div className="flex items-center border-b px-3 pb-2 mb-2">
             <Search className="me-2 h-4 w-4 shrink-0 opacity-50" />
@@ -188,6 +203,43 @@ export function ClientCombobox({
           </div>
         </PopoverContent>
       </Popover>
+
+      {/* Action buttons for selected client */}
+      {selectedClient && (
+        <>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handlePhoneCall}
+            disabled={disabled || !selectedClient.phone}
+            title={t('clients.phoneCall')}
+            className={cn(
+              selectedClient.phone && "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300"
+            )}
+          >
+            <Phone className={cn(
+              "h-4 w-4",
+              selectedClient.phone ? "text-blue-600" : "text-muted-foreground"
+            )} />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleWhatsApp}
+            disabled={disabled || !selectedClient.phone}
+            title={t('clients.whatsappMessage')}
+            className={cn(
+              selectedClient.phone && "hover:bg-green-50 hover:text-green-600 hover:border-green-300"
+            )}
+          >
+            <MessageCircle className={cn(
+              "h-4 w-4",
+              selectedClient.phone ? "text-green-600" : "text-muted-foreground"
+            )} />
+          </Button>
+        </>
+      )}
+      </div>
 
       {/* Client Creation Dialog */}
       <Dialog open={showClientDialog} onOpenChange={setShowClientDialog}>
