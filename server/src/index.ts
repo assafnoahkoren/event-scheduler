@@ -24,6 +24,17 @@ app.use('/trpc', createExpressMiddleware({
   createContext
 }));
 
+app.get('/', (_, res) => {
+  res.json({
+    message: 'Event Scheduler API is running!',
+    status: 'online',
+    endpoints: {
+      api: '/trpc',
+      health: '/health'
+    }
+  });
+});
+
 app.get('/health', (_, res) => {
   res.json({ status: 'healthy' });
 });
