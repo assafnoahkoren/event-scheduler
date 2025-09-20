@@ -35,6 +35,15 @@ export const arTranslation: TranslationType = {
       october: "أكتوبر",
       november: "نوفمبر",
       december: "ديسمبر"
+    },
+    weekdays: {
+      sunday: "ح",
+      monday: "ن",
+      tuesday: "ث",
+      wednesday: "ر",
+      thursday: "خ",
+      friday: "ج",
+      saturday: "س"
     }
   },
   auth: {

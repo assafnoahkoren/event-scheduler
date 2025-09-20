@@ -35,6 +35,15 @@ export const heTranslation: TranslationType = {
       october: "אוקטובר",
       november: "נובמבר",
       december: "דצמבר"
+    },
+    weekdays: {
+      sunday: "א",
+      monday: "ב",
+      tuesday: "ג",
+      wednesday: "ד",
+      thursday: "ה",
+      friday: "ו",
+      saturday: "ש"
     }
   },
   auth: {

@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
+import { useIsRtl } from '@/hooks/useIsRtl'
 import {
   format,
   startOfMonth,
@@ -47,7 +48,7 @@ export function SimpleCalendar({
   month = new Date(),
   onMonthChange,
   className,
-  dir = 'ltr',
+  dir,
   disabled = false,
   modifiers = {},
   modifiersClassNames = {},
@@ -55,6 +56,8 @@ export function SimpleCalendar({
 }: SimpleCalendarProps) {
   const { t } = useTranslation()
   const [currentMonth, setCurrentMonth] = useState(month)
+  const isRtl = useIsRtl()
+  const actualDir = dir || (isRtl ? 'rtl' : 'ltr')
 
   const days = useMemo(() => {
     const start = startOfWeek(startOfMonth(currentMonth))
@@ -70,9 +73,16 @@ export function SimpleCalendar({
     return days
   }, [currentMonth])
 
-  const weekDays = dir === 'rtl'
-    ? ['ש', 'ו', 'ה', 'ד', 'ג', 'ב', 'א'] // Hebrew days
-    : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+  // Get translated weekdays
+  const weekDays = [
+    t('calendar.weekdays.sunday'),
+    t('calendar.weekdays.monday'),
+    t('calendar.weekdays.tuesday'),
+    t('calendar.weekdays.wednesday'),
+    t('calendar.weekdays.thursday'),
+    t('calendar.weekdays.friday'),
+    t('calendar.weekdays.saturday')
+  ]
 
   const handlePreviousMonth = () => {
     const newMonth = subMonths(currentMonth, 1)
@@ -110,7 +120,7 @@ export function SimpleCalendar({
   }
 
   return (
-    <div className={cn("p-3 rounded-md", className)} dir={dir}>
+    <div className={cn("p-3 rounded-md", className)} dir={actualDir}>
       {/* Header with month navigation */}
       <div className="flex items-center justify-between mb-4">
         <Button
@@ -120,7 +130,7 @@ export function SimpleCalendar({
           onClick={handlePreviousMonth}
           disabled={disabled}
         >
-          {dir === 'rtl' ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          {actualDir === 'rtl' ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
 
         <div className="text-sm font-medium">
@@ -134,7 +144,7 @@ export function SimpleCalendar({
           onClick={handleNextMonth}
           disabled={disabled}
         >
-          {dir === 'rtl' ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          {actualDir === 'rtl' ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </Button>
       </div>
 

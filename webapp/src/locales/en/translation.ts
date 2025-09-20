@@ -35,6 +35,15 @@ export const enTranslation = {
       october: "October",
       november: "November",
       december: "December"
+    },
+    weekdays: {
+      sunday: "Su",
+      monday: "Mo",
+      tuesday: "Tu",
+      wednesday: "We",
+      thursday: "Th",
+      friday: "Fr",
+      saturday: "Sa"
     }
   },
   auth: {
