@@ -113,9 +113,8 @@ export function EventProductSection({ event }: EventProductSectionProps) {
   }
 
   const activeProducts = products?.filter(p => p.isActive) || []
-  const availableProducts = activeProducts.filter(
-    p => !existingEventProducts?.some(ep => ep.productId === p.id)
-  )
+  // Allow adding the same product multiple times
+  const availableProducts = activeProducts
 
   return (
     <div className="space-y-4">
