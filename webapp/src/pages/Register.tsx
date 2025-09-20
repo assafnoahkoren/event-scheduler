@@ -47,7 +47,7 @@ export function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md border-0 shadow-none bg-slate-100">
         <CardHeader>
           <CardTitle className="text-2xl">{t('auth.registerTitle')}</CardTitle>
           <CardDescription>
