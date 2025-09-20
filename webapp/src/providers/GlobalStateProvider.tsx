@@ -2,6 +2,7 @@ import { type ReactNode } from 'react'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { CurrentSiteProvider } from '@/contexts/CurrentSiteContext'
 import { LanguageProvider } from '@/contexts/LanguageContext'
+import { Toaster } from 'sonner'
 
 interface GlobalStateProviderProps {
   children: ReactNode
@@ -17,6 +18,7 @@ export function GlobalStateProvider({ children }: GlobalStateProviderProps) {
       <LanguageProvider>
         <CurrentSiteProvider>
           {children}
+          <Toaster position="top-center" richColors closeButton />
         </CurrentSiteProvider>
       </LanguageProvider>
     </AuthProvider>

@@ -9,6 +9,9 @@ import { Event } from '@/pages/Event'
 import { NewSite } from '@/pages/sites/NewSite'
 import { SiteSettings } from '@/pages/sites/SiteSettings'
 import { Profile } from '@/pages/Profile'
+import { Products } from '@/pages/products/Products'
+import { NewProduct } from '@/pages/products/NewProduct'
+import { ProductDetail } from '@/pages/products/ProductDetail'
 import '@/styles/swiper-custom.css'
 
 function App() {
@@ -27,6 +30,9 @@ function App() {
             <Route path="/sites/new" element={<NewSite />} />
             <Route path="/sites/settings" element={<SiteSettings />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/products/new" element={<NewProduct />} />
+            <Route path="/products/:productId" element={<ProductDetail />} />
           </Route>
         </Route>
 
