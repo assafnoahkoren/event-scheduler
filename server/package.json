@@ -12,9 +12,9 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "prisma generate",
     "db": "tsx src/cli/db-cli.ts",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsc --noEmit",
+    "vercel-build": "prisma generate && npm run build"
   },
   "dependencies": {
     "@prisma/client": "6.16.2",
