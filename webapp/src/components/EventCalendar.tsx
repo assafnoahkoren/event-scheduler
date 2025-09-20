@@ -143,7 +143,7 @@ export function EventCalendar() {
 
   return (
     <>
-      <div className="flex justify-center items-flex-start min-h-[524px] pt-8 bg-slate-50">
+      <div className="flex justify-center items-flex-start min-h-[500px] pt-2 bg-slate-50">
         <div className="max-w-2xl w-md">
           <SimpleCalendar
             selected={selectedDate}

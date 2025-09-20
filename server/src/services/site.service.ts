@@ -15,9 +15,15 @@ export const updateSiteSchema = z.object({
   name: z.string().min(1).max(100).optional(),
 })
 
+export const addMemberByEmailSchema = z.object({
+  siteId: z.string(),
+  email: z.string().email(),
+})
+
 // Type inference from schemas
 export type CreateSiteInput = z.infer<typeof createSiteSchema>
 export type UpdateSiteInput = z.infer<typeof updateSiteSchema>
+export type AddMemberByEmailInput = z.infer<typeof addMemberByEmailSchema>
 
 class SiteService {
   /**
@@ -377,6 +383,90 @@ class SiteService {
     })
 
     return { success: true }
+  }
+
+  /**
+   * Add a user to a site by email
+   */
+  async addUserByEmail(
+    siteId: string,
+    requesterId: string,
+    email: string
+  ) {
+    // Check if requester has owner access (for now, only owners can add members)
+    const userRole = await this.getUserSiteRole(requesterId, siteId)
+    if (userRole !== SiteRole.OWNER) {
+      throw new Error('Only the site owner can add members')
+    }
+
+    // Find the user by email
+    const targetUser = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+      },
+    })
+
+    if (!targetUser) {
+      throw new Error('No user found with this email address')
+    }
+
+    // Check if user already has access
+    const existingAccess = await prisma.siteUser.findUnique({
+      where: {
+        userId_siteId: {
+          userId: targetUser.id,
+          siteId,
+        },
+      },
+    })
+
+    if (existingAccess) {
+      if (existingAccess.isActive) {
+        throw new Error('User already has access to this site')
+      } else {
+        // Reactivate inactive user with OWNER role
+        return await prisma.siteUser.update({
+          where: { id: existingAccess.id },
+          data: {
+            isActive: true,
+            role: SiteRole.OWNER,
+            joinedAt: new Date(),
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                username: true,
+              },
+            },
+          },
+        })
+      }
+    }
+
+    // Add user to site with OWNER role
+    const siteUser = await prisma.siteUser.create({
+      data: {
+        userId: targetUser.id,
+        siteId,
+        role: SiteRole.OWNER,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            username: true,
+          },
+        },
+      },
+    })
+
+    return siteUser
   }
 
   /**

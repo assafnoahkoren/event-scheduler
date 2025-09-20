@@ -73,13 +73,13 @@ export function EventCard({ event, onClick }: EventCardProps) {
           {/* Main content area */}
           <div
             onClick={handleClick}
-            className="flex-1 p-3 cursor-pointer"
+            className="flex-1 min-w-0 p-3 cursor-pointer"
           >
             <div className="flex items-center gap-3">
               <div className="text-sm text-muted-foreground whitespace-nowrap">
                 {format(new Date(event.startDate), 'MM/dd')}
               </div>
-              <h3 className="font-medium truncate">
+              <h3 className="font-medium truncate flex-1 min-w-0">
                 {event.title || t('events.untitledEvent')}
               </h3>
             </div>

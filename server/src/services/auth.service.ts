@@ -69,7 +69,7 @@ export class AuthService {
         firstName,
         lastName,
         isActive: true,
-        isEmailVerified: false,
+        isEmailVerified: true, // TODO: Change to false and add email verification
       }
     })
 

@@ -28,6 +28,13 @@ export function SiteSettings() {
 
   const [siteName, setSiteName] = useState(currentSite?.name || '')
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [inviteEmail, setInviteEmail] = useState('')
+
+  // Fetch site details with members
+  const { data: siteDetails } = trpc.sites.get.useQuery(
+    { siteId: currentSite?.id || '' },
+    { enabled: !!currentSite?.id }
+  )
 
   // Update site mutation
   const updateSiteMutation = trpc.sites.update.useMutation({
@@ -42,6 +49,17 @@ export function SiteSettings() {
     onSuccess: () => {
       utils.sites.list.invalidate()
       navigate('/')
+    }
+  })
+
+  // Add member mutation
+  const addMemberMutation = trpc.sites.addMemberByEmail.useMutation({
+    onSuccess: () => {
+      utils.sites.get.invalidate({ siteId: currentSite?.id })
+      setInviteEmail('')
+    },
+    onError: (error) => {
+      alert(error.message)
     }
   })
 
@@ -62,6 +80,15 @@ export function SiteSettings() {
     })
   }
 
+  const handleAddMember = () => {
+    if (!currentSite || !inviteEmail.trim()) return
+
+    addMemberMutation.mutate({
+      siteId: currentSite.id,
+      email: inviteEmail.trim()
+    })
+  }
+
   if (!currentSite) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -74,7 +101,7 @@ export function SiteSettings() {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold flex items-center gap-2">
+          <h1 className="text-xl font-bold flex items-center gap-2">
             <Settings className="h-8 w-8" />
             {t('sites.siteSettings')}
           </h1>
@@ -148,21 +175,55 @@ export function SiteSettings() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Users className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium">{t('common.you')}</p>
-                        <p className="text-sm text-muted-foreground">{t('sites.owner')}</p>
+                  {/* Display all site members */}
+                  {siteDetails?.siteUsers?.map((member) => (
+                    <div key={member.user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Users className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium">
+                            {member.user.username || member.user.email}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {member.role === 'OWNER' ? t('sites.owner') :
+                             member.role === 'ADMIN' ? t('sites.admin') :
+                             member.role === 'EDITOR' ? t('sites.editor') :
+                             t('sites.viewer')}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
 
-                  <Button variant="outline" className="w-full">
-                    {t('sites.inviteMembers')}
-                  </Button>
+                  <div className="space-y-2">
+                    <Label htmlFor="inviteEmail">{t('common.email')}</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="inviteEmail"
+                        type="email"
+                        value={inviteEmail}
+                        onChange={(e) => setInviteEmail(e.target.value)}
+                        placeholder={t('auth.emailPlaceholder')}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddMember()
+                          }
+                        }}
+                      />
+                      <Button
+                        onClick={handleAddMember}
+                        disabled={!inviteEmail.trim() || addMemberMutation.isPending}
+                      >
+                        {addMemberMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          t('sites.inviteMembers')
+                        )}
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

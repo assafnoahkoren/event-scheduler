@@ -100,8 +100,8 @@ export function Event() {
     <div>
       <div className="max-w-2xl mx-auto">
         <div className="rounded-lg p-6">
-          <div className="flex justify-between items-start mb-6">
-            <h1 className="text-3xl font-bold">
+          <div className="flex justify-between items-start gap-4 mb-6">
+            <h1 className="text-2xl font-bold flex-1 min-w-0 truncate">
               {event.title || t('events.untitledEvent')}
             </h1>
             <Button
@@ -109,6 +109,7 @@ export function Event() {
               size="icon"
               onClick={() => setShowDeleteDialog(true)}
               disabled={deleteMutation.isPending}
+              className="flex-shrink-0"
             >
               {deleteMutation.isPending ? (
                 <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />

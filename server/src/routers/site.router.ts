@@ -5,7 +5,7 @@
 import { router, protectedProcedure } from '../trpc'
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
-import { siteService, createSiteSchema, updateSiteSchema } from '../services/site.service'
+import { siteService, createSiteSchema, updateSiteSchema, addMemberByEmailSchema } from '../services/site.service'
 import { invitationService, createInvitationSchema } from '../services/invitation.service'
 import { SiteRole } from '@prisma/client'
 
@@ -109,6 +109,27 @@ export const siteRouter = router({
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: error.message || 'Failed to delete site',
+        })
+      }
+    }),
+
+  /**
+   * Add a member to a site by email (direct add, no invitation)
+   */
+  addMemberByEmail: protectedProcedure
+    .input(addMemberByEmailSchema)
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const result = await siteService.addUserByEmail(
+          input.siteId,
+          ctx.user.id,
+          input.email
+        )
+        return result
+      } catch (error: any) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: error.message || 'Failed to add member',
         })
       }
     }),
