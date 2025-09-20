@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { trpc } from '@/utils/trpc'
 import { useTranslation } from 'react-i18next'
+import { useIsRtl } from '@/hooks/useIsRtl'
 import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
 import {
@@ -14,12 +15,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EventForm, type EventFormData } from '@/components/EventForm'
 
 export function Event() {
   const { eventId } = useParams<{ eventId: string }>()
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const isRtl = useIsRtl()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const { data: event, isLoading, error } = trpc.events.get.useQuery(
@@ -100,30 +103,62 @@ export function Event() {
     <div>
       <div className="max-w-2xl mx-auto">
         <div className="rounded-lg p-6">
-          <div className="flex justify-between items-start gap-4 mb-6">
-            <h1 className="text-2xl font-bold flex-1 min-w-0 truncate">
-              {event.title || t('events.untitledEvent')}
-            </h1>
-            <Button
-              variant="destructive"
-              size="icon"
-              onClick={() => setShowDeleteDialog(true)}
-              disabled={deleteMutation.isPending}
-              className="flex-shrink-0"
-            >
-              {deleteMutation.isPending ? (
-                <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-              ) : (
-                <Trash2 className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
+          <h1 className="text-2xl font-bold mb-6">
+            {event.title || t('events.untitledEvent')}
+          </h1>
 
-          <EventForm
-            event={event}
-            onSubmit={handleUpdate}
-            isSubmitting={updateMutation.isPending}
-          />
+          <Tabs defaultValue="details" className="w-full" dir={isRtl ? 'rtl' : 'ltr'}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="details">{t('events.details')}</TabsTrigger>
+              <TabsTrigger value="danger">{t('events.dangerZone')}</TabsTrigger>
+
+            </TabsList>
+
+            <TabsContent value="details" className="mt-6">
+              <EventForm
+                event={event}
+                onSubmit={handleUpdate}
+                isSubmitting={updateMutation.isPending}
+              />
+            </TabsContent>
+
+            <TabsContent value="danger" className="mt-6">
+              <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-6">
+                <h3 className="text-lg font-semibold text-destructive mb-2">
+                  {t('events.dangerZone')}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  {t('events.dangerZoneDescription')}
+                </p>
+
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-sm font-medium mb-2">{t('events.deleteEvent')}</h4>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {t('events.confirmDeleteDescription')}
+                    </p>
+                    <Button
+                      variant="destructive"
+                      onClick={() => setShowDeleteDialog(true)}
+                      disabled={deleteMutation.isPending}
+                    >
+                      {deleteMutation.isPending ? (
+                        <span className="flex items-center gap-2">
+                          <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+                          {t('events.deleting')}
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <Trash2 className="h-4 w-4" />
+                          {t('events.deleteEvent')}
+                        </span>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 

@@ -130,7 +130,10 @@ export const arTranslation: TranslationType = {
     confirmDeleteDescription: "هل أنت متأكد من رغبتك في حذف هذا الحدث؟ لا يمكن التراجع عن هذا الإجراء.",
     deleting: "جاري الحذف...",
     deleteSuccess: "تم حذف الحدث بنجاح",
-    deleteFailed: "فشل حذف الحدث"
+    deleteFailed: "فشل حذف الحدث",
+    details: "التفاصيل",
+    dangerZone: "منطقة خطرة",
+    dangerZoneDescription: "الإجراءات هنا لا يمكن التراجع عنها. يرجى المتابعة بحذر."
   },
   navigation: {
     home: "الرئيسية",

@@ -130,7 +130,10 @@ export const enTranslation = {
     confirmDeleteDescription: "Are you sure you want to delete this event? This action cannot be undone.",
     deleting: "Deleting...",
     deleteSuccess: "Event deleted successfully",
-    deleteFailed: "Failed to delete event"
+    deleteFailed: "Failed to delete event",
+    details: "Details",
+    dangerZone: "Danger Zone",
+    dangerZoneDescription: "Actions here cannot be undone. Please proceed with caution."
   },
   navigation: {
     home: "Home",

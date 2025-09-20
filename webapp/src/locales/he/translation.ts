@@ -130,7 +130,10 @@ export const heTranslation: TranslationType = {
     confirmDeleteDescription: "האם אתה בטוח שברצונך למחוק אירוע זה? פעולה זו אינה ניתנת לביטול.",
     deleting: "מוחק...",
     deleteSuccess: "האירוע נמחק בהצלחה",
-    deleteFailed: "מחיקת האירוע נכשלה"
+    deleteFailed: "מחיקת האירוע נכשלה",
+    details: "פרטים",
+    dangerZone: "אזור מסוכן",
+    dangerZoneDescription: "פעולות כאן לא ניתנות לביטול. אנא המשך בזהירות."
   },
   navigation: {
     home: "בית",
