@@ -14,23 +14,14 @@ interface AppConfig {
   }
 }
 
-function extractBaseUrl(trpcUrl: string): string {
-  try {
-    const url = new URL(trpcUrl)
-    return `${url.protocol}//${url.host}`
-  } catch {
-    return 'http://localhost:3000'
-  }
-}
-
 function createConfig(): AppConfig {
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/trpc'
-  const baseUrl = extractBaseUrl(apiUrl)
+  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+  const trpcUrl = `${baseUrl}/trpc`
 
   return {
     api: {
       baseUrl,
-      trpcUrl: apiUrl,
+      trpcUrl,
       timeout: parseInt(import.meta.env.VITE_API_TIMEOUT || '30000', 10)
     },
     app: {
