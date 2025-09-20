@@ -17,7 +17,9 @@ export const enTranslation = {
     edit: "Edit",
     create: "Create",
     back: "Back",
-    you: "You"
+    you: "You",
+    menu: "Menu",
+    language: "Language"
   },
   calendar: {
     months: {

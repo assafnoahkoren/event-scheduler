@@ -1,8 +1,9 @@
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { Sidebar } from '@/components/Sidebar'
 import { SiteSwitcher } from '@/components/sites/SiteSwitcher'
-import { User, ArrowLeft, ArrowRight, Settings, Calendar } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Menu } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useIsRtl } from '@/hooks/useIsRtl'
 import { trpc } from '@/utils/trpc'
@@ -12,19 +13,12 @@ export function Header() {
   const location = useLocation()
   const navigate = useNavigate()
   const isRtl = useIsRtl()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const { data: sites } = trpc.sites.list.useQuery()
 
   // Always show back button
   const showBackButton = true
   const BackIcon = isRtl ? ArrowRight : ArrowLeft
-
-  const handleProfile = () => {
-    navigate('/profile')
-  }
-
-  const handleSettings = () => {
-    navigate('/sites/settings')
-  }
 
   const handleBack = () => {
     // If there's history, go back, otherwise go home
@@ -37,9 +31,20 @@ export function Header() {
 
   return (
     <>
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center">
+            <Button
+              id="menu-button"
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="me-2"
+              title={t('common.menu')}
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
             {showBackButton && (
               <Button
                 variant="ghost"
@@ -51,40 +56,12 @@ export function Header() {
                 <BackIcon className="h-4 w-4" />
               </Button>
             )}
-            {sites && sites.length > 0 && (
-              <div className="border-e pe-4 flex items-center">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => navigate('/')}
-                  title={t('navigation.calendar')}
-                  className="me-0"
-                >
-                  <Calendar className="h-4 w-4" />
-                </Button>
-                <SiteSwitcher />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleSettings}
-                  title={t('navigation.settings')}
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
           </div>
 
           <div className="flex items-center">
-            <LanguageSwitcher />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleProfile}
-              title={t('profile.title')}
-            >
-              <User className="h-4 w-4" />
-            </Button>
+            {sites && sites.length > 0 && (
+              <SiteSwitcher />
+            )}
           </div>
         </div>
       </header>

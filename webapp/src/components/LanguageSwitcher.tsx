@@ -14,6 +14,10 @@ interface Language {
   countryCode: string
 }
 
+interface LanguageSwitcherProps {
+  variant?: 'default' | 'sidebar'
+}
+
 const languages: Language[] = [
   {
     code: 'en',
@@ -35,8 +39,8 @@ const languages: Language[] = [
   }
 ]
 
-export function LanguageSwitcher() {
-  const { i18n } = useTranslation()
+export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps) {
+  const { i18n, t } = useTranslation()
 
   const handleLanguageChange = (languageCode: string) => {
     // Change the language in i18next
@@ -55,6 +59,44 @@ export function LanguageSwitcher() {
   }
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0]
+
+  if (variant === 'sidebar') {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="w-full justify-start">
+            <div className="w-4 h-4 rounded-full overflow-hidden me-2">
+              <img
+                src={`https://kapowaz.github.io/square-flags/flags/${currentLanguage.countryCode.toLowerCase()}.svg`}
+                alt={`${currentLanguage.name} flag`}
+                className="w-full h-full object-contain"
+              />
+            </div>
+            {t('common.language')}
+            <span className="ms-auto text-xs text-muted-foreground">{currentLanguage.nativeName}</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          {languages.map((lang) => (
+            <DropdownMenuItem
+              key={lang.code}
+              onClick={() => handleLanguageChange(lang.code)}
+              className="flex items-center gap-2"
+            >
+              <div className="w-5 h-5 rounded-full overflow-hidden">
+                <img
+                  src={`https://kapowaz.github.io/square-flags/flags/${lang.countryCode.toLowerCase()}.svg`}
+                  alt={`${lang.name} flag`}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <span>{lang.nativeName}</span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
 
   return (
     <DropdownMenu>
