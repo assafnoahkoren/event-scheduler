@@ -2,12 +2,9 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Command,
   CommandEmpty,
-  CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
@@ -17,9 +14,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Plus, X, Package, Check, ChevronsUpDown } from 'lucide-react'
+import { Plus, Package, Check, ChevronsUpDown } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { EventProductCard } from './EventProductCard'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@/../../server/src/routers/appRouter'
 
@@ -180,30 +178,14 @@ export function EventProductSection({ event }: EventProductSectionProps) {
       {/* Products List */}
       {existingEventProducts && existingEventProducts.length > 0 ? (
         <div className="divide-y rounded-lg border">
-          {existingEventProducts.map((eventProduct) => {
-            const product = products?.find(p => p.id === eventProduct.productId)
-            if (!product) return null
-
-            return (
-              <div key={eventProduct.id} className="flex items-center justify-between p-3">
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">{product.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {formatPrice(eventProduct.price, product.currency)}
-                    {eventProduct.quantity > 1 && ` × ${eventProduct.quantity}`}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveProduct(eventProduct.id)}
-                  disabled={removeEventProductMutation.isPending}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            )
-          })}
+          {existingEventProducts.map((eventProduct) => (
+            <EventProductCard
+              key={eventProduct.id}
+              eventProduct={eventProduct}
+              onRemove={handleRemoveProduct}
+              isRemoving={removeEventProductMutation.isPending}
+            />
+          ))}
         </div>
       ) : (
         <div className="text-center py-8">
@@ -221,8 +203,8 @@ export function EventProductSection({ event }: EventProductSectionProps) {
             <span className="font-medium">{t('events.total')}</span>
             <span className="text-lg font-bold">
               {formatPrice(
-                existingEventProducts.reduce((sum, ep) => sum + (ep.price * ep.quantity), 0),
-                products?.[0]?.currency || 'ILS'
+                existingEventProducts.reduce((sum, ep) => sum + ((ep.price || ep.product?.price || 0) * ep.quantity), 0),
+                existingEventProducts[0]?.product?.currency || 'ILS'
               )}
             </span>
           </div>
