@@ -32,7 +32,7 @@ export function Header() {
   return (
     <>
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      <header className="border-b">
+      <header className="sticky top-0 z-40 bg-background border-b">
         <div className="container mx-auto px-2 py-2 flex items-center justify-between">
           <div className="flex items-center">
             <Button
