@@ -76,7 +76,6 @@ class InvitationService {
           select: {
             id: true,
             email: true,
-            username: true,
           },
         },
       },
@@ -109,7 +108,6 @@ class InvitationService {
           select: {
             id: true,
             email: true,
-            username: true,
           },
         },
       },
@@ -142,7 +140,6 @@ class InvitationService {
           select: {
             id: true,
             email: true,
-            username: true,
           },
         },
       },
@@ -318,7 +315,6 @@ class InvitationService {
         inviter: {
           select: {
             email: true,
-            username: true,
           },
         },
       },

@@ -22,14 +22,13 @@ export interface LoginResult {
 
 export interface RegisterInput {
   email: string
-  username: string
   password: string
   firstName?: string
   lastName?: string
 }
 
 export interface LoginInput {
-  emailOrUsername: string
+  email: string
   password: string
 }
 
@@ -38,23 +37,17 @@ export class AuthService {
    * Register a new user
    */
   async register(input: RegisterInput): Promise<LoginResult> {
-    const { email, username, password, firstName, lastName } = input
+    const { email, password, firstName, lastName } = input
 
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [
-          { email: email.toLowerCase() },
-          { username: username.toLowerCase() }
-        ]
+        email: email.toLowerCase()
       }
     })
 
     if (existingUser) {
-      if (existingUser.email === email.toLowerCase()) {
-        throw new Error('Email already registered')
-      }
-      throw new Error('Username already taken')
+      throw new Error('Email already registered')
     }
 
     // Hash password
@@ -64,7 +57,6 @@ export class AuthService {
     const user = await prisma.user.create({
       data: {
         email: email.toLowerCase(),
-        username: username.toLowerCase(),
         passwordHash,
         firstName,
         lastName,
@@ -100,15 +92,12 @@ export class AuthService {
    * Login a user
    */
   async login(input: LoginInput): Promise<LoginResult> {
-    const { emailOrUsername, password } = input
+    const { email, password } = input
 
-    // Find user by email or username
+    // Find user by email
     const user = await prisma.user.findFirst({
       where: {
-        OR: [
-          { email: emailOrUsername.toLowerCase() },
-          { username: emailOrUsername.toLowerCase() }
-        ]
+        email: email.toLowerCase()
       }
     })
 

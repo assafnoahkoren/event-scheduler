@@ -14,7 +14,6 @@ const REFRESH_TOKEN_EXPIRES_IN = '90d' // 90 days (3 months)
 export interface AccessTokenPayload {
   userId: string
   email: string
-  username: string
   type: 'access'
 }
 
@@ -30,11 +29,10 @@ export type TokenPayload = AccessTokenPayload | RefreshTokenPayload
 /**
  * Generate an access token for a user
  */
-export function generateAccessToken(user: Pick<User, 'id' | 'email' | 'username'>): string {
+export function generateAccessToken(user: Pick<User, 'id' | 'email'>): string {
   const payload: AccessTokenPayload = {
     userId: user.id,
     email: user.email,
-    username: user.username,
     type: 'access',
   }
 

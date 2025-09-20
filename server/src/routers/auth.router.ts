@@ -10,10 +10,6 @@ import { getTokenExpiryTimes } from '../lib/jwt';
 
 const registerSchema = z.object({
   email: z.email('Invalid email format'),
-  username: z.string()
-    .min(3, 'Username must be at least 3 characters')
-    .max(30, 'Username must not exceed 30 characters')
-    .regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores, and hyphens'),
   password: z.string()
     .min(6, 'Password must be at least 6 characters')
     .max(100, 'Password must not exceed 100 characters'),
@@ -22,7 +18,7 @@ const registerSchema = z.object({
 });
 
 const loginSchema = z.object({
-  emailOrUsername: z.string().min(1, 'Email or username is required'),
+  email: z.email('Invalid email format'),
   password: z.string().min(1, 'Password is required'),
 });
 

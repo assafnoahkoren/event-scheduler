@@ -184,7 +184,7 @@ export function SiteSettings() {
                         </div>
                         <div>
                           <p className="font-medium">
-                            {member.user.username || member.user.email}
+                            {member.user.email}
                           </p>
                           <p className="text-sm text-muted-foreground">
                             {member.role === 'OWNER' ? t('sites.owner') :

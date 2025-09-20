@@ -47,7 +47,6 @@ class SiteService {
           select: {
             id: true,
             email: true,
-            username: true,
           },
         },
         siteUsers: {
@@ -56,7 +55,6 @@ class SiteService {
               select: {
                 id: true,
                 email: true,
-                username: true,
               },
             },
           },
@@ -91,7 +89,6 @@ class SiteService {
           select: {
             id: true,
             email: true,
-            username: true,
           },
         },
         siteUsers: {
@@ -130,7 +127,6 @@ class SiteService {
           select: {
             id: true,
             email: true,
-            username: true,
           },
         },
         siteUsers: {
@@ -140,7 +136,6 @@ class SiteService {
               select: {
                 id: true,
                 email: true,
-                username: true,
                 avatarUrl: true,
               },
             },
@@ -197,7 +192,6 @@ class SiteService {
           select: {
             id: true,
             email: true,
-            username: true,
           },
         },
       },
@@ -317,7 +311,6 @@ class SiteService {
               select: {
                 id: true,
                 email: true,
-                username: true,
               },
             },
           },
@@ -337,7 +330,6 @@ class SiteService {
           select: {
             id: true,
             email: true,
-            username: true,
           },
         },
       },
@@ -405,7 +397,6 @@ class SiteService {
       select: {
         id: true,
         email: true,
-        username: true,
       },
     })
 
@@ -440,7 +431,6 @@ class SiteService {
               select: {
                 id: true,
                 email: true,
-                username: true,
               },
             },
           },
@@ -460,7 +450,6 @@ class SiteService {
           select: {
             id: true,
             email: true,
-            username: true,
           },
         },
       },
@@ -507,7 +496,6 @@ class SiteService {
           select: {
             id: true,
             email: true,
-            username: true,
           },
         },
       },

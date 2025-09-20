@@ -3,7 +3,6 @@
 model User {
   id            String    @id @default(uuid())
   email         String    @unique
-  username      String    @unique
   passwordHash  String    @map("password_hash")
 
   // Profile information
@@ -46,7 +45,6 @@ model User {
   clients       Client[]
 
   @@index([email])
-  @@index([username])
   @@index([isDeleted])
   @@map("users")
 }

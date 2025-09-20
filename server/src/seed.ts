@@ -29,7 +29,6 @@ async function main() {
   const adminUser = await prisma.user.create({
     data: {
       email: 'a',
-      username: 'admin',
       passwordHash: hashedPassword,
       firstName: 'Admin',
       lastName: 'User',
@@ -42,7 +41,6 @@ async function main() {
 
   console.log(`✅ Created admin user:`)
   console.log(`   Email: ${adminUser.email}`)
-  console.log(`   Username: ${adminUser.username}`)
   console.log(`   Password: a`)
 
   // Create system-wide admin permission
@@ -74,7 +72,6 @@ async function main() {
   const testUser1 = await prisma.user.create({
     data: {
       email: 'user@test.com',
-      username: 'testuser',
       passwordHash: await bcrypt.hash('password123', 10),
       firstName: 'Test',
       lastName: 'User',
@@ -86,7 +83,6 @@ async function main() {
   const testUser2 = await prisma.user.create({
     data: {
       email: 'john@example.com',
-      username: 'johndoe',
       passwordHash: await bcrypt.hash('password123', 10),
       firstName: 'John',
       lastName: 'Doe',

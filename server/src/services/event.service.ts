@@ -83,7 +83,6 @@ export class EventService {
         creator: {
           select: {
             id: true,
-            username: true,
             firstName: true,
             lastName: true,
           }
@@ -144,7 +143,6 @@ export class EventService {
         creator: {
           select: {
             id: true,
-            username: true,
             firstName: true,
             lastName: true,
           }
@@ -165,7 +163,6 @@ export class EventService {
         creator: {
           select: {
             id: true,
-            username: true,
             firstName: true,
             lastName: true,
           }
@@ -263,7 +260,6 @@ export class EventService {
         creator: {
           select: {
             id: true,
-            username: true,
             firstName: true,
             lastName: true,
           }

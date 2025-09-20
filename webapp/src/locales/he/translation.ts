@@ -60,7 +60,7 @@ export const heTranslation: TranslationType = {
     welcomeDescription: "התחל ביצירת האתר הראשון שלך. אתר הוא סביבת העבודה שלך שבה תוכל לנהל אירועים, להזמין חברי צוות ולארגן את לוח הזמנים שלך.",
     createFirstSite: "צור את האתר הראשון שלך",
     siteName: "שם האתר",
-    siteNamePlaceholder: "האולם המדהים שלי",
+    siteNamePlaceholder: "הזן שם אתר",
     siteSlug: "כתובת האתר",
     siteSlugPlaceholder: "my-awesome-site",
     siteSlugHelp: "זה יהיה מזהה ה-URL הייחודי של האתר שלך. השתמש רק באותיות קטנות, מספרים ומקפים.",

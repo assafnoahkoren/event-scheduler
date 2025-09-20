@@ -12,7 +12,7 @@ interface AuthContextType {
   isLoading: boolean
   accessToken: string | null
   login: (email: string, password: string) => Promise<void>
-  register: (email: string, username: string, password: string) => Promise<void>
+  register: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   refreshAuth: () => Promise<void>
 }
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [accessToken, meQuery.isLoading])
 
   const login = async (email: string, password: string) => {
-    const result = await loginMutation.mutateAsync({ emailOrUsername: email, password })
+    const result = await loginMutation.mutateAsync({ email, password })
     setUser(result.user)
     setAccessToken(result.accessToken)
     localStorage.setItem('accessToken', result.accessToken)
@@ -74,8 +74,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await utils.invalidate()
   }
 
-  const register = async (email: string, username: string, password: string) => {
-    const result = await registerMutation.mutateAsync({ email, username, password })
+  const register = async (email: string, password: string) => {
+    const result = await registerMutation.mutateAsync({ email, password })
     setUser(result.user)
     setAccessToken(result.accessToken)
     localStorage.setItem('accessToken', result.accessToken)

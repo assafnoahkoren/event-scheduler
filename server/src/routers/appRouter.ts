@@ -41,7 +41,7 @@ export const appRouter = router({
   protected: protectedProcedure
     .query(({ ctx }) => {
       return {
-        message: `Hello ${ctx.user.username}, you are authenticated!`,
+        message: `Hello ${ctx.user.email}, you are authenticated!`,
         user: ctx.user
       };
     })
