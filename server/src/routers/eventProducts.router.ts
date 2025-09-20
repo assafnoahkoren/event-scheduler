@@ -35,11 +35,7 @@ export const eventProductsRouter = router({
           eventId: input.eventId,
         },
         include: {
-          product: {
-            where: {
-              isDeleted: false,
-            },
-          },
+          product: true,
         },
         orderBy: {
           createdAt: 'asc',
@@ -101,29 +97,7 @@ export const eventProductsRouter = router({
         })
       }
 
-      // Check if product is already added to this event
-      const existingEventProduct = await prisma.eventProduct.findUnique({
-        where: {
-          eventId_productId: {
-            eventId: input.eventId,
-            productId: input.productId,
-          },
-        },
-      })
-
-      if (existingEventProduct) {
-        // Update quantity if product already exists
-        return await prisma.eventProduct.update({
-          where: {
-            id: existingEventProduct.id,
-          },
-          data: {
-            quantity: existingEventProduct.quantity + input.quantity,
-          },
-        })
-      }
-
-      // Create new event product
+      // Create new event product (allow multiple of same product)
       const eventProduct = await prisma.eventProduct.create({
         data: {
           eventId: input.eventId,
@@ -195,22 +169,25 @@ export const eventProductsRouter = router({
   remove: protectedProcedure
     .input(
       z.object({
-        eventId: z.string(),
-        productId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // Verify user has access to the event and can edit it
-      const event = await prisma.event.findFirst({
+      // Get the event product to verify permissions
+      const eventProduct = await prisma.eventProduct.findFirst({
         where: {
-          id: input.eventId,
-          isDeleted: false,
-          site: {
-            siteUsers: {
-              some: {
-                userId: ctx.user.id,
-                role: {
-                  in: ['OWNER', 'ADMIN', 'EDITOR'],
+          id: input.id,
+        },
+        include: {
+          event: {
+            include: {
+              site: {
+                include: {
+                  siteUsers: {
+                    where: {
+                      userId: ctx.user.id,
+                    },
+                  },
                 },
               },
             },
@@ -218,7 +195,15 @@ export const eventProductsRouter = router({
         },
       })
 
-      if (!event) {
+      if (!eventProduct || eventProduct.event.site.siteUsers.length === 0) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Event product not found',
+        })
+      }
+
+      const siteUser = eventProduct.event.site.siteUsers[0]
+      if (!['OWNER', 'ADMIN', 'EDITOR'].includes(siteUser.role)) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: 'You do not have permission to edit this event',
@@ -228,10 +213,7 @@ export const eventProductsRouter = router({
       // Delete the event product
       await prisma.eventProduct.delete({
         where: {
-          eventId_productId: {
-            eventId: input.eventId,
-            productId: input.productId,
-          },
+          id: input.id,
         },
       })
 

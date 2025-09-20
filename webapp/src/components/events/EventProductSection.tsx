@@ -95,10 +95,9 @@ export function EventProductSection({ event }: EventProductSectionProps) {
     setOpen(false)
   }
 
-  const handleRemoveProduct = (productId: string) => {
+  const handleRemoveProduct = (eventProductId: string) => {
     removeEventProductMutation.mutate({
-      eventId: event.id,
-      productId,
+      id: eventProductId,
     })
   }
 
@@ -198,7 +197,7 @@ export function EventProductSection({ event }: EventProductSectionProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleRemoveProduct(product.id)}
+                  onClick={() => handleRemoveProduct(eventProduct.id)}
                   disabled={removeEventProductMutation.isPending}
                 >
                   <X className="h-4 w-4" />

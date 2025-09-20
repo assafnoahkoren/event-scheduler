@@ -51,6 +51,10 @@ model EventProduct {
   currency    String?  // Override currency if needed
   notes       String?
 
+  // Soft delete
+  deletedAt   DateTime? @map("deleted_at")
+  isDeleted   Boolean   @default(false) @map("is_deleted")
+
   // Timestamps
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -59,8 +63,10 @@ model EventProduct {
   event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   product     Product  @relation(fields: [productId], references: [id])
 
-  @@unique([eventId, productId])
   @@index([eventId])
   @@index([productId])
+  @@index([isDeleted])
+  @@index([eventId, isDeleted])
+  @@index([eventId, productId])
   @@map("event_products")
 }

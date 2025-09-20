@@ -5,12 +5,21 @@
 ### Overview
 All models in the database use soft deletion instead of hard deletion. This means records are never physically removed from the database, but are instead marked as deleted.
 
+### IMPORTANT: Required Fields for ALL Models
+**Every model in the database MUST include soft delete fields. No exceptions.**
+
 ### Soft Delete Fields
-Every model includes these two fields for soft deletion:
+Every model MUST include these two fields for soft deletion:
 ```prisma
 // Soft delete
 deletedAt   DateTime? @map("deleted_at")
 isDeleted   Boolean   @default(false) @map("is_deleted")
+```
+
+And the corresponding indexes:
+```prisma
+@@index([isDeleted])
+@@index([siteId, isDeleted]) // If the model has a siteId field
 ```
 
 ### How It Works
@@ -54,8 +63,12 @@ All models in the schema have soft delete fields:
 - RefreshToken
 - PasswordReset
 - UserAssetPermission
+- Product
+- EventProduct
 
 ### Important Notes
+- **ALL models MUST have soft delete fields** - This is required for the soft-delete extension to work properly
+- When creating a new model, always add the soft delete fields and indexes
 - Never manually implement delete logic - the extension handles it automatically
 - Soft-deleted records are excluded from all queries by default
 - To permanently delete (hard delete), you would need to use raw SQL queries
