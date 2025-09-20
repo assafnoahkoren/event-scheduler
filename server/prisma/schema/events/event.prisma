@@ -29,6 +29,9 @@ model Event {
   createdBy   String   @map("created_by")
   creator     User     @relation(fields: [createdBy], references: [id])
 
+  // Products attached to this event
+  products    EventProduct[]
+
   // Soft delete
   deletedAt   DateTime? @map("deleted_at")
   isDeleted   Boolean   @default(false) @map("is_deleted")

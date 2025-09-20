@@ -7,6 +7,7 @@ import { trpc } from '@/utils/trpc'
 import { cn } from '@/lib/utils'
 import { useIsRtl } from '@/hooks/useIsRtl'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 
 interface SidebarProps {
   isOpen: boolean
@@ -17,6 +18,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { data: sites } = trpc.sites.list.useQuery()
+  const { currentSite } = useCurrentSite()
   const isRtl = useIsRtl()
 
   // Close sidebar when clicking outside on mobile
@@ -83,14 +85,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2">
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => handleNavigation('/')}
-            >
-              <Home className="h-4 w-4 me-2" />
-              {t('navigation.home')}
-            </Button>
 
             <Button
               variant="ghost"
@@ -101,11 +95,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               {t('navigation.calendar')}
             </Button>
 
-            {sites && sites.length > 0 && (
+            {sites && sites.length > 0 && currentSite && (
               <>
                 <div className="pt-4 pb-2">
                   <h3 className="text-sm font-medium text-muted-foreground px-2">
-                    {t('sites.mySites')}
+                    {currentSite.name}
                   </h3>
                 </div>
                 <Button

@@ -1,0 +1,66 @@
+// Product catalog for services and physical items
+
+model Product {
+  id          String   @id @default(uuid())
+
+  // Site this product belongs to
+  siteId      String   @map("site_id")
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  // Product details
+  name        String
+  description String?
+  type        ProductType
+  price       Float
+  currency    String       // "USD", "EUR", "ILS", etc.
+
+  // Soft delete
+  deletedAt   DateTime? @map("deleted_at")
+  isDeleted   Boolean   @default(false) @map("is_deleted")
+  isActive    Boolean   @default(true) @map("is_active")
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  eventItems  EventProduct[]
+
+  @@index([siteId])
+  @@index([isDeleted])
+  @@index([siteId, isDeleted])
+  @@map("products")
+}
+
+enum ProductType {
+  SERVICE
+  PHYSICAL
+  EXTERNAL_SERVICE
+}
+
+model EventProduct {
+  id          String   @id @default(uuid())
+
+  // Event and Product relationship
+  eventId     String   @map("event_id")
+  productId   String   @map("product_id")
+
+  // Instance-specific values
+  quantity    Float    @default(1)
+  price       Float?   // Override product price if needed
+  currency    String?  // Override currency if needed
+  notes       String?
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id])
+
+  @@unique([eventId, productId])
+  @@index([eventId])
+  @@index([productId])
+  @@map("event_products")
+}

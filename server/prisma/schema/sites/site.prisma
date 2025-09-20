@@ -24,6 +24,7 @@ model Site {
   invitations SiteInvitation[]
   events      Event[]
   clients     Client[]
+  products    Product[]
 
   @@index([ownerId])
   @@index([isDeleted])
