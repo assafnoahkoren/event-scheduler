@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { AlertCircle } from 'lucide-react'
 import { FirstLanguagePick } from '@/components/FirstLanguagePick'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 export function Login() {
   const [email, setEmail] = useState('')
@@ -52,7 +53,10 @@ export function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight">Event Scheduler</h1>

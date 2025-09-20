@@ -1,7 +1,5 @@
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
-import { useLanguage } from '@/contexts/LanguageContext'
-import { getAvailableLanguages } from '@/i18n'
-import { Globe } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,29 +7,83 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
+interface Language {
+  code: string
+  name: string
+  nativeName: string
+  countryCode: string
+}
+
+const languages: Language[] = [
+  {
+    code: 'en',
+    name: 'English',
+    nativeName: 'English',
+    countryCode: 'US'
+  },
+  {
+    code: 'he',
+    name: 'Hebrew',
+    nativeName: 'עברית',
+    countryCode: 'IL'
+  },
+  {
+    code: 'ar',
+    name: 'Arabic',
+    nativeName: 'العربية',
+    countryCode: 'SA'
+  }
+]
+
 export function LanguageSwitcher() {
-  const { language, changeLanguage } = useLanguage()
-  const languages = getAvailableLanguages()
+  const { i18n } = useTranslation()
+
+  const handleLanguageChange = (languageCode: string) => {
+    // Change the language in i18next
+    i18n.changeLanguage(languageCode)
+
+    // Save the preference with our custom key
+    localStorage.setItem('userLanguagePreference', languageCode)
+
+    // Also save for i18next to remember the language
+    localStorage.setItem('i18nextLng', languageCode)
+
+    // Set the direction for RTL languages
+    const dir = languageCode === 'ar' || languageCode === 'he' ? 'rtl' : 'ltr'
+    document.documentElement.dir = dir
+    document.documentElement.lang = languageCode
+  }
+
+  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0]
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0">
-          <Globe className="h-5 w-5" />
-          <span className="sr-only">Change language</span>
+        <Button variant="ghost" size="icon" className="rounded-full">
+          <div className="w-5 rounded-full overflow-hidden">
+            <img
+              src={`https://kapowaz.github.io/square-flags/flags/${currentLanguage.countryCode.toLowerCase()}.svg`}
+              alt={`${currentLanguage.name} flag`}
+              className="w-full h-full object-contain"
+            />
+          </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
-            onClick={() => changeLanguage(lang.code as any)}
-            className={language === lang.code ? 'bg-accent' : ''}
+            onClick={() => handleLanguageChange(lang.code)}
+            className="flex items-center gap-2"
           >
-            <span className="me-2">{lang.nativeName}</span>
-            {lang.dir === 'rtl' && (
-              <span className="text-xs text-muted-foreground">(RTL)</span>
-            )}
+            <div className="w-5 h-5 rounded-full overflow-hidden">
+              <img
+                src={`https://kapowaz.github.io/square-flags/flags/${lang.countryCode.toLowerCase()}.svg`}
+                alt={`${lang.name} flag`}
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <span>{lang.nativeName}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

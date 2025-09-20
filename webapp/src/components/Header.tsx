@@ -2,15 +2,17 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { SiteSwitcher } from '@/components/sites/SiteSwitcher'
-import { User, ArrowLeft, ArrowRight, Settings } from 'lucide-react'
+import { User, ArrowLeft, ArrowRight, Settings, Calendar } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useIsRtl } from '@/hooks/useIsRtl'
+import { trpc } from '@/utils/trpc'
 
 export function Header() {
   const { t } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
   const isRtl = useIsRtl()
+  const { data: sites } = trpc.sites.list.useQuery()
 
   // Always show back button
   const showBackButton = true
@@ -49,17 +51,28 @@ export function Header() {
                 <BackIcon className="h-4 w-4" />
               </Button>
             )}
-            <div className="border-e pe-4 flex items-center gap-2">
-              <SiteSwitcher />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleSettings}
-                title={t('navigation.settings')}
-              >
-                <Settings className="h-4 w-4" />
-              </Button>
-            </div>
+            {sites && sites.length > 0 && (
+              <div className="border-e pe-4 flex items-center">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate('/')}
+                  title={t('navigation.calendar')}
+                  className="me-0"
+                >
+                  <Calendar className="h-4 w-4" />
+                </Button>
+                <SiteSwitcher />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleSettings}
+                  title={t('navigation.settings')}
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center">
