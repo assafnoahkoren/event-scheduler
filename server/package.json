@@ -4,9 +4,6 @@
   "private": true,
   "description": "Event scheduler server",
   "main": "index.js",
-  "prisma": {
-    "seed": "tsx src/seed.ts"
-  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
