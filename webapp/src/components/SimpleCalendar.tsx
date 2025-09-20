@@ -119,33 +119,79 @@ export function SimpleCalendar({
     return t(`calendar.months.${monthKeys[monthIndex]}` as any)
   }
 
+  const getShortMonthName = (date: Date) => {
+    const fullName = getMonthName(date)
+    // Return first 3 characters of the month name
+    return fullName.substring(0, 3)
+  }
+
   return (
     <div className={cn("p-3 rounded-md", className)} dir={actualDir}>
       {/* Header with month navigation */}
       <div className="flex items-center justify-between mb-4">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-7 w-7"
-          onClick={handlePreviousMonth}
-          disabled={disabled}
-        >
-          {actualDir === 'rtl' ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </Button>
+        <div className="flex items-center gap-2">
+          {actualDir === 'rtl' ? (
+            <>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-7 w-7"
+                onClick={handlePreviousMonth}
+                disabled={disabled}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <span className="text-xs opacity-60">{getShortMonthName(subMonths(currentMonth, 1))}</span>
+            </>
+          ) : (
+            <>
+              <span className="text-xs opacity-60">{getShortMonthName(subMonths(currentMonth, 1))}</span>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-7 w-7"
+                onClick={handlePreviousMonth}
+                disabled={disabled}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+        </div>
 
         <div className="text-sm font-medium">
           {getMonthName(currentMonth)} {getYear(currentMonth)}
         </div>
 
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-7 w-7"
-          onClick={handleNextMonth}
-          disabled={disabled}
-        >
-          {actualDir === 'rtl' ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-        </Button>
+        <div className="flex items-center gap-2">
+          {actualDir === 'rtl' ? (
+            <>
+              <span className="text-xs opacity-60">{getShortMonthName(addMonths(currentMonth, 1))}</span>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-7 w-7"
+                onClick={handleNextMonth}
+                disabled={disabled}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-7 w-7"
+                onClick={handleNextMonth}
+                disabled={disabled}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <span className="text-xs opacity-60">{getShortMonthName(addMonths(currentMonth, 1))}</span>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Calendar grid */}

@@ -33,7 +33,7 @@ export function Header() {
     <>
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-2 py-2 flex items-center justify-between">
           <div className="flex items-center">
             <Button
               id="menu-button"
