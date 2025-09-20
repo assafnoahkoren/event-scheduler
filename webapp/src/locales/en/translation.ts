@@ -133,7 +133,14 @@ export const enTranslation = {
     deleteFailed: "Failed to delete event",
     details: "Details",
     dangerZone: "Danger Zone",
-    dangerZoneDescription: "Actions here cannot be undone. Please proceed with caution."
+    dangerZoneDescription: "Actions here cannot be undone. Please proceed with caution.",
+    products: "Products",
+    selectProduct: "Select a product",
+    noProductsAdded: "No products added to this event",
+    productAdded: "Product added successfully",
+    productRemoved: "Product removed successfully",
+    productError: "Error managing products",
+    total: "Total"
   },
   navigation: {
     home: "Home",

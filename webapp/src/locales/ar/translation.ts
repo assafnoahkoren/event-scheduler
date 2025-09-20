@@ -133,7 +133,14 @@ export const arTranslation: TranslationType = {
     deleteFailed: "فشل حذف الحدث",
     details: "التفاصيل",
     dangerZone: "منطقة خطرة",
-    dangerZoneDescription: "الإجراءات هنا لا يمكن التراجع عنها. يرجى المتابعة بحذر."
+    dangerZoneDescription: "الإجراءات هنا لا يمكن التراجع عنها. يرجى المتابعة بحذر.",
+    products: "المنتجات",
+    selectProduct: "اختر منتج",
+    noProductsAdded: "لم يتم إضافة منتجات لهذا الحدث",
+    productAdded: "تمت إضافة المنتج بنجاح",
+    productRemoved: "تمت إزالة المنتج بنجاح",
+    productError: "خطأ في إدارة المنتجات",
+    total: "المجموع"
   },
   navigation: {
     home: "الرئيسية",

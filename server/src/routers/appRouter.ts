@@ -5,6 +5,7 @@ import { siteRouter } from './site.router';
 import { eventRouter } from './event.router';
 import { clientRouter } from './client.router';
 import { productsRouter } from './products.router';
+import { eventProductsRouter } from './eventProducts.router';
 
 export const appRouter = router({
   // Auth routes
@@ -21,6 +22,9 @@ export const appRouter = router({
 
   // Product management routes
   products: productsRouter,
+
+  // Event products routes
+  eventProducts: eventProductsRouter,
 
   // Public routes
   ping: publicProcedure

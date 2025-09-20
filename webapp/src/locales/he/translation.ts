@@ -133,7 +133,14 @@ export const heTranslation: TranslationType = {
     deleteFailed: "מחיקת האירוע נכשלה",
     details: "פרטים",
     dangerZone: "אזור מסוכן",
-    dangerZoneDescription: "פעולות כאן לא ניתנות לביטול. אנא המשך בזהירות."
+    dangerZoneDescription: "פעולות כאן לא ניתנות לביטול. אנא המשך בזהירות.",
+    products: "מוצרים",
+    selectProduct: "בחר מוצר",
+    noProductsAdded: "לא נוספו מוצרים לאירוע זה",
+    productAdded: "המוצר נוסף בהצלחה",
+    productRemoved: "המוצר הוסר בהצלחה",
+    productError: "שגיאה בניהול מוצרים",
+    total: "סך הכל"
   },
   navigation: {
     home: "בית",

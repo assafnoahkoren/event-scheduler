@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EventForm, type EventFormData } from '@/components/EventForm'
+import { EventProductSection } from '@/components/events/EventProductSection'
 
 export function Event() {
   const { eventId } = useParams<{ eventId: string }>()
@@ -108,8 +109,9 @@ export function Event() {
           </h1>
 
           <Tabs defaultValue="details" className="w-full" dir={isRtl ? 'rtl' : 'ltr'}>
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="details">{t('events.details')}</TabsTrigger>
+              <TabsTrigger value="products">{t('events.products')}</TabsTrigger>
               <TabsTrigger value="danger">{t('events.dangerZone')}</TabsTrigger>
 
             </TabsList>
@@ -120,6 +122,10 @@ export function Event() {
                 onSubmit={handleUpdate}
                 isSubmitting={updateMutation.isPending}
               />
+            </TabsContent>
+
+            <TabsContent value="products" className="mt-6">
+              <EventProductSection event={event} />
             </TabsContent>
 
             <TabsContent value="danger" className="mt-6">
