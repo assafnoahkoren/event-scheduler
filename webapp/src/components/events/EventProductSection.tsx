@@ -184,6 +184,7 @@ export function EventProductSection({ event }: EventProductSectionProps) {
               eventProduct={eventProduct}
               onRemove={handleRemoveProduct}
               isRemoving={removeEventProductMutation.isPending}
+              onUpdate={() => utils.eventProducts.list.invalidate({ eventId: event.id })}
             />
           ))}
         </div>

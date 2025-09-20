@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
+import { skipToken } from '@tanstack/react-query'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { ProductCard } from '@/components/products/ProductCard'
 import { Button } from '@/components/ui/button'
@@ -20,8 +21,7 @@ export function Products() {
   const [searchQuery, setSearchQuery] = useState('')
 
   const { data: products, isLoading, error } = trpc.products.list.useQuery(
-    currentSite ? { siteId: currentSite.id } : {},
-    { enabled: !!currentSite }
+    currentSite ? { siteId: currentSite.id } : skipToken
   )
 
   const handleEdit = (product: Product) => {

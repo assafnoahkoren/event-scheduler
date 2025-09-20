@@ -140,6 +140,7 @@ export const enTranslation = {
     productAdded: "Product added successfully",
     productRemoved: "Product removed successfully",
     productError: "Error managing products",
+    updateError: "Failed to update product",
     total: "Total"
   },
   navigation: {
@@ -193,6 +194,7 @@ export const enTranslation = {
     price: "Price",
     pricePlaceholder: "0.00",
     currency: "Currency",
+    quantity: "Quantity",
     noProducts: "No products yet",
     noProductsDescription: "Create your first product to get started",
     confirmDeleteProduct: "Delete Product",

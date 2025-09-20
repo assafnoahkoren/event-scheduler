@@ -116,7 +116,7 @@ export const eventProductsRouter = router({
       z.object({
         id: z.string(),
         quantity: z.number().min(1).optional(),
-        price: z.number().min(0).optional(),
+        price: z.number().min(0).nullable().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {

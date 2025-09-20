@@ -19,7 +19,9 @@ export const heTranslation: TranslationType = {
     edit: "ערוך",
     create: "צור",
     back: "חזור",
-    you: "אתה"
+    you: "אתה",
+    menu: "תפריט",
+    language: "שפה"
   },
   calendar: {
     months: {
@@ -140,6 +142,7 @@ export const heTranslation: TranslationType = {
     productAdded: "המוצר נוסף בהצלחה",
     productRemoved: "המוצר הוסר בהצלחה",
     productError: "שגיאה בניהול מוצרים",
+    updateError: "נכשל עדכון המוצר",
     total: "סך הכל"
   },
   navigation: {
@@ -193,6 +196,7 @@ export const heTranslation: TranslationType = {
     price: "מחיר",
     pricePlaceholder: "0.00",
     currency: "מטבע",
+    quantity: "כמות",
     noProducts: "אין מוצרים עדיין",
     noProductsDescription: "צור את המוצר הראשון שלך כדי להתחיל",
     confirmDeleteProduct: "מחיקת מוצר",

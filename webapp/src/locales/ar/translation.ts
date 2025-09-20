@@ -19,7 +19,9 @@ export const arTranslation: TranslationType = {
     edit: "تعديل",
     create: "إنشاء",
     back: "رجوع",
-    you: "أنت"
+    you: "أنت",
+    menu: "القائمة",
+    language: "اللغة"
   },
   calendar: {
     months: {
@@ -140,6 +142,7 @@ export const arTranslation: TranslationType = {
     productAdded: "تمت إضافة المنتج بنجاح",
     productRemoved: "تمت إزالة المنتج بنجاح",
     productError: "خطأ في إدارة المنتجات",
+    updateError: "فشل تحديث المنتج",
     total: "المجموع"
   },
   navigation: {
@@ -193,6 +196,7 @@ export const arTranslation: TranslationType = {
     price: "السعر",
     pricePlaceholder: "0.00",
     currency: "العملة",
+    quantity: "الكمية",
     noProducts: "لا توجد منتجات بعد",
     noProductsDescription: "قم بإنشاء منتجك الأول للبدء",
     confirmDeleteProduct: "حذف المنتج",
