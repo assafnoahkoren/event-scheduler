@@ -191,7 +191,9 @@ export const enTranslation = {
     editClient: "Edit Client",
     deleteClient: "Delete Client",
     confirmDeleteDescription: "Are you sure you want to delete {{name}}? This action cannot be undone.",
-    createFirstClient: "Create your first client"
+    createFirstClient: "Create your first client",
+    importContact: "Import Contact",
+    contactPickerNotSupported: "Your browser does not support importing contacts. Please enter the information manually."
   },
   products: {
     products: "Products",

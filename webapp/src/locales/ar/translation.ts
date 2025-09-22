@@ -193,7 +193,9 @@ export const arTranslation: TranslationType = {
     editClient: "تعديل العميل",
     deleteClient: "حذف العميل",
     confirmDeleteDescription: "هل أنت متأكد من رغبتك في حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء.",
-    createFirstClient: "أنشئ عميلك الأول"
+    createFirstClient: "أنشئ عميلك الأول",
+    importContact: "استيراد جهة اتصال",
+    contactPickerNotSupported: "متصفحك لا يدعم استيراد جهات الاتصال. يرجى إدخال المعلومات يدوياً."
   },
   products: {
     products: "المنتجات",

@@ -193,7 +193,9 @@ export const heTranslation: TranslationType = {
     editClient: "ערוך לקוח",
     deleteClient: "מחק לקוח",
     confirmDeleteDescription: "האם אתה בטוח שברצונך למחוק את {{name}}? פעולה זו אינה ניתנת לביטול.",
-    createFirstClient: "צור את הלקוח הראשון שלך"
+    createFirstClient: "צור את הלקוח הראשון שלך",
+    importContact: "ייבא איש קשר",
+    contactPickerNotSupported: "הדפדפן שלך אינו תומך בייבוא אנשי קשר. אנא הזן את הפרטים ידנית."
   },
   products: {
     products: "מוצרים",
