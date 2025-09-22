@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X, Calendar, Settings, User, Plus, Home, Globe, Package, Users } from 'lucide-react'
+import { X, Calendar, Settings, User, Plus, Home, Globe, Package, Users, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -117,6 +117,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 >
                   <Package className="h-4 w-4 me-2" />
                   {t('products.products')}
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={() => handleNavigation('/waiting-list')}
+                >
+                  <Clock className="h-4 w-4 me-2" />
+                  {t('waitingList.title')}
                 </Button>
                 <Button
                   variant="ghost"

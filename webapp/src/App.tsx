@@ -13,6 +13,7 @@ import { Products } from '@/pages/products/Products'
 import { NewProduct } from '@/pages/products/NewProduct'
 import { ProductDetail } from '@/pages/products/ProductDetail'
 import { Clients } from '@/pages/clients/Clients'
+import { WaitingList } from '@/pages/waiting-list/WaitingList'
 import '@/styles/swiper-custom.css'
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
             <Route path="/products/new" element={<NewProduct />} />
             <Route path="/products/:productId" element={<ProductDetail />} />
             <Route path="/clients" element={<Clients />} />
+            <Route path="/waiting-list" element={<WaitingList />} />
           </Route>
         </Route>
 

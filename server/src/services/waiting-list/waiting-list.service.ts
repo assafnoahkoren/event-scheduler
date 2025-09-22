@@ -362,7 +362,12 @@ export async function checkAllEntriesForMatches(
   })
 
   // Check each entry for matches
-  const results = []
+  const results: Array<{
+    entry: typeof entries[0],
+    matchingDates: Date[],
+    earliestMatch: Date,
+    matchCount: number
+  }> = []
 
   for (const entry of entries) {
     const matchingDates: Date[] = []
