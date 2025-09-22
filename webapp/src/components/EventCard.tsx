@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { navigateToEvent } from '@/utils/navigation'
 import { RelativeTimeBadge } from '@/components/RelativeTimeBadge'
+import { DayOfWeekBadge } from '@/components/DayOfWeekBadge'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
@@ -69,11 +70,15 @@ export function EventCard({ event, onClick }: EventCardProps) {
         {getStatusLabel(event.status)}
       </Badge>
 
-      {/* Floating relative time chip */}
-      <RelativeTimeBadge
-        date={event.startDate}
-        className="absolute -top-3 end-3 z-10"
-      />
+      {/* Floating chips container */}
+      <div className="absolute -top-3 end-3 z-10 flex gap-2">
+        <DayOfWeekBadge
+          date={event.startDate}
+        />
+        <RelativeTimeBadge
+          date={event.startDate}
+        />
+      </div>
 
       <div className="border rounded-lg overflow-hidden hover:bg-accent/50 transition-colors">
         <div className="flex">

@@ -44,6 +44,15 @@ export const enTranslation = {
       thursday: "Th",
       friday: "Fr",
       saturday: "Sa"
+    },
+    weekdaysFull: {
+      sunday: "Sunday",
+      monday: "Monday",
+      tuesday: "Tuesday",
+      wednesday: "Wednesday",
+      thursday: "Thursday",
+      friday: "Friday",
+      saturday: "Saturday"
     }
   },
   auth: {

@@ -46,6 +46,15 @@ export const arTranslation: TranslationType = {
       thursday: "خ",
       friday: "ج",
       saturday: "س"
+    },
+    weekdaysFull: {
+      sunday: "الأحد",
+      monday: "الإثنين",
+      tuesday: "الثلاثاء",
+      wednesday: "الأربعاء",
+      thursday: "الخميس",
+      friday: "الجمعة",
+      saturday: "السبت"
     }
   },
   auth: {

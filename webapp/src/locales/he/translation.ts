@@ -46,6 +46,15 @@ export const heTranslation: TranslationType = {
       thursday: "ה",
       friday: "ו",
       saturday: "ש"
+    },
+    weekdaysFull: {
+      sunday: "ראשון",
+      monday: "שני",
+      tuesday: "שלישי",
+      wednesday: "רביעי",
+      thursday: "חמישי",
+      friday: "שישי",
+      saturday: "שבת"
     }
   },
   auth: {
