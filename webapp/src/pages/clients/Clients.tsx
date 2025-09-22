@@ -4,7 +4,13 @@ import { trpc } from '@/utils/trpc'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Plus, Search } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+} from '@/components/ui/drawer'
 import { ClientForm, type ClientFormData } from '@/components/ClientForm'
 import { ClientList } from '@/components/ClientList'
 import {
@@ -159,28 +165,30 @@ export function Clients() {
         onNewClient={handleNewClient}
       />
 
-      {/* Edit/Create Dialog */}
-      <Dialog open={isFormOpen} onOpenChange={(open) => {
+      {/* Edit/Create Drawer */}
+      <Drawer open={isFormOpen} onOpenChange={(open) => {
         setIsFormOpen(open)
         if (!open) {
           setSelectedClient(null)
           setSelectedClientId(null)
         }
       }}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
+        <DrawerContent className="overflow-y-auto">
+          <DrawerHeader>
+            <DrawerTitle>
               {selectedClient ? t('clients.editClient') : t('clients.newClient')}
-            </DialogTitle>
-          </DialogHeader>
-          <ClientForm
-            client={selectedClient}
-            onSubmit={handleSubmit}
-            onCancel={() => setIsFormOpen(false)}
-            isSubmitting={createMutation.isPending || updateMutation.isPending}
-          />
-        </DialogContent>
-      </Dialog>
+            </DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-4">
+            <ClientForm
+              client={selectedClient}
+              onSubmit={handleSubmit}
+              onCancel={() => setIsFormOpen(false)}
+              isSubmitting={createMutation.isPending || updateMutation.isPending}
+            />
+          </div>
+        </DrawerContent>
+      </Drawer>
 
       {/* Delete Confirmation */}
       <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
