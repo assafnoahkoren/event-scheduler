@@ -46,6 +46,7 @@ const currencies = [
 export function ProductForm({ product, onSubmit, onCancel, isSubmitting }: ProductFormProps) {
   const { t } = useTranslation()
 
+  const [priceInput, setPriceInput] = useState<string>(product?.price ? product.price.toString() : '')
   const [formData, setFormData] = useState<ProductFormData>({
     name: product?.name || '',
     description: product?.description || '',
@@ -65,6 +66,7 @@ export function ProductForm({ product, onSubmit, onCancel, isSubmitting }: Produ
         currency: product.currency,
         isActive: product.isActive,
       })
+      setPriceInput(product.price.toString())
     }
   }, [product])
 
@@ -74,6 +76,7 @@ export function ProductForm({ product, onSubmit, onCancel, isSubmitting }: Produ
   }
 
   const handlePriceChange = (value: string) => {
+    setPriceInput(value)
     const price = parseFloat(value) || 0
     setFormData({ ...formData, price })
   }
@@ -135,8 +138,7 @@ export function ProductForm({ product, onSubmit, onCancel, isSubmitting }: Produ
             id="price"
             type="number"
             step="0.01"
-            min="0"
-            value={formData.price}
+            value={priceInput}
             onChange={(e) => handlePriceChange(e.target.value)}
             placeholder={t('products.pricePlaceholder')}
             required
