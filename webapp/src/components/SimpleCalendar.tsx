@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 import { useIsRtl } from '@/hooks/useIsRtl'
+import { useIsWeekend } from '@/hooks/useIsWeekend'
 import {
   format,
   startOfMonth,
@@ -57,6 +58,7 @@ export function SimpleCalendar({
   const { t } = useTranslation()
   const [currentMonth, setCurrentMonth] = useState(month)
   const isRtl = useIsRtl()
+  const { isWeekendDay, isWeekendDate } = useIsWeekend()
   const actualDir = dir || (isRtl ? 'rtl' : 'ltr')
 
   const days = useMemo(() => {
@@ -202,7 +204,7 @@ export function SimpleCalendar({
             key={index}
             className={cn(
               "aspect-square min-h-[20px] flex items-center justify-center text-sm font-medium text-muted-foreground",
-              (index === 4 || index === 5) && "border-2 border-purple-200"
+              isWeekendDay(index) && "border-2 border-purple-200"
             )}
           >
             {day}
@@ -215,8 +217,7 @@ export function SimpleCalendar({
           const isCurrentMonth = isSameMonth(day, currentMonth)
           const isTodayDate = isToday(day)
           const hasEvent = isEventDay(day)
-          const dayOfWeek = day.getDay()
-          const isWeekendColumn = dayOfWeek === 4 || dayOfWeek === 5
+          const isWeekendColumn = isWeekendDate(day)
 
           // Use custom render function if provided
           if (renderCell) {
