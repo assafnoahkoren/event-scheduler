@@ -5,7 +5,7 @@ export function Shell() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="container flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col">
         <Outlet />
       </main>
     </div>
