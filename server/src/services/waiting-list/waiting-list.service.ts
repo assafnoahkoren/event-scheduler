@@ -419,9 +419,9 @@ export async function checkAllEntriesForMatches(
       const dates = entry.specificDates as string[]
 
       for (const dateStr of dates) {
-        // Parse the date and set to start of day in local timezone
-        const date = new Date(dateStr + 'T00:00:00')
-        const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+        // Parse the date string as local date (YYYY-MM-DD format)
+        const [year, month, day] = dateStr.split('-').map(Number)
+        const dateOnly = new Date(year, month - 1, day) // month is 0-indexed
         const startOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate())
         const endOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate())
         const expirationOnly = new Date(entry.expirationDate.getFullYear(), entry.expirationDate.getMonth(), entry.expirationDate.getDate())
@@ -471,9 +471,12 @@ export async function checkAllEntriesForMatches(
     else if (entry.ruleType === 'DATE_RANGE' && entry.dateRange) {
       const range = entry.dateRange as { start: string; end: string }
 
-      // Parse dates and normalize to start of day
-      const rangeStart = new Date(range.start + 'T00:00:00')
-      const rangeEnd = new Date(range.end + 'T00:00:00')
+      // Parse dates as local dates (YYYY-MM-DD format)
+      const [startYear, startMonth, startDay] = range.start.split('-').map(Number)
+      const rangeStart = new Date(startYear, startMonth - 1, startDay)
+
+      const [endYear, endMonth, endDay] = range.end.split('-').map(Number)
+      const rangeEnd = new Date(endYear, endMonth - 1, endDay)
       const startOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate())
       const endOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate())
       const expirationOnly = new Date(entry.expirationDate.getFullYear(), entry.expirationDate.getMonth(), entry.expirationDate.getDate())
