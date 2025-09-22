@@ -20,7 +20,10 @@ export const enTranslation = {
     back: "Back",
     you: "You",
     menu: "Menu",
-    language: "Language"
+    language: "Language",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    yesterday: "Yesterday"
   },
   calendar: {
     months: {
@@ -235,6 +238,7 @@ export const enTranslation = {
   },
   waitingList: {
     title: "Waiting List",
+    matchesAvailable: "Waiting List Matches Available",
     newEntry: "New Entry",
     editEntry: "Edit Entry",
     deleteEntry: "Delete Entry",

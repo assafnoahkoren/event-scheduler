@@ -1,4 +1,3 @@
-import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { UserIcon, Phone, MessageCircle } from 'lucide-react'
@@ -7,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { navigateToEvent } from '@/utils/navigation'
 import { RelativeTimeBadge } from '@/components/RelativeTimeBadge'
 import { DayOfWeekBadge } from '@/components/DayOfWeekBadge'
+import { useFormatDayMonth } from '@/hooks/useDateFormatter'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
@@ -21,6 +21,7 @@ interface EventCardProps {
 export function EventCard({ event, onClick }: EventCardProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const formatDayMonth = useFormatDayMonth()
 
   const handleClick = () => {
     if (onClick) {
@@ -89,7 +90,7 @@ export function EventCard({ event, onClick }: EventCardProps) {
           >
             <div className="flex items-center gap-3">
               <div className="text-sm text-muted-foreground whitespace-nowrap">
-                {format(new Date(event.startDate), 'dd/MM')}
+                {formatDayMonth(event.startDate)}
               </div>
               <h3 className="font-medium truncate flex-1 min-w-0">
                 {event.title || t('events.untitledEvent')}

@@ -22,7 +22,10 @@ export const arTranslation: TranslationType = {
     back: "رجوع",
     you: "أنت",
     menu: "القائمة",
-    language: "اللغة"
+    language: "اللغة",
+    today: "اليوم",
+    tomorrow: "غداً",
+    yesterday: "أمس"
   },
   calendar: {
     months: {
@@ -237,6 +240,7 @@ export const arTranslation: TranslationType = {
   },
   waitingList: {
     title: "قائمة الانتظار",
+    matchesAvailable: "توجد تطابقات في قائمة الانتظار",
     newEntry: "إدخال جديد",
     editEntry: "تعديل الإدخال",
     deleteEntry: "حذف الإدخال",

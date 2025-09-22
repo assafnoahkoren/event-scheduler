@@ -22,7 +22,10 @@ export const heTranslation: TranslationType = {
     back: "חזור",
     you: "אתה",
     menu: "תפריט",
-    language: "שפה"
+    language: "שפה",
+    today: "היום",
+    tomorrow: "מחר",
+    yesterday: "אתמול"
   },
   calendar: {
     months: {
@@ -237,6 +240,7 @@ export const heTranslation: TranslationType = {
   },
   waitingList: {
     title: "רשימת המתנה",
+    matchesAvailable: "יש התאמות ברשימת ההמתנה",
     newEntry: "רשומה חדשה",
     editEntry: "ערוך רשומה",
     deleteEntry: "מחק רשומה",
