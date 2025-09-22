@@ -43,6 +43,7 @@ model User {
   acceptedInvitations SiteInvitation[] @relation("AcceptedInvitations")
   events        Event[]
   clients       Client[]
+  waitingListEntries WaitingListEntry[] @relation("WaitingListCreator")
 
   @@index([email])
   @@index([isDeleted])

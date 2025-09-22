@@ -25,6 +25,7 @@ model Site {
   events      Event[]
   clients     Client[]
   products    Product[]
+  waitingListEntries WaitingListEntry[]
 
   @@index([ownerId])
   @@index([isDeleted])

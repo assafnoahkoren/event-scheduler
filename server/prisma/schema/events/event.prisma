@@ -32,6 +32,9 @@ model Event {
   // Products attached to this event
   products    EventProduct[]
 
+  // Waiting list entries that were fulfilled by this event
+  waitingListEntries WaitingListEntry[]
+
   // Soft delete
   deletedAt   DateTime? @map("deleted_at")
   isDeleted   Boolean   @default(false) @map("is_deleted")

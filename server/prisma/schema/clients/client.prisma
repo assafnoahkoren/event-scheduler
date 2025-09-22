@@ -20,6 +20,9 @@ model Client {
   // Events for this client
   events      Event[]
 
+  // Waiting list entries for this client
+  waitingListEntries WaitingListEntry[]
+
   // Created by
   createdBy   String   @map("created_by")
   creator     User     @relation(fields: [createdBy], references: [id])
