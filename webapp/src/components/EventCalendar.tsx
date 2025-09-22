@@ -7,7 +7,12 @@ import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { format, startOfMonth, endOfMonth } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { navigateToEvent } from '@/utils/navigation'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer'
 import { EventForm, type EventFormData } from '@/components/EventForm'
 
 export function EventCalendar() {
@@ -160,13 +165,13 @@ export function EventCalendar() {
         </div>
       </div>
 
-      {/* Event Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[525px]">
-          <DialogHeader>
-            <DialogTitle>{t('events.createEvent')}</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
+      {/* Event Drawer */}
+      <Drawer open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DrawerContent className="overflow-y-auto">
+          <DrawerHeader>
+            <DrawerTitle>{t('events.createEvent')}</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-4">
             <EventForm
               initialDate={eventDate}
               onSubmit={handleCreateEvent}
@@ -174,8 +179,8 @@ export function EventCalendar() {
               isSubmitting={createEventMutation.isPending}
             />
           </div>
-        </DialogContent>
-      </Dialog>
+        </DrawerContent>
+      </Drawer>
     </>
   )
 }

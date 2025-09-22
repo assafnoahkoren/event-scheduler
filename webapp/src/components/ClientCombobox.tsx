@@ -9,11 +9,11 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer'
 import { trpc } from '@/utils/trpc'
 import { useTranslation } from 'react-i18next'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
@@ -207,13 +207,13 @@ export function ClientCombobox({
       )}
       </div>
 
-      {/* Client Creation Dialog */}
-      <Dialog open={showClientDialog} onOpenChange={setShowClientDialog}>
-        <DialogContent className="sm:max-w-[525px]">
-          <DialogHeader>
-            <DialogTitle>{t('clients.newClient')}</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
+      {/* Client Creation Drawer */}
+      <Drawer open={showClientDialog} onOpenChange={setShowClientDialog}>
+        <DrawerContent className="overflow-y-auto">
+          <DrawerHeader>
+            <DrawerTitle>{t('clients.newClient')}</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-4">
             <ClientForm
               initialName={prefilledName}
               onSubmit={handleCreateClient}
@@ -224,8 +224,8 @@ export function ClientCombobox({
               isSubmitting={createClientMutation.isPending}
             />
           </div>
-        </DialogContent>
-      </Dialog>
+        </DrawerContent>
+      </Drawer>
     </>
   )
 }
