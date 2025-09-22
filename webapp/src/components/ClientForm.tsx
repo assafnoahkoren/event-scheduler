@@ -73,7 +73,6 @@ export function ClientForm({
           onChange={(e) => setName(e.target.value)}
           placeholder={t('clients.namePlaceholder')}
           disabled={isSubmitting}
-          autoFocus
           required
         />
       </div>

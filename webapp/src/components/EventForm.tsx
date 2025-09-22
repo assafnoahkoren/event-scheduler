@@ -133,7 +133,6 @@ export function EventForm({
           onChange={(e) => setTitle(e.target.value)}
           placeholder={t('events.eventTitle')}
           disabled={isSubmitting}
-          autoFocus
         />
       </div>
 
