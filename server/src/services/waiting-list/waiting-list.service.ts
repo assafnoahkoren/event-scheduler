@@ -399,7 +399,8 @@ export async function checkAllEntriesForMatches(
   const occupiedDates = new Set<string>()
   existingEvents.forEach(event => {
     const eventDate = new Date(event.startDate)
-    occupiedDates.add(getIsraelDateString(eventDate))
+    const israelDateStr = getIsraelDateString(eventDate)
+    occupiedDates.add(israelDateStr)
   })
 
   // Check each entry for matches
@@ -418,28 +419,47 @@ export async function checkAllEntriesForMatches(
       const dates = entry.specificDates as string[]
 
       for (const dateStr of dates) {
-        const date = new Date(dateStr)
+        // Parse the date and set to start of day in local timezone
+        const date = new Date(dateStr + 'T00:00:00')
+        const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+        const startOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate())
+        const endOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate())
+        const expirationOnly = new Date(entry.expirationDate.getFullYear(), entry.expirationDate.getMonth(), entry.expirationDate.getDate())
+
         // Skip if before tomorrow, after end date, or past expiration
-        if (date < start || date > end || date > entry.expirationDate) {
+        if (dateOnly < startOnly) {
           continue
         }
+        if (dateOnly > endOnly) {
+          continue
+        }
+        // Include dates ON the expiration date
+        if (dateOnly > expirationOnly) {
+          continue
+        }
+
         // Use Israel timezone for comparison
-        const israelDateStr = getIsraelDateString(date)
+        const israelDateStr = getIsraelDateString(dateOnly)
+
         if (!occupiedDates.has(israelDateStr)) {
-          matchingDates.push(date)
+          matchingDates.push(dateOnly)
         }
       }
     }
 
     else if (entry.ruleType === 'DAY_OF_WEEK' && entry.daysOfWeek) {
       const days = entry.daysOfWeek as number[]
-      const current = new Date(start)
 
-      while (current <= end && current <= entry.expirationDate) {
-        // Only include if matching day of week and not today or past
-        if (days.includes(current.getDay()) && current >= start) {
+      const current = new Date(start.getFullYear(), start.getMonth(), start.getDate())
+      const endOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate())
+      const expirationOnly = new Date(entry.expirationDate.getFullYear(), entry.expirationDate.getMonth(), entry.expirationDate.getDate())
+
+      while (current <= endOnly && current <= expirationOnly) {
+        // Only include if matching day of week
+        if (days.includes(current.getDay())) {
           // Use Israel timezone for comparison
           const israelDateStr = getIsraelDateString(current)
+
           if (!occupiedDates.has(israelDateStr)) {
             matchingDates.push(new Date(current))
           }
@@ -450,14 +470,21 @@ export async function checkAllEntriesForMatches(
 
     else if (entry.ruleType === 'DATE_RANGE' && entry.dateRange) {
       const range = entry.dateRange as { start: string; end: string }
-      const rangeStart = new Date(range.start)
-      const rangeEnd = new Date(range.end)
-      const current = new Date(Math.max(rangeStart.getTime(), start.getTime()))
-      const finalEnd = new Date(Math.min(rangeEnd.getTime(), end.getTime(), entry.expirationDate.getTime()))
+
+      // Parse dates and normalize to start of day
+      const rangeStart = new Date(range.start + 'T00:00:00')
+      const rangeEnd = new Date(range.end + 'T00:00:00')
+      const startOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate())
+      const endOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate())
+      const expirationOnly = new Date(entry.expirationDate.getFullYear(), entry.expirationDate.getMonth(), entry.expirationDate.getDate())
+
+      const current = new Date(Math.max(rangeStart.getTime(), startOnly.getTime()))
+      const finalEnd = new Date(Math.min(rangeEnd.getTime(), endOnly.getTime(), expirationOnly.getTime()))
 
       while (current <= finalEnd) {
         // Use Israel timezone for comparison
         const israelDateStr = getIsraelDateString(current)
+
         if (!occupiedDates.has(israelDateStr)) {
           matchingDates.push(new Date(current))
         }

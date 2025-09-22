@@ -135,13 +135,28 @@ export function WaitingListForm({
 
     // Add rule-specific data
     if (ruleType === 'SPECIFIC_DATES') {
-      formData.specificDates = specificDates.map(d => d.toISOString().split('T')[0])
+      // Format dates as YYYY-MM-DD in local timezone
+      formData.specificDates = specificDates.map(d => {
+        const year = d.getFullYear()
+        const month = String(d.getMonth() + 1).padStart(2, '0')
+        const day = String(d.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      })
     } else if (ruleType === 'DAY_OF_WEEK') {
       formData.daysOfWeek = daysOfWeek
     } else if (ruleType === 'DATE_RANGE' && dateRangeStart && dateRangeEnd) {
+      // Format dates as YYYY-MM-DD in local timezone
+      const startYear = dateRangeStart.getFullYear()
+      const startMonth = String(dateRangeStart.getMonth() + 1).padStart(2, '0')
+      const startDay = String(dateRangeStart.getDate()).padStart(2, '0')
+
+      const endYear = dateRangeEnd.getFullYear()
+      const endMonth = String(dateRangeEnd.getMonth() + 1).padStart(2, '0')
+      const endDay = String(dateRangeEnd.getDate()).padStart(2, '0')
+
       formData.dateRange = {
-        start: dateRangeStart.toISOString().split('T')[0],
-        end: dateRangeEnd.toISOString().split('T')[0]
+        start: `${startYear}-${startMonth}-${startDay}`,
+        end: `${endYear}-${endMonth}-${endDay}`
       }
     }
 
