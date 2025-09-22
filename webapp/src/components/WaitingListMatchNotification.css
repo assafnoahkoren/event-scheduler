@@ -1,0 +1,16 @@
+/* WaitingListMatchNotification styles */
+
+/* Red pagination bullets for waiting list swiper */
+.waiting-list-swiper .swiper-pagination-bullet {
+  background: #fca5a5;
+  opacity: 1;
+}
+
+.waiting-list-swiper .swiper-pagination-bullet-active {
+  background: #ef4444;
+}
+
+/* Move pagination bullets lower */
+.waiting-list-swiper .swiper-pagination {
+  bottom: 6px !important;
+}

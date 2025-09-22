@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { useFormatLongDateWithDay, useFormatRelativeTime } from '@/hooks/useDateFormatter'
 import 'swiper/css'
 import 'swiper/css/pagination'
+import './WaitingListMatchNotification.css'
 
 interface WaitingListEntry {
   id: string
@@ -137,7 +138,6 @@ export function WaitingListMatchNotification() {
 
   // Sort by date
   allMatches.sort((a, b) => a.date.getTime() - b.date.getTime())
-  allMatches.push(allMatches[0])
 
   if (allMatches.length === 0) {
     return null
@@ -173,7 +173,7 @@ export function WaitingListMatchNotification() {
               slidesPerView: 4,
             },
           }}
-          className="waiting-list-swiper !pb-8"
+          className={`waiting-list-swiper ${allMatches.length > 1 ? '!pb-8' : '!pb-4'}`}
         >
           {allMatches.map((match, index) => (
             <SwiperSlide key={`${match.entry.id}-${match.date.toISOString()}-${index}`}>
