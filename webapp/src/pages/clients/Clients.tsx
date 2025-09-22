@@ -173,7 +173,7 @@ export function Clients() {
           setSelectedClientId(null)
         }
       }}>
-        <DrawerContent className="overflow-y-auto">
+        <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>
               {selectedClient ? t('clients.editClient') : t('clients.newClient')}

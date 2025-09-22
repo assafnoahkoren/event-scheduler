@@ -209,7 +209,7 @@ export function ClientCombobox({
 
       {/* Client Creation Drawer */}
       <Drawer open={showClientDialog} onOpenChange={setShowClientDialog}>
-        <DrawerContent className="overflow-y-auto">
+        <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>{t('clients.newClient')}</DrawerTitle>
           </DrawerHeader>

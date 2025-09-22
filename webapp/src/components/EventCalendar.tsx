@@ -167,7 +167,7 @@ export function EventCalendar() {
 
       {/* Event Drawer */}
       <Drawer open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DrawerContent className="overflow-y-auto">
+        <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>{t('events.createEvent')}</DrawerTitle>
           </DrawerHeader>

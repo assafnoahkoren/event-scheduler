@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Sidebar } from '@/components/Sidebar'
 import { SiteSwitcher } from '@/components/sites/SiteSwitcher'
-import { ArrowLeft, ArrowRight, Menu } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Menu, Home } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useIsRtl } from '@/hooks/useIsRtl'
 import { trpc } from '@/utils/trpc'
@@ -56,6 +56,14 @@ export function Header() {
                 <BackIcon className="h-4 w-4" />
               </Button>
             )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/')}
+              title={t('navigation.home')}
+            >
+              <Home className="h-4 w-4" />
+            </Button>
           </div>
 
           <div className="flex items-center">
