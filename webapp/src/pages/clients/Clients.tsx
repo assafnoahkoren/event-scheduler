@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Plus, Search } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ClientForm, type ClientFormData } from '@/components/ClientForm'
-import { ClientCard } from '@/components/ClientCard'
+import { ClientList } from '@/components/ClientList'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +17,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import type { inferRouterOutputs } from '@trpc/server'
@@ -37,15 +36,6 @@ export function Clients() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [clientToDelete, setClientToDelete] = useState<ClientSearchResult | null>(null)
 
-  // Fetch clients
-  const { data: clients, isLoading } = trpc.clients.search.useQuery(
-    {
-      siteId: currentSite?.id || '',
-      query: searchQuery,
-      limit: 50
-    },
-    { enabled: !!currentSite }
-  )
   const utils = trpc.useUtils()
 
   // Fetch full client data when editing
@@ -136,16 +126,6 @@ export function Clients() {
     )
   }
 
-  if (isLoading) {
-    return (
-      <div className="container py-8 flex items-center justify-center">
-        <div>{t('common.loading')}</div>
-      </div>
-    )
-  }
-
-  const displayedClients = clients || []
-
   return (
     <div className="container py-8 px-4 max-w-6xl">
       {/* Header */}
@@ -170,33 +150,14 @@ export function Clients() {
         </div>
       </div>
 
-      {/* Clients Grid */}
-      {displayedClients.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <p className="text-muted-foreground text-center">
-              {searchQuery ? t('clients.noClientsFound') : t('clients.noClients')}
-            </p>
-            {!searchQuery && (
-              <Button onClick={handleNewClient} className="mt-4">
-                <Plus className="h-4 w-4 me-2" />
-                {t('clients.createFirstClient')}
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {displayedClients.map((client) => (
-            <ClientCard
-              key={client.id}
-              client={client}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-      )}
+      {/* Clients List */}
+      <ClientList
+        siteId={currentSite.id}
+        searchQuery={searchQuery}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onNewClient={handleNewClient}
+      />
 
       {/* Edit/Create Dialog */}
       <Dialog open={isFormOpen} onOpenChange={(open) => {
