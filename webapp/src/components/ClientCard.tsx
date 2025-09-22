@@ -21,7 +21,7 @@ export function ClientCard({ client, onEdit, onDelete, className }: ClientCardPr
   const hasPhone = !!client.phone
 
   return (
-    <Card className={cn("overflow-hidden hover:shadow-md transition-shadow", className)}>
+    <Card className={cn("overflow-hidden shadow-none transition-shadow", className)}>
       <div className="flex">
         {/* Main content area */}
         <div

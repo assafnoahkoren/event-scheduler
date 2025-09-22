@@ -37,7 +37,8 @@ export function Register() {
 
     try {
       await register(email, password)
-      navigate('/')
+      // Clear navigation history by replacing the current entry
+      navigate('/', { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to register')
     } finally {
