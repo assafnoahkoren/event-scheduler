@@ -129,6 +129,8 @@ export const heTranslation: TranslationType = {
     cancelled: "בוטל",
     deleteEvent: "מחק אירוע",
     confirmDeleteTitle: "מחיקת אירוע",
+    tomorrow: "מחר",
+    inDays: "בעוד {{days}} ימים",
     confirmDeleteDescription: "האם אתה בטוח שברצונך למחוק אירוע זה? פעולה זו אינה ניתנת לביטול.",
     deleting: "מוחק...",
     deleteSuccess: "האירוע נמחק בהצלחה",

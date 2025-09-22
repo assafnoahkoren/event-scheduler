@@ -5,6 +5,7 @@ import { UserIcon, Phone, MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { navigateToEvent } from '@/utils/navigation'
+import { RelativeTimeBadge } from '@/components/RelativeTimeBadge'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
@@ -31,13 +32,13 @@ export function EventCard({ event, onClick }: EventCardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'DRAFT':
-        return 'bg-blue-100 text-blue-800'
+        return 'bg-blue-100 text-blue-800 hover:bg-blue-100'
       case 'SCHEDULED':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800 hover:bg-green-100'
       case 'CANCELLED':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800 hover:bg-red-100'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800 hover:bg-gray-100'
     }
   }
 
@@ -67,6 +68,12 @@ export function EventCard({ event, onClick }: EventCardProps) {
       >
         {getStatusLabel(event.status)}
       </Badge>
+
+      {/* Floating relative time chip */}
+      <RelativeTimeBadge
+        date={event.startDate}
+        className="absolute -top-3 end-3 z-10"
+      />
 
       <div className="border rounded-lg overflow-hidden hover:bg-accent/50 transition-colors">
         <div className="flex">

@@ -127,6 +127,8 @@ export const enTranslation = {
     cancelled: "Cancelled",
     deleteEvent: "Delete Event",
     confirmDeleteTitle: "Delete Event",
+    tomorrow: "Tomorrow",
+    inDays: "in {{days}} days",
     confirmDeleteDescription: "Are you sure you want to delete this event? This action cannot be undone.",
     deleting: "Deleting...",
     deleteSuccess: "Event deleted successfully",

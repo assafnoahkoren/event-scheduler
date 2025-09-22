@@ -129,6 +129,8 @@ export const arTranslation: TranslationType = {
     cancelled: "ملغى",
     deleteEvent: "حذف الحدث",
     confirmDeleteTitle: "حذف الحدث",
+    tomorrow: "غداً",
+    inDays: "بعد {{days}} أيام",
     confirmDeleteDescription: "هل أنت متأكد من رغبتك في حذف هذا الحدث؟ لا يمكن التراجع عن هذا الإجراء.",
     deleting: "جاري الحذف...",
     deleteSuccess: "تم حذف الحدث بنجاح",
