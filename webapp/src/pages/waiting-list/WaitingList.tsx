@@ -32,7 +32,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { cn } from '@/lib/utils'
-import { format } from 'date-fns'
+import { useFormatDate, useFormatShortDate } from '@/hooks/useDateFormatter'
 
 interface WaitingListEntry {
   id: string
@@ -51,6 +51,8 @@ interface WaitingListEntry {
 export function WaitingList() {
   const { t } = useTranslation()
   const { currentSite } = useCurrentSite()
+  const formatDate = useFormatDate()
+  const formatShortDate = useFormatShortDate()
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -165,7 +167,15 @@ export function WaitingList() {
     }
     if (entry.ruleType === 'DAY_OF_WEEK' && entry.daysOfWeek) {
       const days = entry.daysOfWeek as number[]
-      const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+      const weekdays = [
+        t('calendar.weekdaysFull.sunday'),
+        t('calendar.weekdaysFull.monday'),
+        t('calendar.weekdaysFull.tuesday'),
+        t('calendar.weekdaysFull.wednesday'),
+        t('calendar.weekdaysFull.thursday'),
+        t('calendar.weekdaysFull.friday'),
+        t('calendar.weekdaysFull.saturday')
+      ]
       const dayNames = days.map(d => weekdays[d])
       return `${t('waitingList.daysOfWeek')}: ${dayNames.join(', ')}`
     }
@@ -273,7 +283,7 @@ export function WaitingList() {
                 <div className="space-y-2">
                   {matchesData.conflictingDates.map(conflict => (
                     <div key={conflict.date} className="bg-orange-50 p-2 rounded">
-                      <div className="font-medium">{format(new Date(conflict.date), 'PPP')}</div>
+                      <div className="font-medium">{formatDate(new Date(conflict.date))}</div>
                       <div className="text-sm text-muted-foreground">
                         {conflict.entries.map(e => (
                           <div key={e.entry.id}>
@@ -323,8 +333,8 @@ export function WaitingList() {
                     </div>
                     <div className="text-sm text-muted-foreground space-y-1">
                       <div>{getRuleTypeLabel(entry)}</div>
-                      <div>{t('waitingList.expires')}: {format(new Date(entry.expirationDate), 'PPP')}</div>
-                      <div>{t('waitingList.createdAt')}: {format(new Date(entry.createdAt), 'PPP')}</div>
+                      <div>{t('waitingList.expires')}: {formatDate(new Date(entry.expirationDate))}</div>
+                      <div>{t('waitingList.createdAt')}: {formatDate(new Date(entry.createdAt))}</div>
                       {entry.notes && (
                         <div className="mt-2 p-2 bg-muted rounded text-sm">{entry.notes}</div>
                       )}
