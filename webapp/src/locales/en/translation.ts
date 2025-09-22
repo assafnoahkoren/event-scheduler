@@ -14,6 +14,7 @@ export const enTranslation = {
     cancel: "Cancel",
     save: "Save",
     delete: "Delete",
+    deleting: "Deleting...",
     edit: "Edit",
     create: "Create",
     back: "Back",
@@ -185,7 +186,12 @@ export const enTranslation = {
     notes: "Notes",
     notesPlaceholder: "Additional notes about this client...",
     phoneCall: "Call client",
-    whatsappMessage: "Send WhatsApp message"
+    whatsappMessage: "Send WhatsApp message",
+    noClients: "No clients yet",
+    editClient: "Edit Client",
+    deleteClient: "Delete Client",
+    confirmDeleteDescription: "Are you sure you want to delete {{name}}? This action cannot be undone.",
+    createFirstClient: "Create your first client"
   },
   products: {
     products: "Products",

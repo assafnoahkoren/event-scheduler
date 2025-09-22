@@ -102,12 +102,28 @@ function Component() {
 ## Type Safety
 - Always define types for props
 - Use tRPC's type inference for API calls
-- Avoid using `any` type
+- **NEVER use `any` type** - always use proper types
 - Prefer type inference over explicit types when possible
 - **IMPORTANT: Always use actual types from tRPC router outputs instead of hardcoded interfaces**
   - Use `inferRouterOutputs<AppRouter>` to get types from API responses
   - Example: `type Event = RouterOutput['events']['list'][0]` instead of manually defining an Event interface
   - This ensures type safety and automatic updates when backend types change
+- **Component Props Type Safety**:
+  - Always use tRPC inferred types for data models in component props
+  - Never create duplicate interface definitions for models that exist in the backend
+  - Example for components:
+    ```typescript
+    import type { inferRouterOutputs } from '@trpc/server'
+    import type { AppRouter } from '../../../server/src/routers/appRouter'
+
+    type RouterOutput = inferRouterOutputs<AppRouter>
+    type Client = RouterOutput['clients']['get']
+
+    interface ComponentProps {
+      client: Client  // Use tRPC type, not a custom interface
+      onEdit: (client: Client) => void  // Use same type in callbacks
+    }
+    ```
 
 ## Component Structure
 ```

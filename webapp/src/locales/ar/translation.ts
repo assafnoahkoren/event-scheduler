@@ -16,6 +16,7 @@ export const arTranslation: TranslationType = {
     cancel: "إلغاء",
     save: "حفظ",
     delete: "حذف",
+    deleting: "جاري الحذف...",
     edit: "تعديل",
     create: "إنشاء",
     back: "رجوع",
@@ -187,7 +188,12 @@ export const arTranslation: TranslationType = {
     notes: "ملاحظات",
     notesPlaceholder: "ملاحظات إضافية حول هذا العميل...",
     phoneCall: "اتصل بالعميل",
-    whatsappMessage: "أرسل رسالة واتساب"
+    whatsappMessage: "أرسل رسالة واتساب",
+    noClients: "لا يوجد عملاء بعد",
+    editClient: "تعديل العميل",
+    deleteClient: "حذف العميل",
+    confirmDeleteDescription: "هل أنت متأكد من رغبتك في حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء.",
+    createFirstClient: "أنشئ عميلك الأول"
   },
   products: {
     products: "المنتجات",

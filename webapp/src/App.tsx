@@ -12,6 +12,7 @@ import { Profile } from '@/pages/Profile'
 import { Products } from '@/pages/products/Products'
 import { NewProduct } from '@/pages/products/NewProduct'
 import { ProductDetail } from '@/pages/products/ProductDetail'
+import { Clients } from '@/pages/clients/Clients'
 import '@/styles/swiper-custom.css'
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
             <Route path="/products" element={<Products />} />
             <Route path="/products/new" element={<NewProduct />} />
             <Route path="/products/:productId" element={<ProductDetail />} />
+            <Route path="/clients" element={<Clients />} />
           </Route>
         </Route>
 

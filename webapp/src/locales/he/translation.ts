@@ -16,6 +16,7 @@ export const heTranslation: TranslationType = {
     cancel: "ביטול",
     save: "שמור",
     delete: "מחק",
+    deleting: "מוחק...",
     edit: "ערוך",
     create: "צור",
     back: "חזור",
@@ -187,7 +188,12 @@ export const heTranslation: TranslationType = {
     notes: "הערות",
     notesPlaceholder: "הערות נוספות על הלקוח...",
     phoneCall: "התקשר ללקוח",
-    whatsappMessage: "שלח הודעת וואטסאפ"
+    whatsappMessage: "שלח הודעת וואטסאפ",
+    noClients: "אין לקוחות עדיין",
+    editClient: "ערוך לקוח",
+    deleteClient: "מחק לקוח",
+    confirmDeleteDescription: "האם אתה בטוח שברצונך למחוק את {{name}}? פעולה זו אינה ניתנת לביטול.",
+    createFirstClient: "צור את הלקוח הראשון שלך"
   },
   products: {
     products: "מוצרים",
