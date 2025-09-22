@@ -51,7 +51,11 @@ export function EventProductSection({ event }: EventProductSectionProps) {
   // Get existing event products
   const { data: existingEventProducts } = trpc.eventProducts.list.useQuery(
     { eventId: event.id },
-    { enabled: !!event.id }
+    {
+      enabled: !!event.id,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
   )
 
   const addEventProductMutation = trpc.eventProducts.add.useMutation({
@@ -184,7 +188,10 @@ export function EventProductSection({ event }: EventProductSectionProps) {
               eventProduct={eventProduct}
               onRemove={handleRemoveProduct}
               isRemoving={removeEventProductMutation.isPending}
-              onUpdate={() => utils.eventProducts.list.invalidate({ eventId: event.id })}
+              onUpdate={() => {
+                // Invalidate in the background without causing re-render
+                utils.eventProducts.list.invalidate({ eventId: event.id })
+              }}
             />
           ))}
         </div>

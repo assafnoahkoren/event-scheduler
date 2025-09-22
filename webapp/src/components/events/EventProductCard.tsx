@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { X } from 'lucide-react'
@@ -20,29 +20,25 @@ interface EventProductCardProps {
 
 export function EventProductCard({ eventProduct, onRemove, isRemoving, onUpdate }: EventProductCardProps) {
   const { t } = useTranslation()
-  const utils = trpc.useUtils()
   const product = eventProduct.product
   const [quantity, setQuantity] = useState(eventProduct.quantity)
-  const [priceOverride, setPriceOverride] = useState(eventProduct.price || '')
+  const [priceOverride, setPriceOverride] = useState<string>(eventProduct.price?.toString() ?? '')
 
   const updateMutation = trpc.eventProducts.update.useMutation({
     onSuccess: () => {
-      if (onUpdate) onUpdate()
-      utils.eventProducts.list.invalidate()
+      // Call onUpdate to invalidate the query in the background
+      if (onUpdate) {
+        onUpdate()
+      }
     },
     onError: (error) => {
       console.error('Failed to update product:', error)
       toast.error(t('events.updateError'))
       // Reset to original values on error
       setQuantity(eventProduct.quantity)
-      setPriceOverride(eventProduct.price || '')
+      setPriceOverride(eventProduct.price?.toString() ?? '')
     },
   })
-
-  useEffect(() => {
-    setQuantity(eventProduct.quantity)
-    setPriceOverride(eventProduct.price || '')
-  }, [eventProduct.quantity, eventProduct.price])
 
   if (!product) return null
 
@@ -50,29 +46,41 @@ export function EventProductCard({ eventProduct, onRemove, isRemoving, onUpdate 
     const numValue = parseFloat(value)
     if (!isNaN(numValue) && numValue > 0) {
       setQuantity(numValue)
+    }
+  }
+
+  const handleQuantityBlur = () => {
+    if (quantity !== eventProduct.quantity) {
       updateMutation.mutate({
         id: eventProduct.id,
-        quantity: numValue,
+        quantity: quantity,
       })
     }
   }
 
   const handlePriceChange = (value: string) => {
-    if (value === '') {
-      setPriceOverride('')
-      // Send null to clear the price override
-      updateMutation.mutate({
-        id: eventProduct.id,
-        price: null,
-      })
-    } else {
-      const numValue = parseFloat(value)
-      if (!isNaN(numValue) && numValue >= 0) {
-        setPriceOverride(numValue)
+    setPriceOverride(value)
+  }
+
+  const handlePriceBlur = () => {
+    const currentPrice = priceOverride === '' ? null : parseFloat(priceOverride)
+    const originalPrice = eventProduct.price
+
+    // Only update if value actually changed
+    if (currentPrice !== originalPrice) {
+      if (priceOverride === '') {
         updateMutation.mutate({
           id: eventProduct.id,
-          price: numValue,
+          price: null,
         })
+      } else {
+        const numValue = parseFloat(priceOverride)
+        if (!isNaN(numValue) && numValue >= 0) {
+          updateMutation.mutate({
+            id: eventProduct.id,
+            price: numValue,
+          })
+        }
       }
     }
   }
@@ -97,6 +105,7 @@ export function EventProductCard({ eventProduct, onRemove, isRemoving, onUpdate 
             type="number"
             value={quantity}
             onChange={(e) => handleQuantityChange(e.target.value)}
+            onBlur={handleQuantityBlur}
             className="w-12 pe-1"
             min="1"
             step="1"
@@ -110,6 +119,7 @@ export function EventProductCard({ eventProduct, onRemove, isRemoving, onUpdate 
             type="number"
             value={priceOverride}
             onChange={(e) => handlePriceChange(e.target.value)}
+            onBlur={handlePriceBlur}
             className="w-24"
             min="0"
             step="0.01"
