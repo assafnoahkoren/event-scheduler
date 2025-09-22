@@ -111,6 +111,11 @@ export function WaitingList() {
     if (selectedEntry) {
       updateMutation.mutate({
         id: selectedEntry.id,
+        clientId: data.clientId,
+        ruleType: data.ruleType,
+        specificDates: data.specificDates,
+        daysOfWeek: data.daysOfWeek,
+        dateRange: data.dateRange,
         notes: data.notes,
         expirationDate: data.expirationDate
       })

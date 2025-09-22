@@ -14,8 +14,9 @@ import {
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { CalendarIcon } from 'lucide-react'
-import { format, addDays } from 'date-fns'
+import { addDays } from 'date-fns'
 import { cn } from '@/lib/utils'
+import { useFormatDate, useFormatShortDate } from '@/hooks/useDateFormatter'
 
 type RuleType = 'SPECIFIC_DATES' | 'DAY_OF_WEEK' | 'DATE_RANGE'
 
@@ -52,16 +53,6 @@ export interface WaitingListFormData {
   notes?: string
 }
 
-const WEEKDAYS = [
-  { value: 0, label: 'Sunday' },
-  { value: 1, label: 'Monday' },
-  { value: 2, label: 'Tuesday' },
-  { value: 3, label: 'Wednesday' },
-  { value: 4, label: 'Thursday' },
-  { value: 5, label: 'Friday' },
-  { value: 6, label: 'Saturday' },
-]
-
 export function WaitingListForm({
   entry,
   initialClientId,
@@ -71,6 +62,19 @@ export function WaitingListForm({
   isSubmitting = false
 }: WaitingListFormProps) {
   const { t } = useTranslation()
+  const formatDate = useFormatDate()
+  const formatShortDate = useFormatShortDate()
+
+  // Get translated weekdays
+  const WEEKDAYS = [
+    { value: 0, label: t('calendar.weekdays.sunday') },
+    { value: 1, label: t('calendar.weekdays.monday') },
+    { value: 2, label: t('calendar.weekdays.tuesday') },
+    { value: 3, label: t('calendar.weekdays.wednesday') },
+    { value: 4, label: t('calendar.weekdays.thursday') },
+    { value: 5, label: t('calendar.weekdays.friday') },
+    { value: 6, label: t('calendar.weekdays.saturday') },
+  ]
 
   // Form state
   const [clientId, setClientId] = useState(entry?.clientId || initialClientId || '')
@@ -220,7 +224,16 @@ export function WaitingListForm({
           </Popover>
           {specificDates.length > 0 && (
             <div className="text-sm text-muted-foreground">
-              {specificDates.map(d => format(d, 'PPP')).join(', ')}
+              {specificDates.map((d, idx) => (
+                <span key={d.toString()}>
+                  {idx > 0 && (
+                    <>
+                      <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                    </>
+                  )}
+                  {formatShortDate(d)}
+                </span>
+              ))}
             </div>
           )}
         </div>
@@ -260,7 +273,7 @@ export function WaitingListForm({
                   )}
                 >
                   <CalendarIcon className="me-2 h-4 w-4" />
-                  {dateRangeStart ? format(dateRangeStart, 'PPP') : t('waitingList.startDate')}
+                  {dateRangeStart ? formatDate(dateRangeStart) : t('waitingList.startDate')}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -283,7 +296,7 @@ export function WaitingListForm({
                   )}
                 >
                   <CalendarIcon className="me-2 h-4 w-4" />
-                  {dateRangeEnd ? format(dateRangeEnd, 'PPP') : t('waitingList.endDate')}
+                  {dateRangeEnd ? formatDate(dateRangeEnd) : t('waitingList.endDate')}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -313,7 +326,7 @@ export function WaitingListForm({
               )}
             >
               <CalendarIcon className="me-2 h-4 w-4" />
-              {expirationDate ? format(expirationDate, 'PPP') : t('waitingList.selectExpiration')}
+              {expirationDate ? formatDate(expirationDate) : t('waitingList.selectExpiration')}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">

@@ -20,6 +20,14 @@ export const createWaitingListEntrySchema = z.object({
 
 export const updateWaitingListEntrySchema = z.object({
   id: z.string().uuid(),
+  clientId: z.string().uuid().optional(),
+  ruleType: z.enum(['SPECIFIC_DATES', 'DAY_OF_WEEK', 'DATE_RANGE']).optional(),
+  specificDates: z.array(z.string()).optional(),
+  daysOfWeek: z.array(z.number().int().min(0).max(6)).optional(),
+  dateRange: z.object({
+    start: z.string(),
+    end: z.string()
+  }).optional(),
   status: z.enum(['PENDING', 'FULFILLED', 'EXPIRED', 'CANCELLED']).optional(),
   eventId: z.string().uuid().optional().nullable(),
   notes: z.string().optional(),
@@ -95,6 +103,26 @@ export async function updateWaitingListEntry(input: UpdateWaitingListEntryInput)
   }
 
   const updateData: any = {}
+
+  if (validated.clientId !== undefined) {
+    updateData.clientId = validated.clientId
+  }
+
+  if (validated.ruleType !== undefined) {
+    updateData.ruleType = validated.ruleType as WaitingListRuleType
+  }
+
+  if (validated.specificDates !== undefined) {
+    updateData.specificDates = validated.specificDates
+  }
+
+  if (validated.daysOfWeek !== undefined) {
+    updateData.daysOfWeek = validated.daysOfWeek
+  }
+
+  if (validated.dateRange !== undefined) {
+    updateData.dateRange = validated.dateRange
+  }
 
   if (validated.status !== undefined) {
     updateData.status = validated.status as WaitingListStatus
