@@ -38,8 +38,8 @@ export function DayOfWeekBadge({ date, className }: DayOfWeekBadgeProps) {
       className={cn(
         "text-xs flex items-center gap-1",
         isWeekend
-          ? "bg-purple-100 text-purple-800 hover:bg-purple-100"
-          : "bg-slate-100 text-slate-800 hover:bg-slate-100",
+          ? "border-2 border-purple-300 text-purple-800 bg-white hover:bg-purple-50"
+          : "border-2 border-slate-300 text-slate-800 bg-white hover:bg-slate-50",
         className
       )}
     >

@@ -200,7 +200,10 @@ export function SimpleCalendar({
         {weekDays.map((day, index) => (
           <div
             key={index}
-            className="aspect-square min-h-[20px] flex items-center justify-center text-sm font-medium text-muted-foreground"
+            className={cn(
+              "aspect-square min-h-[20px] flex items-center justify-center text-sm font-medium text-muted-foreground",
+              (index === 4 || index === 5) && "border-2 border-purple-200"
+            )}
           >
             {day}
           </div>
@@ -212,6 +215,8 @@ export function SimpleCalendar({
           const isCurrentMonth = isSameMonth(day, currentMonth)
           const isTodayDate = isToday(day)
           const hasEvent = isEventDay(day)
+          const dayOfWeek = day.getDay()
+          const isWeekendColumn = dayOfWeek === 4 || dayOfWeek === 5
 
           // Use custom render function if provided
           if (renderCell) {
@@ -221,7 +226,8 @@ export function SimpleCalendar({
                 onClick={() => !disabled && isCurrentMonth && handleDayClick(day)}
                 className={cn(
                   "relative aspect-square w-full cursor-pointer",
-                  disabled || !isCurrentMonth ? "cursor-not-allowed opacity-50" : ""
+                  disabled || !isCurrentMonth ? "cursor-not-allowed opacity-50" : "",
+                  isWeekendColumn && isCurrentMonth && "border-2 border-purple-200"
                 )}
               >
                 {renderCell(day, {
@@ -245,6 +251,7 @@ export function SimpleCalendar({
                 "hover:bg-accent hover:text-accent-foreground",
                 "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
+                isWeekendColumn && isCurrentMonth && "border-2 border-purple-200",
                 {
                   "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground": isSelected,
                   "bg-accent text-accent-foreground": isTodayDate && !isSelected,
