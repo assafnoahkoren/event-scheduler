@@ -129,7 +129,7 @@ export function EventCalendar() {
         <span className={cn(
           "flex items-center justify-center w-8 h-8 rounded-full",
           // Today styling - border instead of background
-          isToday && "border-2 border-blue-500",
+          isToday && "bg-blue-500 text-white",
         )}>
           {format(date, 'd')}
         </span>
