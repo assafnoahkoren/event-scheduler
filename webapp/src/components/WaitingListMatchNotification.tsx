@@ -125,14 +125,22 @@ export function WaitingListMatchNotification() {
     navigate('/waiting-list')
   }
 
-  // Flatten all matches with their dates
+  // Flatten all matches with their dates and filter for future dates only (excluding today)
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  tomorrow.setHours(0, 0, 0, 0) // Start of tomorrow
+
   const allMatches: Array<{ entry: WaitingListEntry, date: Date }> = []
   matchesData.matches.forEach((match: WaitingListMatch) => {
     match.matchingDates.forEach((date) => {
-      allMatches.push({
-        entry: match.entry,
-        date: new Date(date)
-      })
+      const matchDate = new Date(date)
+      // Only include future dates (tomorrow or later, excluding today)
+      if (matchDate >= tomorrow) {
+        allMatches.push({
+          entry: match.entry,
+          date: matchDate
+        })
+      }
     })
   })
 

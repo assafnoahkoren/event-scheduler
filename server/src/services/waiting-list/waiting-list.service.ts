@@ -322,14 +322,26 @@ export async function expireOldEntries(siteId: string) {
   })
 }
 
+// Helper function to get date string in Israel timezone
+function getIsraelDateString(date: Date): string {
+  const israelDate = new Date(date.toLocaleString("en-US", {timeZone: "Asia/Jerusalem"}))
+  const year = israelDate.getFullYear()
+  const month = String(israelDate.getMonth() + 1).padStart(2, '0')
+  const day = String(israelDate.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 // Check all waiting list entries for a site and find potential matches
 export async function checkAllEntriesForMatches(
   siteId: string,
   startDate?: Date,
   endDate?: Date
 ) {
-  // Default date range: today to 30 days from now
-  const start = startDate || new Date()
+  // Default date range: tomorrow to 30 days from now
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  tomorrow.setHours(0, 0, 0, 0)
+  const start = startDate || tomorrow
   let end = endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
 
   // Limit date range to maximum 90 days to prevent DDoS
@@ -383,10 +395,11 @@ export async function checkAllEntriesForMatches(
   })
 
   // Create a map of occupied dates
+  // Convert to Israel timezone for accurate date comparison
   const occupiedDates = new Set<string>()
   existingEvents.forEach(event => {
     const eventDate = new Date(event.startDate)
-    occupiedDates.add(eventDate.toISOString().split('T')[0])
+    occupiedDates.add(getIsraelDateString(eventDate))
   })
 
   // Check each entry for matches
@@ -406,10 +419,13 @@ export async function checkAllEntriesForMatches(
 
       for (const dateStr of dates) {
         const date = new Date(dateStr)
-        if (date >= start && date <= end && date >= entry.expirationDate) {
-          continue // Skip if past expiration
+        // Skip if before tomorrow, after end date, or past expiration
+        if (date < start || date > end || date > entry.expirationDate) {
+          continue
         }
-        if (!occupiedDates.has(dateStr)) {
+        // Use Israel timezone for comparison
+        const israelDateStr = getIsraelDateString(date)
+        if (!occupiedDates.has(israelDateStr)) {
           matchingDates.push(date)
         }
       }
@@ -420,9 +436,11 @@ export async function checkAllEntriesForMatches(
       const current = new Date(start)
 
       while (current <= end && current <= entry.expirationDate) {
-        if (days.includes(current.getDay())) {
-          const dateStr = current.toISOString().split('T')[0]
-          if (!occupiedDates.has(dateStr)) {
+        // Only include if matching day of week and not today or past
+        if (days.includes(current.getDay()) && current >= start) {
+          // Use Israel timezone for comparison
+          const israelDateStr = getIsraelDateString(current)
+          if (!occupiedDates.has(israelDateStr)) {
             matchingDates.push(new Date(current))
           }
         }
@@ -438,8 +456,9 @@ export async function checkAllEntriesForMatches(
       const finalEnd = new Date(Math.min(rangeEnd.getTime(), end.getTime(), entry.expirationDate.getTime()))
 
       while (current <= finalEnd) {
-        const dateStr = current.toISOString().split('T')[0]
-        if (!occupiedDates.has(dateStr)) {
+        // Use Israel timezone for comparison
+        const israelDateStr = getIsraelDateString(current)
+        if (!occupiedDates.has(israelDateStr)) {
           matchingDates.push(new Date(current))
         }
         current.setDate(current.getDate() + 1)

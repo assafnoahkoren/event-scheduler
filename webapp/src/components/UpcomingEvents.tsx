@@ -30,9 +30,12 @@ export function UpcomingEvents() {
   )
 
 
-  // Sort and filter upcoming events (excluding drafts)
+  // Sort and filter upcoming events (excluding drafts and past events)
   const upcomingEvents = useMemo(() => {
     if (!eventsData) return []
+
+    const now = new Date()
+    now.setHours(0, 0, 0, 0) // Start of today
 
     return eventsData
       .filter(event => {
@@ -40,7 +43,8 @@ export function UpcomingEvents() {
         if (event.status === 'DRAFT') return false
 
         const eventDate = parseISO(event.startDate)
-        return isAfter(eventDate, today) || format(eventDate, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd')
+        // Only include events from today onwards
+        return eventDate >= now
       })
       .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
       .slice(0, 10) // Show max 10 upcoming events

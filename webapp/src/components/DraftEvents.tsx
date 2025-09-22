@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
-import { startOfToday, endOfMonth, addMonths } from 'date-fns'
+import { startOfToday, endOfMonth, addMonths, parseISO } from 'date-fns'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EventCard } from '@/components/EventCard'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -29,12 +29,22 @@ export function DraftEvents() {
     }
   )
 
-  // Filter only draft events
+  // Filter only draft events that haven't passed
   const draftEvents = useMemo(() => {
     if (!eventsData) return []
 
+    const now = new Date()
+    now.setHours(0, 0, 0, 0) // Start of today
+
     return eventsData
-      .filter(event => event.status === 'DRAFT')
+      .filter(event => {
+        // Only include draft events
+        if (event.status !== 'DRAFT') return false
+
+        const eventDate = parseISO(event.startDate)
+        // Only include events from today onwards
+        return eventDate >= now
+      })
       .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
       .slice(0, 10) // Show max 10 draft events
   }, [eventsData])
