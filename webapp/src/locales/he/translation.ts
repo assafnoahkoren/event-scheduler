@@ -233,7 +233,10 @@ export const heTranslation: TranslationType = {
     productDeleted: "המוצר נמחק בהצלחה",
     productError: "שגיאה בשמירת המוצר",
     noProductsFound: "לא נמצאו מוצרים",
-    tryAdjustingSearch: "נסה לשנות את החיפוש"
+    tryAdjustingSearch: "נסה לשנות את החיפוש",
+    addProduct: "הוסף מוצר",
+    selectProducts: "בחר מוצרים",
+    noActiveProducts: "אין מוצרים פעילים זמינים"
   },
   profile: {
     title: "פרופיל"

@@ -231,7 +231,10 @@ export const enTranslation = {
     productDeleted: "Product deleted successfully",
     productError: "Error saving product",
     noProductsFound: "No products found",
-    tryAdjustingSearch: "Try adjusting your search"
+    tryAdjustingSearch: "Try adjusting your search",
+    addProduct: "Add Product",
+    selectProducts: "Select Products",
+    noActiveProducts: "No active products available"
   },
   profile: {
     title: "Profile"

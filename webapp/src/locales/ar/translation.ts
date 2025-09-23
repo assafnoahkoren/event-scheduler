@@ -233,7 +233,10 @@ export const arTranslation: TranslationType = {
     productDeleted: "تم حذف المنتج بنجاح",
     productError: "خطأ في حفظ المنتج",
     noProductsFound: "لم يتم العثور على منتجات",
-    tryAdjustingSearch: "حاول تعديل البحث"
+    tryAdjustingSearch: "حاول تعديل البحث",
+    addProduct: "إضافة منتج",
+    selectProducts: "اختر المنتجات",
+    noActiveProducts: "لا توجد منتجات نشطة متاحة"
   },
   profile: {
     title: "الملف الشخصي"
