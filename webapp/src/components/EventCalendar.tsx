@@ -7,6 +7,7 @@ import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { format, startOfMonth, endOfMonth } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { navigateToEvent } from '@/utils/navigation'
+import { useLongPress } from 'use-long-press'
 import {
   Drawer,
   DrawerContent,
@@ -107,18 +108,37 @@ export function EventCalendar() {
     })
   }
 
-  // Custom cell render function
-  const renderCell = (date: Date, { isSelected, isCurrentMonth, isToday }: {
+  // Calendar cell component to properly use hooks
+  const CalendarCell = ({ date, isSelected, isCurrentMonth, isToday }: {
+    date: Date
     isSelected: boolean
     isCurrentMonth: boolean
     isToday: boolean
-    hasEvent: boolean
   }) => {
     const dayEvents = eventsByDate.get(format(date, 'yyyy-MM-dd')) || []
-
-    // Check if any events are drafts
     const hasDraftEvent = dayEvents.some(event => event.status === 'DRAFT')
     const hasScheduledEvent = dayEvents.some(event => event.status !== 'DRAFT')
+
+    // Use the long press hook
+    const longPressHandlers = useLongPress(
+      () => {
+        // Long press callback - always open event creation
+        if (isCurrentMonth) {
+          setEventDate(date)
+          setIsDialogOpen(true)
+        }
+      },
+      {
+        onCancel: () => {
+          // Single click - navigate or create based on existing events
+          if (isCurrentMonth) {
+            handleDateSelect(date)
+          }
+        },
+        threshold: 500, // 500ms for long press
+        cancelOnMovement: true,
+      }
+    )
 
     return (
       <div
@@ -128,17 +148,37 @@ export function EventCalendar() {
           hasDraftEvent && isCurrentMonth && "bg-blue-100 hover:bg-blue-200",
           !hasDraftEvent && hasScheduledEvent && isCurrentMonth && "bg-green-100 hover:bg-green-200",
           // Disabled styling
-          !isCurrentMonth && "text-gray-400"
+          !isCurrentMonth && "text-gray-400",
+          // Add cursor pointer for interactive cells
+          isCurrentMonth && "cursor-pointer select-none"
         )}
+        {...(isCurrentMonth ? longPressHandlers() : {})}
       >
         <span className={cn(
-          "flex items-center justify-center w-8 h-8 rounded-full",
+          "flex items-center justify-center w-8 h-8 rounded-full pointer-events-none",
           // Today styling - border instead of background
           isToday && "bg-blue-500 text-white",
         )}>
           {format(date, 'd')}
         </span>
       </div>
+    )
+  }
+
+  // Custom cell render function
+  const renderCell = (date: Date, { isSelected, isCurrentMonth, isToday, hasEvent }: {
+    isSelected: boolean
+    isCurrentMonth: boolean
+    isToday: boolean
+    hasEvent: boolean
+  }) => {
+    return (
+      <CalendarCell
+        date={date}
+        isSelected={isSelected}
+        isCurrentMonth={isCurrentMonth}
+        isToday={isToday}
+      />
     )
   }
 
