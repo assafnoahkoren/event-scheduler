@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Plus, Search, Clock, CheckCircle, XCircle, AlertCircle, CalendarSearch } from 'lucide-react'
+import { Plus, Search, Clock } from 'lucide-react'
 import {
   Drawer,
   DrawerContent,
@@ -58,7 +58,6 @@ export function WaitingList() {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [selectedEntry, setSelectedEntry] = useState<WaitingListEntry | null>(null)
   const [entryToDelete, setEntryToDelete] = useState<WaitingListEntry | null>(null)
-  const [showMatches, setShowMatches] = useState(false)
 
   const utils = trpc.useUtils()
 
@@ -72,16 +71,6 @@ export function WaitingList() {
     { enabled: !!currentSite }
   )
 
-  // Check all matches query
-  const { data: matchesData, refetch: refetchMatches }: { data?: any, refetch: any } = trpc.waitingList.checkAllMatches.useQuery(
-    {
-      siteId: currentSite?.id || ''
-    },
-    {
-      enabled: !!currentSite && showMatches,
-      refetchOnWindowFocus: false
-    }
-  )
 
   // Mutations
   const createMutation = trpc.waitingList.create.useMutation({
@@ -205,20 +194,8 @@ export function WaitingList() {
     <div className="container py-4 px-4 max-w-6xl">
       {/* Header */}
       <div className="flex flex-col gap-4 mb-8">
-        <h1 className="text-xl font-bold">{t('waitingList.title')}</h1>
-
-        {/* Action Buttons */}
-        <div className="flex justify-end gap-2">
-          <Button
-            variant="outline"
-            onClick={() => {
-              setShowMatches(!showMatches)
-              if (!showMatches) refetchMatches()
-            }}
-          >
-            <CalendarSearch className="h-4 w-4 me-2" />
-            {t('waitingList.checkMatches')}
-          </Button>
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold">{t('waitingList.title')}</h1>
           <Button onClick={handleNewEntry}>
             <Plus className="h-4 w-4 me-2" />
             {t('waitingList.newEntry')}
@@ -251,54 +228,6 @@ export function WaitingList() {
         </div>
       </div>
 
-      {/* Matches Summary */}
-      {showMatches && matchesData && (
-        <Card className="mb-6 border-blue-200">
-          <CardHeader>
-            <CardTitle className="text-lg">{t('waitingList.matchesTitle')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              <div>
-                <div className="text-2xl font-bold">{matchesData.summary.totalPendingEntries}</div>
-                <div className="text-sm text-muted-foreground">{t('waitingList.totalPending')}</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-green-600">{matchesData.summary.entriesWithMatches}</div>
-                <div className="text-sm text-muted-foreground">{t('waitingList.withMatches')}</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold">{matchesData.summary.totalAvailableDates}</div>
-                <div className="text-sm text-muted-foreground">{t('waitingList.availableDates')}</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-orange-600">{matchesData.summary.datesWithConflicts}</div>
-                <div className="text-sm text-muted-foreground">{t('waitingList.conflictingDates')}</div>
-              </div>
-            </div>
-
-            {matchesData.conflictingDates.length > 0 && (
-              <div className="mt-4">
-                <h3 className="font-semibold mb-2">{t('waitingList.conflicts')}</h3>
-                <div className="space-y-2">
-                  {matchesData.conflictingDates.map(conflict => (
-                    <div key={conflict.date} className="bg-orange-50 p-2 rounded">
-                      <div className="font-medium">{formatDate(new Date(conflict.date))}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {conflict.entries.map(e => (
-                          <div key={e.entry.id}>
-                            {t('waitingList.priority')} {e.priority}: {e.entry.client.name}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
 
       {/* Entries List */}
       {isLoading ? (
