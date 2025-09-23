@@ -304,6 +304,87 @@ export class EventService {
 
     return { success: true }
   }
+
+  async calculateEventCosts(userId: string, eventId: string) {
+    // Check event exists and user has permission to view it
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      include: {
+        providers: {
+          include: {
+            provider: true,
+            providerService: {
+              include: {
+                category: true
+              }
+            }
+          }
+        },
+        products: {
+          include: {
+            product: true
+          }
+        }
+      }
+    })
+
+    if (!event) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Event not found'
+      })
+    }
+
+    const siteUser = await prisma.siteUser.findFirst({
+      where: {
+        userId,
+        siteId: event.siteId
+      }
+    })
+
+    if (!siteUser) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You do not have permission to view this event'
+      })
+    }
+
+    // Calculate total client cost (what client pays)
+    let clientCost = 0
+
+    // Add service costs (what we charge the client)
+    for (const eventProvider of event.providers) {
+      // Use agreed price if set, otherwise use service default price
+      const servicePrice = eventProvider.agreedPrice || eventProvider.providerService.price || 0
+      clientCost += servicePrice
+    }
+
+    // Add product costs
+    for (const eventProduct of event.products) {
+      const productPrice = eventProduct.price || eventProduct.product?.price || 0
+      const quantity = eventProduct.quantity || 1
+      clientCost += productPrice * quantity
+    }
+
+    // Calculate total provider cost (what we pay providers)
+    let providerCost = 0
+
+    for (const eventProvider of event.providers) {
+      // Use provider price if set, otherwise default to 0
+      const providerPrice = eventProvider.providerPrice || 0
+      providerCost += providerPrice
+    }
+
+    // Calculate profit
+    const profit = clientCost - providerCost
+
+    return {
+      clientCost,
+      providerCost,
+      profit,
+      currency: 'ILS' // Default currency, could be made dynamic
+    }
+  }
 }
 
 export const eventService = new EventService()

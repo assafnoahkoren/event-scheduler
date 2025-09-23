@@ -182,7 +182,14 @@ export const heTranslation: TranslationType = {
     productRemoved: "המוצר הוסר בהצלחה",
     productError: "שגיאה בניהול מוצרים",
     updateError: "נכשל עדכון המוצר",
-    total: "סך הכל"
+    total: "סך הכל",
+    costBreakdown: "פירוט עלויות",
+    clientCost: "עלות ללקוח",
+    providerCost: "עלות ספקים",
+    profit: "רווח",
+    margin: "שולי רווח",
+    profitMargin: "אחוז רווח",
+    costCalculationError: "לא ניתן לחשב עלויות"
   },
   navigation: {
     home: "בית",

@@ -37,4 +37,10 @@ export const eventRouter = router({
     .mutation(async ({ ctx, input }) => {
       return eventService.deleteEvent(ctx.user.id, input.id)
     }),
+
+  calculateCosts: protectedProcedure
+    .input(z.object({ eventId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      return eventService.calculateEventCosts(ctx.user.id, input.eventId)
+    }),
 })

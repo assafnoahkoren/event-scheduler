@@ -180,7 +180,14 @@ export const enTranslation = {
     productRemoved: "Product removed successfully",
     productError: "Error managing products",
     updateError: "Failed to update product",
-    total: "Total"
+    total: "Total",
+    costBreakdown: "Cost Breakdown",
+    clientCost: "Client Cost",
+    providerCost: "Provider Cost",
+    profit: "Profit",
+    margin: "margin",
+    profitMargin: "Profit Margin",
+    costCalculationError: "Unable to calculate costs"
   },
   navigation: {
     home: "Home",

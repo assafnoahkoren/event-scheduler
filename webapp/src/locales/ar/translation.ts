@@ -182,7 +182,14 @@ export const arTranslation: TranslationType = {
     productRemoved: "تمت إزالة المنتج بنجاح",
     productError: "خطأ في إدارة المنتجات",
     updateError: "فشل تحديث المنتج",
-    total: "المجموع"
+    total: "المجموع",
+    costBreakdown: "تفصيل التكلفة",
+    clientCost: "تكلفة العميل",
+    providerCost: "تكلفة الموردين",
+    profit: "الربح",
+    margin: "الهامش",
+    profitMargin: "هامش الربح",
+    costCalculationError: "غير قادر على حساب التكاليف"
   },
   navigation: {
     home: "الرئيسية",

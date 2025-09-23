@@ -19,6 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EventForm, type EventFormData } from '@/components/EventForm'
 import { EventProductSection } from '@/components/events/EventProductSection'
 import { EventServiceSection } from '@/components/events/EventServiceSection'
+import { EventCostsSection } from '@/components/events/EventCostsSection'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { WaitingListForm, type WaitingListFormData } from '@/components/WaitingListForm'
 import { Card, CardContent } from '@/components/ui/card'
@@ -246,6 +247,10 @@ export function Event() {
                   onSubmit={handleUpdate}
                   isSubmitting={updateMutation.isPending}
                 />
+
+                {/* Event Costs Section */}
+                {eventId && <EventCostsSection eventId={eventId} />}
+
                 <div className="pt-4 border-t">
                   <Button
                     variant="destructive"
