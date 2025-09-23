@@ -10,6 +10,7 @@ model User {
   lastName      String?   @map("last_name")
   avatarUrl     String?   @map("avatar_url")
   bio           String?
+  language      String?   @default("en")
 
   // Account status
   isActive      Boolean   @default(true) @map("is_active")

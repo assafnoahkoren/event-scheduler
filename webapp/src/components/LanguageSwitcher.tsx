@@ -6,6 +6,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { trpc } from '@/utils/trpc'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface Language {
   code: string
@@ -41,21 +43,31 @@ const languages: Language[] = [
 
 export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps) {
   const { i18n, t } = useTranslation()
+  const { user } = useAuth()
+  const updateLanguageMutation = trpc.auth.updateLanguage.useMutation()
 
-  const handleLanguageChange = (languageCode: string) => {
+  const handleLanguageChange = async (languageCode: string) => {
     // Change the language in i18next
     i18n.changeLanguage(languageCode)
-
-    // Save the preference with our custom key
-    localStorage.setItem('userLanguagePreference', languageCode)
-
-    // Also save for i18next to remember the language
-    localStorage.setItem('i18nextLng', languageCode)
 
     // Set the direction for RTL languages
     const dir = languageCode === 'ar' || languageCode === 'he' ? 'rtl' : 'ltr'
     document.documentElement.dir = dir
     document.documentElement.lang = languageCode
+
+    // If user is logged in, save to database
+    if (user) {
+      try {
+        await updateLanguageMutation.mutateAsync({
+          language: languageCode as 'en' | 'he' | 'ar'
+        })
+      } catch (error) {
+        console.error('Failed to update language preference:', error)
+      }
+    } else {
+      // For non-logged in users, save to localStorage
+      localStorage.setItem('i18nextLng', languageCode)
+    }
   }
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0]

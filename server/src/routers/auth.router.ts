@@ -15,6 +15,7 @@ const registerSchema = z.object({
     .max(100, 'Password must not exceed 100 characters'),
   firstName: z.string().min(1).max(50).optional(),
   lastName: z.string().min(1).max(50).optional(),
+  language: z.enum(['en', 'he', 'ar']).optional(),
 });
 
 const loginSchema = z.object({
@@ -31,6 +32,10 @@ const changePasswordSchema = z.object({
   newPassword: z.string()
     .min(6, 'New password must be at least 6 characters')
     .max(100, 'New password must not exceed 100 characters'),
+});
+
+const updateLanguageSchema = z.object({
+  language: z.enum(['en', 'he', 'ar']),
 });
 
 const requestPasswordResetSchema = z.object({
@@ -326,6 +331,28 @@ export const authRouter = router({
         authenticated: !!ctx.user,
         user: ctx.user || null,
       };
+    }),
+
+  /**
+   * Update user language preference
+   */
+  updateLanguage: protectedProcedure
+    .input(updateLanguageSchema)
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await authService.updateLanguage(ctx.user.id, input.language);
+
+        return {
+          success: true,
+          message: 'Language updated successfully',
+          language: input.language,
+        };
+      } catch (error: any) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: error.message || 'Failed to update language',
+        });
+      }
     }),
 });
 

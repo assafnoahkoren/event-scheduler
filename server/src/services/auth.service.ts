@@ -25,6 +25,7 @@ export interface RegisterInput {
   password: string
   firstName?: string
   lastName?: string
+  language?: 'en' | 'he' | 'ar'
 }
 
 export interface LoginInput {
@@ -37,7 +38,7 @@ export class AuthService {
    * Register a new user
    */
   async register(input: RegisterInput): Promise<LoginResult> {
-    const { email, password, firstName, lastName } = input
+    const { email, password, firstName, lastName, language } = input
 
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
@@ -60,6 +61,7 @@ export class AuthService {
         passwordHash,
         firstName,
         lastName,
+        language: language || 'en',
         isActive: true,
         isEmailVerified: true, // TODO: Change to false and add email verification
       }
@@ -381,6 +383,16 @@ export class AuthService {
 
     // Revoke all refresh tokens
     await this.logoutAll(resetToken.userId)
+  }
+
+  /**
+   * Update user language preference
+   */
+  async updateLanguage(userId: string, language: 'en' | 'he' | 'ar'): Promise<void> {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { language }
+    })
   }
 
   /**

@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { trpc } from '@/utils/trpc'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
+import { useTranslation } from 'react-i18next'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
 type User = RouterOutput['auth']['me']['user']
@@ -20,6 +21,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { i18n } = useTranslation()
   const [user, setUser] = useState<User | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(() => {
     // Check localStorage for token on initial load
@@ -41,11 +43,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     retry: false,
   })
 
-  // Handle meQuery results
+  // Handle meQuery results and set user language
   useEffect(() => {
     if (meQuery.data) {
       setUser(meQuery.data.user)
       setIsLoading(false)
+
+      // Set language from user preferences if available
+      if (meQuery.data.user?.language) {
+        const userLang = meQuery.data.user.language
+        i18n.changeLanguage(userLang)
+
+        // Set the direction for RTL languages
+        const dir = userLang === 'ar' || userLang === 'he' ? 'rtl' : 'ltr'
+        document.documentElement.dir = dir
+        document.documentElement.lang = userLang
+
+        // Remove localStorage language preference as we're using DB now
+        localStorage.removeItem('i18nextLng')
+      }
     } else if (meQuery.error && accessToken) {
       // Token is invalid
       localStorage.removeItem('accessToken')
@@ -53,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null)
       setIsLoading(false)
     }
-  }, [meQuery.data, meQuery.error, accessToken])
+  }, [meQuery.data, meQuery.error, accessToken, i18n])
 
   useEffect(() => {
     // If we have a token, the meQuery will handle loading the user
@@ -70,15 +86,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(result.user)
     setAccessToken(result.accessToken)
     localStorage.setItem('accessToken', result.accessToken)
+
+    // Set language from user preferences if available
+    if (result.user?.language) {
+      const userLang = result.user.language
+      i18n.changeLanguage(userLang)
+
+      // Set the direction for RTL languages
+      const dir = userLang === 'ar' || userLang === 'he' ? 'rtl' : 'ltr'
+      document.documentElement.dir = dir
+      document.documentElement.lang = userLang
+
+      // Remove localStorage language preference as we're using DB now
+      localStorage.removeItem('i18nextLng')
+    }
+
     setIsLoading(false) // Ensure loading is false after login
     await utils.invalidate()
   }
 
   const register = async (email: string, password: string) => {
-    const result = await registerMutation.mutateAsync({ email, password })
+    // Pass the current UI language when registering
+    const result = await registerMutation.mutateAsync({
+      email,
+      password,
+      language: i18n.language as 'en' | 'he' | 'ar'
+    })
     setUser(result.user)
     setAccessToken(result.accessToken)
     localStorage.setItem('accessToken', result.accessToken)
+
+    // Set language from user preferences if available (or use current UI language for new users)
+    const userLang = result.user?.language || i18n.language
+    i18n.changeLanguage(userLang)
+
+    // Set the direction for RTL languages
+    const dir = userLang === 'ar' || userLang === 'he' ? 'rtl' : 'ltr'
+    document.documentElement.dir = dir
+    document.documentElement.lang = userLang
+
+    // Remove localStorage language preference as we're using DB now
+    localStorage.removeItem('i18nextLng')
+
     setIsLoading(false) // Ensure loading is false after register
     await utils.invalidate()
   }
