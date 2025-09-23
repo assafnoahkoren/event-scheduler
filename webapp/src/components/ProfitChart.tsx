@@ -123,17 +123,17 @@ export function ProfitChart({ startDate, endDate, className }: ProfitChartProps)
       {/* Summary */}
       <div className="absolute w-full -bottom-6">
         <div className="flex items-center justify-center w-full absolute">
+          {isProfit ? (
+            <TrendingUp className="me-1 h-3 w-3 text-green-600" />
+          ) : (
+            <TrendingDown className="me-1 h-3 w-3 text-red-600" />
+          )}
           <span className={cn(
             "text-sm font-bold",
             isProfit ? "text-green-600" : "text-red-600"
           )}>
             {formatCurrency(data.totalProfit)}
           </span>
-          {isProfit ? (
-            <TrendingUp className="h-3 w-3 text-green-600" />
-          ) : (
-            <TrendingDown className="h-3 w-3 text-red-600" />
-          )}
         </div>
       </div>
 
@@ -146,12 +146,12 @@ export function ProfitChart({ startDate, endDate, className }: ProfitChartProps)
           >
             <defs>
               <linearGradient id="profitGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="lossGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
               </linearGradient>
             </defs>
             <XAxis
