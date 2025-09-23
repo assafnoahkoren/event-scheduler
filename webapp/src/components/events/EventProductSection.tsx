@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { trpc } from '@/utils/trpc'
 import { Button } from '@/components/ui/button'
 import {
@@ -8,7 +9,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer'
-import { Plus, Package } from 'lucide-react'
+import { Plus, Package, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { EventProductCard } from './EventProductCard'
 import { ProductSelectionDrawer } from './ProductSelectionDrawer'
@@ -31,6 +32,7 @@ interface EventProduct {
 
 export function EventProductSection({ event }: EventProductSectionProps) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const utils = trpc.useUtils()
   const [eventProducts, setEventProducts] = useState<EventProduct[]>([])
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -105,41 +107,65 @@ export function EventProductSection({ event }: EventProductSectionProps) {
 
   return (
     <div className="space-y-4">
-      {/* Add Product Button */}
-      {availableProducts.length > 0 && (
-        <Button
-          onClick={() => setDrawerOpen(true)}
-          variant="outline"
-          className="w-full"
-        >
-          <Plus className="h-4 w-4 me-2" />
-          {t('products.addProduct')}
-        </Button>
-      )}
-
-      {/* Products List */}
-      {existingEventProducts && existingEventProducts.length > 0 ? (
-        <div className="divide-y rounded-lg border">
-          {existingEventProducts.map((eventProduct) => (
-            <EventProductCard
-              key={eventProduct.id}
-              eventProduct={eventProduct}
-              onRemove={handleRemoveProduct}
-              isRemoving={removeEventProductMutation.isPending}
-              onUpdate={() => {
-                // Invalidate in the background without causing re-render
-                utils.eventProducts.list.invalidate({ eventId: event.id })
-              }}
-            />
-          ))}
+      {/* Check if there are no products in the site at all */}
+      {products && products.length === 0 ? (
+        <div className="text-center py-8 space-y-4">
+          <Package className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+          <div className="space-y-2">
+            <p className="text-sm font-medium">
+              {t('events.noProductsInSite')}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {t('events.createProductsFirst')}
+            </p>
+          </div>
+          <Button
+            onClick={() => navigate('/products')}
+            variant="default"
+          >
+            <ArrowRight className="h-4 w-4 me-2" />
+            {t('events.goToProducts')}
+          </Button>
         </div>
       ) : (
-        <div className="text-center py-8">
-          <Package className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">
-            {t('events.noProductsAdded')}
-          </p>
-        </div>
+        <>
+          {/* Add Product Button */}
+          {availableProducts.length > 0 && (
+            <Button
+              onClick={() => setDrawerOpen(true)}
+              variant="outline"
+              className="w-full"
+            >
+              <Plus className="h-4 w-4 me-2" />
+              {t('products.addProduct')}
+            </Button>
+          )}
+
+          {/* Products List */}
+          {existingEventProducts && existingEventProducts.length > 0 ? (
+            <div className="divide-y rounded-lg border">
+              {existingEventProducts.map((eventProduct) => (
+                <EventProductCard
+                  key={eventProduct.id}
+                  eventProduct={eventProduct}
+                  onRemove={handleRemoveProduct}
+                  isRemoving={removeEventProductMutation.isPending}
+                  onUpdate={() => {
+                    // Invalidate in the background without causing re-render
+                    utils.eventProducts.list.invalidate({ eventId: event.id })
+                  }}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground">
+                {t('events.noProductsAdded')}
+              </p>
+            </div>
+          )}
+        </>
       )}
 
       {/* Total Price */}
