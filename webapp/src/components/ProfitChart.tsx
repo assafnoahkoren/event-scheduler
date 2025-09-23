@@ -69,15 +69,10 @@ export function ProfitChart({ startDate, endDate, className }: ProfitChartProps)
   // Maintain consistent component height
   if (isLoading) {
     return (
-      <div className={cn("space-y-2", className)}>
-        {/* Summary placeholder with same height as actual summary */}
-        <div className="flex items-center justify-between px-2 h-7">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-muted-foreground">
-              {t('events.monthlyProfit')}
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
+      <div className={cn("space-y-2 relative", className)}>
+        {/* Summary placeholder - matching the absolute positioned summary */}
+        <div className="absolute w-full -bottom-6">
+          <div className="flex items-center justify-center w-full absolute">
             <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
           </div>
         </div>
@@ -93,15 +88,10 @@ export function ProfitChart({ startDate, endDate, className }: ProfitChartProps)
   // If no data, show empty state with same height
   if (!data || !chartData.length) {
     return (
-      <div className={cn("space-y-2", className)}>
-        {/* Summary with 0 */}
-        <div className="flex items-center justify-between px-2 h-7">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-muted-foreground">
-              {t('events.monthlyProfit')}
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
+      <div className={cn("space-y-2 relative", className)}>
+        {/* Summary with 0 - matching the absolute positioned summary */}
+        <div className="absolute w-full -bottom-6">
+          <div className="flex items-center justify-center w-full absolute">
             <span className="text-sm font-bold text-muted-foreground">
               {formatCurrency(0)}
             </span>
