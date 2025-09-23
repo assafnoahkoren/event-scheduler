@@ -121,6 +121,7 @@ export function WaitingListMatchNotification() {
   const [isEventDrawerOpen, setIsEventDrawerOpen] = useState(false)
   const [eventDate, setEventDate] = useState<Date>(new Date())
   const [eventClientId, setEventClientId] = useState<string | null>(null)
+  const [currentEntryId, setCurrentEntryId] = useState<string | null>(null)
 
   // Fetch matches when component mounts
   const { data: matchesData, refetch } = trpc.waitingList.checkAllMatches.useQuery(
@@ -134,15 +135,36 @@ export function WaitingListMatchNotification() {
     }
   )
 
+  // Update waiting list entry mutation
+  const updateWaitingListMutation = trpc.waitingList.update.useMutation({
+    onSuccess: () => {
+      // Refetch waiting list data to update the UI
+      refetch()
+      // Navigate to the calendar/home page
+      navigate('/')
+    },
+    onError: (error: any) => {
+      console.error('Failed to update waiting list entry:', error)
+    }
+  })
+
   // Create event mutation - must be before conditional returns
   const createEventMutation = trpc.events.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
       // Invalidate and refetch events
       utils.events.list.invalidate()
       // Close dialog
       setIsEventDrawerOpen(false)
-      // Navigate to the calendar/home page
-      navigate('/')
+
+      // Mark the waiting list entry as fulfilled
+      if (currentEntryId && data?.id) {
+        updateWaitingListMutation.mutate({
+          id: currentEntryId,
+          status: 'FULFILLED',
+          eventId: data.id,
+          fulfilledAt: new Date().toISOString()
+        })
+      }
     },
     onError: (error) => {
       console.error('Failed to create event:', error)
@@ -164,6 +186,7 @@ export function WaitingListMatchNotification() {
   const handleConvertToEvent = (entry: WaitingListEntry, date: Date) => {
     setEventDate(date)
     setEventClientId(entry.clientId)
+    setCurrentEntryId(entry.id)
     setIsEventDrawerOpen(true)
   }
 
