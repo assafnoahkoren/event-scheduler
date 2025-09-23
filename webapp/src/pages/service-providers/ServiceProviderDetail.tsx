@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
-import { ArrowLeft, Phone, Mail, FileText, Edit, Trash2, Plus } from 'lucide-react'
+import { Phone, Mail, FileText, Edit, Trash2, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
@@ -357,10 +357,6 @@ export function ServiceProviderDetail() {
       <div className="flex justify-center items-center h-96">
         <div className="text-center">
           <p>{t('serviceProviders.providerNotFound')}</p>
-          <Button onClick={() => navigate('/service-providers')} className="mt-4">
-            <ArrowLeft className="w-4 h-4 me-2" />
-            {t('serviceProviders.backToProviders')}
-          </Button>
         </div>
       </div>
     )
@@ -370,15 +366,6 @@ export function ServiceProviderDetail() {
     <div className="container mx-auto p-4">
       {/* Header */}
       <div className="mb-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/service-providers')}
-          className="mb-4"
-        >
-          <ArrowLeft className="w-4 h-4 me-2" />
-          {t('serviceProviders.backToProviders')}
-        </Button>
-
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-xl font-bold">{provider.name}</h1>

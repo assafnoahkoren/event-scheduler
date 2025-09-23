@@ -18,6 +18,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EventForm, type EventFormData } from '@/components/EventForm'
 import { EventProductSection } from '@/components/events/EventProductSection'
+import { EventServiceSection } from '@/components/events/EventServiceSection'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { WaitingListForm, type WaitingListFormData } from '@/components/WaitingListForm'
 import { Card, CardContent } from '@/components/ui/card'
@@ -234,20 +235,36 @@ export function Event() {
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="details">{t('events.details')}</TabsTrigger>
               <TabsTrigger value="products">{t('events.products')}</TabsTrigger>
+              <TabsTrigger value="services">{t('events.services')}</TabsTrigger>
               <TabsTrigger value="waiting">{t('waitingList.title')}</TabsTrigger>
-              <TabsTrigger value="danger">{t('events.dangerZone')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="details" className="mt-6">
-              <EventForm
-                event={event}
-                onSubmit={handleUpdate}
-                isSubmitting={updateMutation.isPending}
-              />
+              <div className="space-y-4">
+                <EventForm
+                  event={event}
+                  onSubmit={handleUpdate}
+                  isSubmitting={updateMutation.isPending}
+                />
+                <div className="pt-4 border-t">
+                  <Button
+                    variant="destructive"
+                    onClick={() => setShowDeleteDialog(true)}
+                    disabled={deleteMutation.isPending}
+                  >
+                    <Trash2 className="h-4 w-4 me-2" />
+                    {t('events.deleteEvent')}
+                  </Button>
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="products" className="mt-6">
               <EventProductSection event={event} />
+            </TabsContent>
+
+            <TabsContent value="services" className="mt-6">
+              <EventServiceSection event={event} />
             </TabsContent>
 
             <TabsContent value="waiting" className="mt-6">
@@ -320,43 +337,6 @@ export function Event() {
                     </CardContent>
                   </Card>
                 )}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="danger" className="mt-6">
-              <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-6">
-                <h3 className="text-lg font-semibold text-destructive mb-2">
-                  {t('events.dangerZone')}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-6">
-                  {t('events.dangerZoneDescription')}
-                </p>
-
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="text-sm font-medium mb-2">{t('events.deleteEvent')}</h4>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      {t('events.confirmDeleteDescription')}
-                    </p>
-                    <Button
-                      variant="destructive"
-                      onClick={() => setShowDeleteDialog(true)}
-                      disabled={deleteMutation.isPending}
-                    >
-                      {deleteMutation.isPending ? (
-                        <span className="flex items-center gap-2">
-                          <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-                          {t('events.deleting')}
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-2">
-                          <Trash2 className="h-4 w-4" />
-                          {t('events.deleteEvent')}
-                        </span>
-                      )}
-                    </Button>
-                  </div>
-                </div>
               </div>
             </TabsContent>
           </Tabs>

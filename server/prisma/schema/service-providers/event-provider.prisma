@@ -10,6 +10,7 @@ model EventProvider {
 
   // Service details for this event
   agreedPrice         Float?   @map("agreed_price") // Can override the service's default price
+  providerPrice       Float    @default(0) @map("provider_price") // What the provider charges (their cost)
   currency            String?  // Currency for the agreed price
 
   // Time slot (optional)
@@ -38,7 +39,7 @@ model EventProvider {
   provider            ServiceProvider @relation(fields: [providerId], references: [id])
   providerService     ServiceProviderService @relation(fields: [providerServiceId], references: [id])
 
-  @@unique([eventId, providerServiceId]) // One service per provider per event
+  // Removed unique constraint to allow multiple instances of the same service per event
   @@index([eventId])
   @@index([providerId])
   @@index([providerServiceId])

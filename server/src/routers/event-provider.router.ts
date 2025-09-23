@@ -5,17 +5,17 @@ import {
   eventProviderService,
   addEventProviderSchema,
   updateEventProviderSchema,
+  removeEventProviderSchema,
+  listEventProvidersSchema,
 } from '../services/event-provider.service'
 
 export const eventProviderRouter = router({
   // List providers for an event
-  listByEvent: protectedProcedure
-    .input(z.object({
-      eventId: z.string().uuid(),
-    }))
+  list: protectedProcedure
+    .input(listEventProvidersSchema)
     .query(async ({ input }) => {
       try {
-        return await eventProviderService.listEventProviders(input.eventId)
+        return await eventProviderService.listEventProviders(input)
       } catch (error: any) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -43,14 +43,10 @@ export const eventProviderRouter = router({
 
   // Update event provider
   update: protectedProcedure
-    .input(z.object({
-      eventProviderId: z.string().uuid(),
-      ...updateEventProviderSchema.shape,
-    }))
+    .input(updateEventProviderSchema)
     .mutation(async ({ input }) => {
       try {
-        const { eventProviderId, ...data } = input
-        return await eventProviderService.updateEventProvider(eventProviderId, data)
+        return await eventProviderService.updateEventProvider(input)
       } catch (error: any) {
         if (error.code === 'NOT_FOUND') {
           throw error
@@ -64,12 +60,10 @@ export const eventProviderRouter = router({
 
   // Remove provider from event
   remove: protectedProcedure
-    .input(z.object({
-      eventProviderId: z.string().uuid(),
-    }))
+    .input(removeEventProviderSchema)
     .mutation(async ({ input }) => {
       try {
-        await eventProviderService.removeEventProvider(input.eventProviderId)
+        await eventProviderService.removeEventProvider(input)
         return { success: true }
       } catch (error: any) {
         if (error.code === 'NOT_FOUND') {

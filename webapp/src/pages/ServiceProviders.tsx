@@ -305,10 +305,6 @@ export function ServiceProviders() {
             <ServiceProviderCard
               key={provider.id}
               provider={provider}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onAddService={handleAddService}
-              onManageServices={handleManageServices}
             />
           ))}
         </div>

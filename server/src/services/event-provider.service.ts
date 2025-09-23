@@ -7,34 +7,41 @@ export const addEventProviderSchema = z.object({
   eventId: z.string().uuid(),
   providerId: z.string().uuid(),
   providerServiceId: z.string().uuid(),
-  agreedPrice: z.number().positive().optional(),
-  currency: z.string().max(3).optional(),
-  startTime: z.string().datetime().optional(),
-  endTime: z.string().datetime().optional(),
+  price: z.number().min(0).optional(),
+  providerPrice: z.number().min(0).optional(),
   notes: z.string().optional(),
 })
 
 export const updateEventProviderSchema = z.object({
-  agreedPrice: z.number().positive().optional(),
-  currency: z.string().max(3).optional(),
-  startTime: z.string().datetime().optional(),
-  endTime: z.string().datetime().optional(),
+  id: z.string().uuid(),
+  price: z.number().min(0).optional(),
+  providerPrice: z.number().min(0).optional(),
   notes: z.string().optional(),
   status: z.enum(['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED']).optional(),
   isPaid: z.boolean().optional(),
   paymentNotes: z.string().optional(),
 })
 
+export const removeEventProviderSchema = z.object({
+  id: z.string().uuid(),
+})
+
+export const listEventProvidersSchema = z.object({
+  eventId: z.string().uuid(),
+})
+
 // Type exports
 export type AddEventProviderInput = z.infer<typeof addEventProviderSchema>
 export type UpdateEventProviderInput = z.infer<typeof updateEventProviderSchema>
+export type RemoveEventProviderInput = z.infer<typeof removeEventProviderSchema>
+export type ListEventProvidersInput = z.infer<typeof listEventProvidersSchema>
 
 class EventProviderService {
   // List providers for an event
-  async listEventProviders(eventId: string) {
+  async listEventProviders(input: ListEventProvidersInput) {
     return prisma.eventProvider.findMany({
       where: {
-        eventId,
+        eventId: input.eventId,
         isDeleted: false,
       },
       include: {
@@ -83,31 +90,17 @@ class EventProviderService {
       })
     }
 
-    // Check if this service is already assigned to the event
-    const existing = await prisma.eventProvider.findFirst({
-      where: {
-        eventId: input.eventId,
-        providerServiceId: input.providerServiceId,
-        isDeleted: false,
-      },
-    })
-
-    if (existing) {
-      throw new TRPCError({
-        code: 'CONFLICT',
-        message: 'This provider service is already assigned to this event',
-      })
-    }
+    // Allow multiple instances of the same service to be added to an event
+    // This is useful when you need multiple providers of the same type (e.g., multiple photographers)
 
     return prisma.eventProvider.create({
       data: {
         eventId: input.eventId,
         providerId: input.providerId,
         providerServiceId: input.providerServiceId,
-        agreedPrice: input.agreedPrice ?? providerService.price,
-        currency: input.currency ?? providerService.currency,
-        startTime: input.startTime ? new Date(input.startTime) : undefined,
-        endTime: input.endTime ? new Date(input.endTime) : undefined,
+        agreedPrice: input.price ?? providerService.price,
+        providerPrice: input.providerPrice ?? 0,
+        currency: providerService.currency,
         notes: input.notes,
       },
       include: {
@@ -122,9 +115,9 @@ class EventProviderService {
   }
 
   // Update event provider
-  async updateEventProvider(eventProviderId: string, input: UpdateEventProviderInput) {
+  async updateEventProvider(input: UpdateEventProviderInput) {
     const eventProvider = await prisma.eventProvider.findFirst({
-      where: { id: eventProviderId, isDeleted: false },
+      where: { id: input.id, isDeleted: false },
     })
 
     if (!eventProvider) {
@@ -134,28 +127,24 @@ class EventProviderService {
       })
     }
 
-    const updateData: any = {
-      ...input,
-      startTime: input.startTime ? new Date(input.startTime) : undefined,
-      endTime: input.endTime ? new Date(input.endTime) : undefined,
-    }
+    const updateData: any = {}
+    if (input.price !== undefined) updateData.agreedPrice = input.price
+    if (input.providerPrice !== undefined) updateData.providerPrice = input.providerPrice
+    if (input.notes !== undefined) updateData.notes = input.notes
+    if (input.status !== undefined) updateData.status = input.status
+    if (input.paymentNotes !== undefined) updateData.paymentNotes = input.paymentNotes
 
     // If marking as paid, set the paidAt timestamp
     if (input.isPaid === true && !eventProvider.isPaid) {
       updateData.paidAt = new Date()
+      updateData.isPaid = true
     } else if (input.isPaid === false) {
       updateData.paidAt = null
+      updateData.isPaid = false
     }
 
-    // Remove undefined fields
-    Object.keys(updateData).forEach(key => {
-      if (updateData[key] === undefined) {
-        delete updateData[key]
-      }
-    })
-
     return prisma.eventProvider.update({
-      where: { id: eventProviderId },
+      where: { id: input.id },
       data: updateData,
       include: {
         provider: true,
@@ -169,9 +158,9 @@ class EventProviderService {
   }
 
   // Remove provider from event
-  async removeEventProvider(eventProviderId: string) {
+  async removeEventProvider(input: RemoveEventProviderInput) {
     const eventProvider = await prisma.eventProvider.findFirst({
-      where: { id: eventProviderId, isDeleted: false },
+      where: { id: input.id, isDeleted: false },
     })
 
     if (!eventProvider) {
@@ -181,12 +170,9 @@ class EventProviderService {
       })
     }
 
-    return prisma.eventProvider.update({
-      where: { id: eventProviderId },
-      data: {
-        isDeleted: true,
-        deletedAt: new Date(),
-      },
+    // Soft delete handled by the Prisma extension
+    return prisma.eventProvider.delete({
+      where: { id: input.id },
     })
   }
 
