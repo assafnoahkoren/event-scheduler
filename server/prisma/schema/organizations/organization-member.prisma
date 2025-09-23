@@ -1,0 +1,41 @@
+// OrganizationMember - Represents a user's membership in an organization
+
+model OrganizationMember {
+  id           String   @id @default(uuid())
+
+  // Organization relationship
+  organizationId String       @map("organization_id")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  // User relationship
+  userId       String   @map("user_id")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Membership details
+  joinedAt     DateTime @default(now()) @map("joined_at")
+  isActive     Boolean  @default(true) @map("is_active")
+
+  // Invitation details (if member joined via invitation)
+  invitedById  String?  @map("invited_by_id")
+  invitedBy    User?    @relation("InvitedMembers", fields: [invitedById], references: [id])
+  invitedAt    DateTime? @map("invited_at")
+
+  // Soft delete
+  deletedAt    DateTime? @map("deleted_at")
+  isDeleted    Boolean   @default(false) @map("is_deleted")
+
+  // Timestamps
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  // permissions  OrganizationPermission[] // DEFERRED: Deep permissions for later
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+  @@index([isActive])
+  @@index([isDeleted])
+  @@index([organizationId, isDeleted])
+  @@map("organization_members")
+}

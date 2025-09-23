@@ -7,6 +7,10 @@ model Site {
   // Site settings
   isActive    Boolean  @default(true)
 
+  // Organization relationship
+  organizationId String       @map("organization_id")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   // Ownership
   ownerId     String   @map("owner_id")
   owner       User     @relation("OwnedSites", fields: [ownerId], references: [id])
@@ -26,8 +30,11 @@ model Site {
   clients     Client[]
   products    Product[]
   waitingListEntries WaitingListEntry[]
+  // organizationPermissions OrganizationPermission[] // DEFERRED: Deep permissions for later
 
   @@index([ownerId])
+  @@index([organizationId])
   @@index([isDeleted])
+  @@index([organizationId, isDeleted])
   @@map("sites")
 }

@@ -3,8 +3,12 @@
 model ServiceCategory {
   id          String   @id @default(uuid())
 
+  // Organization this category belongs to
+  organizationId String       @map("organization_id")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   // Category details
-  name        String   @unique // e.g., "Photography", "Catering", "Sound & Lighting"
+  name        String   // e.g., "Photography", "Catering", "Sound & Lighting"
   description String?
 
   // Soft delete
@@ -18,6 +22,9 @@ model ServiceCategory {
   // Relations
   services    ServiceProviderService[]
 
+  @@unique([organizationId, name]) // Name must be unique within organization
   @@index([isDeleted])
+  @@index([organizationId])
+  @@index([organizationId, isDeleted])
   @@map("service_categories")
 }

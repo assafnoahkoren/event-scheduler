@@ -1,0 +1,40 @@
+// Organization - Top-level entity that contains multiple sites
+
+model Organization {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique // URL-friendly identifier
+
+  // Owner (always has full permissions)
+  ownerId     String   @map("owner_id")
+  owner       User     @relation("OwnedOrganizations", fields: [ownerId], references: [id])
+
+  // Settings
+  defaultCurrency String @default("USD") @map("default_currency")
+  timezone        String @default("UTC")
+
+  // Billing/Plan info
+  plan        String   @default("free") // free, pro, enterprise
+  maxSites    Int      @default(3) @map("max_sites")
+  maxUsers    Int      @default(10) @map("max_users")
+
+  // Soft delete
+  deletedAt   DateTime? @map("deleted_at")
+  isDeleted   Boolean   @default(false) @map("is_deleted")
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  sites              Site[]
+  members            OrganizationMember[]
+  clients            Client[]
+  serviceProviders   ServiceProvider[]
+  serviceCategories  ServiceCategory[]
+
+  @@index([slug])
+  @@index([ownerId])
+  @@index([isDeleted])
+  @@map("organizations")
+}

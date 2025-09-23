@@ -3,6 +3,10 @@
 model ServiceProvider {
   id          String   @id @default(uuid())
 
+  // Organization this provider belongs to
+  organizationId String       @map("organization_id")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   // Constructor details
   name        String
   phone       String?
@@ -24,6 +28,8 @@ model ServiceProvider {
 
   @@index([isDeleted])
   @@index([name])
+  @@index([organizationId])
+  @@index([organizationId, isDeleted])
   @@map("service_providers")
 }
 

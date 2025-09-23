@@ -37,6 +37,12 @@ model User {
   passwordResets PasswordReset[]
   assetPermissions UserAssetPermission[]
 
+  // Organization relations
+  ownedOrganizations Organization[]       @relation("OwnedOrganizations")
+  organizationMemberships OrganizationMember[]
+  invitedOrgMembers OrganizationMember[]     @relation("InvitedMembers")
+  // grantedPermissions OrganizationPermission[] @relation("GrantedPermissions") // DEFERRED: Deep permissions for later
+
   // Site relations
   ownedSites    Site[]           @relation("OwnedSites")
   siteUsers     SiteUser[]
