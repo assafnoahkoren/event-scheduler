@@ -190,7 +190,8 @@ export const arTranslation: TranslationType = {
     margin: "الهامش",
     profitMargin: "هامش الربح",
     costCalculationError: "غير قادر على حساب التكاليف",
-    monthlyProfit: "الربح الشهري"
+    monthlyProfit: "الربح الشهري",
+    noData: "لا توجد بيانات"
   },
   navigation: {
     home: "الرئيسية",

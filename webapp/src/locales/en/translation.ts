@@ -188,7 +188,8 @@ export const enTranslation = {
     margin: "margin",
     profitMargin: "Profit Margin",
     costCalculationError: "Unable to calculate costs",
-    monthlyProfit: "Monthly Profit"
+    monthlyProfit: "Monthly Profit",
+    noData: "No data"
   },
   navigation: {
     home: "Home",

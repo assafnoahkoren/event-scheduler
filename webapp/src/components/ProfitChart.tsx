@@ -66,16 +66,54 @@ export function ProfitChart({ startDate, endDate, className }: ProfitChartProps)
     return null
   }
 
+  // Maintain consistent component height
   if (isLoading) {
     return (
-      <div className={cn("flex items-center justify-center py-4", className)}>
-        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+      <div className={cn("space-y-2", className)}>
+        {/* Summary placeholder with same height as actual summary */}
+        <div className="flex items-center justify-between px-2 h-7">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-muted-foreground">
+              {t('events.monthlyProfit')}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+          </div>
+        </div>
+
+        {/* Chart placeholder with fixed height */}
+        <div className="h-[60px] w-full flex items-center justify-center">
+          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+        </div>
       </div>
     )
   }
 
+  // If no data, show empty state with same height
   if (!data || !chartData.length) {
-    return null
+    return (
+      <div className={cn("space-y-2", className)}>
+        {/* Summary with 0 */}
+        <div className="flex items-center justify-between px-2 h-7">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-muted-foreground">
+              {t('events.monthlyProfit')}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-sm font-bold text-muted-foreground">
+              {formatCurrency(0)}
+            </span>
+          </div>
+        </div>
+
+        {/* Empty chart placeholder */}
+        <div className="h-[60px] w-full flex items-center justify-center">
+          <span className="text-xs text-muted-foreground">{t('events.noData')}</span>
+        </div>
+      </div>
+    )
   }
 
   const isProfit = data.totalProfit >= 0
@@ -83,7 +121,7 @@ export function ProfitChart({ startDate, endDate, className }: ProfitChartProps)
   return (
     <div className={cn("space-y-2", className)}>
       {/* Summary */}
-      <div className="flex items-center justify-between px-2">
+      <div className="flex items-center justify-between px-2 h-7">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-muted-foreground">
             {t('events.monthlyProfit')}
@@ -105,11 +143,11 @@ export function ProfitChart({ startDate, endDate, className }: ProfitChartProps)
       </div>
 
       {/* Chart */}
-      <div className="h-[100px] w-full">
+      <div className="h-[60px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={chartData}
-            margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+            margin={{ top: 2, right: 2, left: 2, bottom: 2 }}
           >
             <defs>
               <linearGradient id="profitGradient" x1="0" y1="0" x2="0" y2="1">
@@ -123,9 +161,10 @@ export function ProfitChart({ startDate, endDate, className }: ProfitChartProps)
             </defs>
             <XAxis
               dataKey="displayDate"
-              tick={{ fontSize: 10 }}
+              tick={{ fontSize: 9 }}
               tickLine={false}
               axisLine={false}
+              height={20}
             />
             <YAxis
               hide
