@@ -119,15 +119,10 @@ export function ProfitChart({ startDate, endDate, className }: ProfitChartProps)
   const isProfit = data.totalProfit >= 0
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("space-y-2 relative", className)}>
       {/* Summary */}
-      <div className="flex items-center justify-between px-2 h-7">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">
-            {t('events.monthlyProfit')}
-          </span>
-        </div>
-        <div className="flex items-center gap-1">
+      <div className="absolute w-full -bottom-6">
+        <div className="flex items-center justify-center w-full absolute">
           <span className={cn(
             "text-sm font-bold",
             isProfit ? "text-green-600" : "text-red-600"
