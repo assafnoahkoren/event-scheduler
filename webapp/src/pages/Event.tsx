@@ -242,14 +242,14 @@ export function Event() {
 
             <TabsContent value="details" className="mt-6">
               <div className="space-y-4">
+                {/* Event Costs Section */}
+                {eventId && <EventCostsSection eventId={eventId} />}
+
                 <EventForm
                   event={event}
                   onSubmit={handleUpdate}
                   isSubmitting={updateMutation.isPending}
                 />
-
-                {/* Event Costs Section */}
-                {eventId && <EventCostsSection eventId={eventId} />}
 
                 <div className="pt-4 border-t">
                   <Button

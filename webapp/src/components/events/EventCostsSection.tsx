@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { DollarSign, TrendingUp, Wallet, Loader2 } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { trpc } from '@/utils/trpc'
 
@@ -20,120 +19,61 @@ export function EventCostsSection({ eventId }: EventCostsSectionProps) {
   // Show loading state
   if (isLoading) {
     return (
-      <div className="pt-4 border-t">
-        <h3 className="text-lg font-semibold mb-4">{t('events.costBreakdown')}</h3>
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Loader2 className="h-3 w-3 animate-spin" />
+        <span>{t('common.loading')}</span>
       </div>
     )
   }
 
-  // Show error state
+  // Show error state or if no data
   if (error || !costs) {
-    return (
-      <div className="pt-4 border-t">
-        <h3 className="text-lg font-semibold mb-4">{t('events.costBreakdown')}</h3>
-        <div className="text-center py-8 text-muted-foreground">
-          {t('events.costCalculationError')}
-        </div>
-      </div>
-    )
+    return null
   }
 
   const formatCurrency = (amount: number) => {
-    // Use currency symbol based on currency code
     const currencySymbol = costs.currency === 'ILS' ? '₪' :
                           costs.currency === 'USD' ? '$' :
                           costs.currency === 'EUR' ? '€' :
                           costs.currency === 'GBP' ? '£' :
                           costs.currency
-
-    return `${currencySymbol}${amount.toFixed(2)}`
+    return `${currencySymbol}${amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
   }
 
+  const profitPercentage = costs.clientCost > 0
+    ? ((costs.profit / costs.clientCost) * 100).toFixed(0)
+    : '0'
+
   return (
-    <div className="pt-4 border-t">
-      <h3 className="text-lg font-semibold mb-4">{t('events.costBreakdown')}</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Client Cost Card */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  {t('events.clientCost')}
-                </p>
-                <p className="text-2xl font-bold">
-                  {formatCurrency(costs.clientCost)}
-                </p>
-              </div>
-              <DollarSign className="h-8 w-8 text-blue-500 opacity-50" />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Provider Cost Card */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  {t('events.providerCost')}
-                </p>
-                <p className="text-2xl font-bold">
-                  {formatCurrency(costs.providerCost)}
-                </p>
-              </div>
-              <Wallet className="h-8 w-8 text-orange-500 opacity-50" />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Profit Card */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  {t('events.profit')}
-                </p>
-                <p className={cn(
-                  "text-2xl font-bold",
-                  costs.profit >= 0 ? "text-green-600" : "text-red-600"
-                )}>
-                  {formatCurrency(costs.profit)}
-                </p>
-                {/* Optional: Show profit margin percentage */}
-                {costs.clientCost > 0 && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {((costs.profit / costs.clientCost) * 100).toFixed(1)}% {t('events.margin')}
-                  </p>
-                )}
-              </div>
-              <TrendingUp className={cn(
-                "h-8 w-8 opacity-50",
-                costs.profit >= 0 ? "text-green-500" : "text-red-500 rotate-180"
-              )} />
-            </div>
-          </CardContent>
-        </Card>
+    <div className="flex items-center gap-4 px-3 py-2 bg-muted/50 rounded-md text-sm">
+      <div className="flex items-center gap-1.5">
+        <span className="text-muted-foreground">{t('events.clientCost')}:</span>
+        <span className="font-medium">{formatCurrency(costs.clientCost)}</span>
       </div>
 
-      {/* Optional: Summary row */}
-      <div className="mt-4 p-4 bg-muted/50 rounded-lg">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">{t('events.profitMargin')}</span>
-          <span className={cn(
-            "font-semibold",
-            costs.profit >= 0 ? "text-green-600" : "text-red-600"
-          )}>
-            {costs.clientCost > 0
-              ? `${((costs.profit / costs.clientCost) * 100).toFixed(1)}%`
-              : '0.0%'
-            }
-          </span>
-        </div>
+      <span className="text-muted-foreground">-</span>
+
+      <div className="flex items-center gap-1.5">
+        <span className="text-muted-foreground">{t('events.providerCost')}:</span>
+        <span className="font-medium">{formatCurrency(costs.providerCost)}</span>
+      </div>
+
+      <span className="text-muted-foreground">=</span>
+
+      <div className="flex items-center gap-1.5">
+        <span className="text-muted-foreground">{t('events.profit')}:</span>
+        <span className={cn(
+          "font-semibold",
+          costs.profit >= 0 ? "text-green-600" : "text-red-600"
+        )}>
+          {formatCurrency(costs.profit)}
+        </span>
+        <span className={cn(
+          "text-xs",
+          costs.profit >= 0 ? "text-green-600/80" : "text-red-600/80"
+        )}>
+          ({profitPercentage}%)
+        </span>
       </div>
     </div>
   )
