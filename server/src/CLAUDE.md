@@ -8,6 +8,7 @@
 2. **Export both schema and type** - Export the Zod schema and use `z.infer<typeof schema>` for the TypeScript type
 3. **Single source of truth** - Never duplicate schemas; import and reuse them
 4. **Type inference over interfaces** - Don't create manual interfaces when you can infer from Zod
+5. **Frontend type consumption** - Frontend should use tRPC's `inferRouterInputs` and `inferRouterOutputs` to consume these types automatically
 
 ### Example Pattern:
 ```typescript
@@ -40,6 +41,15 @@ import { createSiteSchema } from '../services/site.service'
 const updateSiteWithIdSchema = updateSiteSchema.extend({
   siteId: z.uuid(),
 })
+```
+
+```typescript
+// Frontend consumption (in React components)
+import type { inferRouterInputs } from '@trpc/server'
+import type { AppRouter } from '../path/to/appRouter'
+
+type RouterInput = inferRouterInputs<AppRouter>
+type CreateSiteFormData = RouterInput['sites']['create']  // Automatically typed from Zod schema
 ```
 
 ### Deprecated Zod Methods:

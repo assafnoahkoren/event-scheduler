@@ -104,24 +104,43 @@ function Component() {
 - Use tRPC's type inference for API calls
 - **NEVER use `any` type** - always use proper types
 - Prefer type inference over explicit types when possible
-- **IMPORTANT: Always use actual types from tRPC router outputs instead of hardcoded interfaces**
+- **IMPORTANT: Always use actual types from tRPC router outputs/inputs instead of hardcoded interfaces**
   - Use `inferRouterOutputs<AppRouter>` to get types from API responses
-  - Example: `type Event = RouterOutput['events']['list'][0]` instead of manually defining an Event interface
+  - Use `inferRouterInputs<AppRouter>` to get types for API request inputs
+  - Example for outputs: `type Event = RouterOutput['events']['list'][0]` instead of manually defining an Event interface
+  - Example for inputs: `type FormData = RouterInput['events']['create']` instead of manually defining a form interface
   - This ensures type safety and automatic updates when backend types change
+- **Form Data Types**:
+  - When a form is directly coupled to a backend endpoint, ALWAYS use tRPC inferred input types
+  - Example:
+    ```typescript
+    // ❌ WRONG - Don't create duplicate interfaces
+    interface ServiceFormData {
+      categoryId: string
+      price?: number
+      currency?: string
+    }
+
+    // ✅ CORRECT - Use tRPC inferred types
+    type ServiceFormData = Omit<RouterInput['serviceProviders']['addService'], 'serviceProviderId'>
+    ```
+  - Benefits: Single source of truth, automatic type synchronization, no manual updates needed
 - **Component Props Type Safety**:
   - Always use tRPC inferred types for data models in component props
   - Never create duplicate interface definitions for models that exist in the backend
   - Example for components:
     ```typescript
-    import type { inferRouterOutputs } from '@trpc/server'
+    import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
     import type { AppRouter } from '../../../server/src/routers/appRouter'
 
     type RouterOutput = inferRouterOutputs<AppRouter>
+    type RouterInput = inferRouterInputs<AppRouter>
     type Client = RouterOutput['clients']['get']
+    type ClientFormData = RouterInput['clients']['create']
 
     interface ComponentProps {
-      client: Client  // Use tRPC type, not a custom interface
-      onEdit: (client: Client) => void  // Use same type in callbacks
+      client: Client  // Use tRPC type for data models
+      onSubmit: (data: ClientFormData) => void  // Use tRPC input type for forms
     }
     ```
 
