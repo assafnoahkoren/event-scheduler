@@ -1,0 +1,23 @@
+// Service Category - Types of services providers can offer
+
+model ServiceCategory {
+  id          String   @id @default(uuid())
+
+  // Category details
+  name        String   @unique // e.g., "Photography", "Catering", "Sound & Lighting"
+  description String?
+
+  // Soft delete
+  deletedAt   DateTime? @map("deleted_at")
+  isDeleted   Boolean   @default(false) @map("is_deleted")
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  services    ServiceProviderService[]
+
+  @@index([isDeleted])
+  @@map("service_categories")
+}

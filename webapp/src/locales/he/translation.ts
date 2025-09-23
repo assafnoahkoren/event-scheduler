@@ -19,10 +19,12 @@ export const heTranslation: TranslationType = {
     deleting: "מוחק...",
     edit: "ערוך",
     create: "צור",
+    update: "עדכן",
     back: "חזור",
     you: "אתה",
     menu: "תפריט",
     language: "שפה",
+    optional: "אופציונלי",
     today: "היום",
     tomorrow: "מחר",
     yesterday: "אתמול"
@@ -289,5 +291,23 @@ export const heTranslation: TranslationType = {
     availableDates: "תאריכים זמינים",
     conflictingDates: "התנגשויות בתאריכים",
     conflicts: "התנגשויות"
+  },
+  serviceProviders: {
+    title: "ספקי שירות",
+    addProvider: "הוסף ספק שירות",
+    createProvider: "צור ספק שירות",
+    editProvider: "ערוך ספק שירות",
+    name: "שם",
+    namePlaceholder: "שם ספק השירות",
+    phone: "טלפון",
+    phonePlaceholder: "+1234567890",
+    email: "אימייל",
+    emailPlaceholder: "provider@example.com",
+    notes: "הערות",
+    notesPlaceholder: "הערות נוספות על ספק שירות זה",
+    searchPlaceholder: "חיפוש ספקי שירות...",
+    noProviders: "לא נמצאו ספקי שירות",
+    confirmDelete: "האם אתה בטוח שברצונך למחוק ספק שירות זה?",
+    events: "אירועים"
   }
 } as const

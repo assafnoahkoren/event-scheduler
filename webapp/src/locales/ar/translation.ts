@@ -19,10 +19,12 @@ export const arTranslation: TranslationType = {
     deleting: "جاري الحذف...",
     edit: "تعديل",
     create: "إنشاء",
+    update: "تحديث",
     back: "رجوع",
     you: "أنت",
     menu: "القائمة",
     language: "اللغة",
+    optional: "اختياري",
     today: "اليوم",
     tomorrow: "غداً",
     yesterday: "أمس"
@@ -289,5 +291,23 @@ export const arTranslation: TranslationType = {
     availableDates: "التواريخ المتاحة",
     conflictingDates: "تعارضات التاريخ",
     conflicts: "التعارضات"
+  },
+  serviceProviders: {
+    title: "مقدمو الخدمات",
+    addProvider: "إضافة مقدم خدمة",
+    createProvider: "إنشاء مقدم خدمة",
+    editProvider: "تعديل مقدم الخدمة",
+    name: "الاسم",
+    namePlaceholder: "اسم مقدم الخدمة",
+    phone: "الهاتف",
+    phonePlaceholder: "+1234567890",
+    email: "البريد الإلكتروني",
+    emailPlaceholder: "provider@example.com",
+    notes: "ملاحظات",
+    notesPlaceholder: "ملاحظات إضافية حول مقدم الخدمة هذا",
+    searchPlaceholder: "البحث عن مقدمي الخدمات...",
+    noProviders: "لم يتم العثور على مقدمي خدمات",
+    confirmDelete: "هل أنت متأكد من حذف مقدم الخدمة هذا؟",
+    events: "أحداث"
   }
 } as const

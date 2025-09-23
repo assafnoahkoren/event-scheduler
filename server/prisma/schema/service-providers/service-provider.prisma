@@ -1,0 +1,60 @@
+// ServiceProvider - Companies that provide services to events
+
+model ServiceProvider {
+  id          String   @id @default(uuid())
+
+  // Constructor details
+  name        String
+  phone       String?
+  email       String?
+  notes       String?  // General notes about the constructor
+
+  // Soft delete
+  deletedAt   DateTime? @map("deleted_at")
+  isDeleted   Boolean   @default(false) @map("is_deleted")
+  isActive    Boolean   @default(true) @map("is_active")
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  services    ServiceProviderService[]
+  eventProviders EventProvider[]
+
+  @@index([isDeleted])
+  @@index([name])
+  @@map("service_providers")
+}
+
+// ServiceProviderService - Services offered by a service provider with pricing
+model ServiceProviderService {
+  id            String   @id @default(uuid())
+
+  // Service details
+  providerId String   @map("provider_id")
+  categoryId    String   @map("category_id")
+  price         Float?   // Price for this service
+  currency      String?  // Currency for the price
+  fileLinks     String[] // Array of S3 links for documents/images related to this service
+
+  // Soft delete
+  deletedAt     DateTime? @map("deleted_at")
+  isDeleted     Boolean   @default(false) @map("is_deleted")
+
+  // Timestamps
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  provider   ServiceProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  category      ServiceCategory @relation(fields: [categoryId], references: [id])
+  eventProviders EventProvider[]
+
+  @@unique([providerId, categoryId])
+  @@index([providerId])
+  @@index([categoryId])
+  @@index([isDeleted])
+  @@index([providerId, isDeleted])
+  @@map("service_provider_services")
+}

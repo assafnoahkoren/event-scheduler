@@ -17,10 +17,12 @@ export const enTranslation = {
     deleting: "Deleting...",
     edit: "Edit",
     create: "Create",
+    update: "Update",
     back: "Back",
     you: "You",
     menu: "Menu",
     language: "Language",
+    optional: "optional",
     today: "Today",
     tomorrow: "Tomorrow",
     yesterday: "Yesterday"
@@ -287,5 +289,23 @@ export const enTranslation = {
     availableDates: "Available Dates",
     conflictingDates: "Date Conflicts",
     conflicts: "Conflicts"
+  },
+  serviceProviders: {
+    title: "Service Providers",
+    addProvider: "Add Provider",
+    createProvider: "Create Service Provider",
+    editProvider: "Edit Service Provider",
+    name: "Name",
+    namePlaceholder: "Provider name",
+    phone: "Phone",
+    phonePlaceholder: "+1234567890",
+    email: "Email",
+    emailPlaceholder: "provider@example.com",
+    notes: "Notes",
+    notesPlaceholder: "Additional notes about this provider",
+    searchPlaceholder: "Search providers...",
+    noProviders: "No service providers found",
+    confirmDelete: "Are you sure you want to delete this service provider?",
+    events: "events"
   }
 } as const

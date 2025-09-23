@@ -7,6 +7,8 @@ import { clientRouter } from './client.router';
 import { productsRouter } from './products.router';
 import { eventProductsRouter } from './eventProducts.router';
 import { waitingListRouter } from './waiting-list.router';
+import { serviceProviderRouter } from './service-provider.router';
+import { eventProviderRouter } from './event-provider.router';
 
 export const appRouter = router({
   // Auth routes
@@ -29,6 +31,12 @@ export const appRouter = router({
 
   // Waiting list routes
   waitingList: waitingListRouter,
+
+  // Service Provider routes
+  serviceProviders: serviceProviderRouter,
+
+  // Event-Provider relation routes
+  eventProviders: eventProviderRouter,
 
   // Public routes
   ping: publicProcedure

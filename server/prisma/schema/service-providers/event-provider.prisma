@@ -1,0 +1,48 @@
+// EventProvider - Links service providers to events with specific service details
+
+model EventProvider {
+  id                  String   @id @default(uuid())
+
+  // Event and Provider relationship
+  eventId             String   @map("event_id")
+  providerId          String   @map("provider_id")
+  providerServiceId   String   @map("provider_service_id")
+
+  // Service details for this event
+  agreedPrice         Float?   @map("agreed_price") // Can override the service's default price
+  currency            String?  // Currency for the agreed price
+
+  // Time slot (optional)
+  startTime           DateTime? @map("start_time") // When constructor starts work
+  endTime             DateTime? @map("end_time")   // When constructor finishes work
+
+  // Additional details
+  notes               String?  // Notes specific to this provider's work on this event
+  status              String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+
+  // Payment tracking
+  isPaid              Boolean  @default(false) @map("is_paid")
+  paidAt              DateTime? @map("paid_at")
+  paymentNotes        String?  @map("payment_notes")
+
+  // Soft delete
+  deletedAt           DateTime? @map("deleted_at")
+  isDeleted           Boolean   @default(false) @map("is_deleted")
+
+  // Timestamps
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  event               Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  provider            ServiceProvider @relation(fields: [providerId], references: [id])
+  providerService     ServiceProviderService @relation(fields: [providerServiceId], references: [id])
+
+  @@unique([eventId, providerServiceId]) // One service per provider per event
+  @@index([eventId])
+  @@index([providerId])
+  @@index([providerServiceId])
+  @@index([isDeleted])
+  @@index([eventId, isDeleted])
+  @@map("event_providers")
+}

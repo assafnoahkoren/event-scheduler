@@ -32,6 +32,9 @@ model Event {
   // Products attached to this event
   products    EventProduct[]
 
+  // Service providers working on this event
+  providers EventProvider[]
+
   // Waiting list entries that were fulfilled by this event
   waitingListEntries WaitingListEntry[]
 
