@@ -330,6 +330,15 @@ export const heTranslation: TranslationType = {
     searchPlaceholder: "חיפוש ספקי שירות...",
     noProviders: "לא נמצאו ספקי שירות",
     confirmDelete: "האם אתה בטוח שברצונך למחוק ספק שירות זה?",
-    events: "אירועים"
+    events: "אירועים",
+    providerDetails: "פרטי ספק",
+    providerDetailsDescription: "ניהול פרטי ספק ונתוני יצירת קשר",
+    totalEvents: "סה\"כ אירועים",
+    totalServices: "סה\"כ שירותים",
+    detailsTab: "פרטים",
+    servicesTab: "שירותים",
+    backToProviders: "חזרה לספקים",
+    providerIdLabel: "מזהה ספק",
+    providerNotFound: "הספק לא נמצא"
   }
 } as const

@@ -73,6 +73,9 @@ class ServiceProviderService {
         isDeleted: false,
       },
       include: {
+        _count: {
+          select: { eventProviders: true },
+        },
         services: {
           where: { isDeleted: false },
           include: {

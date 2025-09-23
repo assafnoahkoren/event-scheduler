@@ -328,6 +328,15 @@ export const enTranslation = {
     searchPlaceholder: "Search providers...",
     noProviders: "No service providers found",
     confirmDelete: "Are you sure you want to delete this service provider?",
-    events: "events"
+    events: "events",
+    providerDetails: "Provider Details",
+    providerDetailsDescription: "Manage provider information and contact details",
+    totalEvents: "Total Events",
+    totalServices: "Total Services",
+    detailsTab: "Details",
+    servicesTab: "Services",
+    backToProviders: "Back to Providers",
+    providerIdLabel: "Provider ID",
+    providerNotFound: "Provider not found"
   }
 } as const

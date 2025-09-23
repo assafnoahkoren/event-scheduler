@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { Phone, Mail, Edit, Trash2, FileText, Plus, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,9 +26,14 @@ interface ServiceProviderCardProps {
 
 export function ServiceProviderCard({ provider, onEdit, onDelete, onAddService, onManageServices }: ServiceProviderCardProps) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+
+  const handleCardClick = () => {
+    navigate(`/service-providers/${provider.id}`)
+  }
 
   return (
-    <Card>
+    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleCardClick}>
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
@@ -40,7 +46,10 @@ export function ServiceProviderCard({ provider, onEdit, onDelete, onAddService, 
             <Button
               size="sm"
               variant="ghost"
-              onClick={() => onManageServices(provider)}
+              onClick={(e) => {
+                e.stopPropagation()
+                onManageServices(provider)
+              }}
               title={t('serviceProviders.manageServices')}
             >
               <Settings className="w-4 h-4" />
@@ -48,7 +57,10 @@ export function ServiceProviderCard({ provider, onEdit, onDelete, onAddService, 
             <Button
               size="sm"
               variant="ghost"
-              onClick={() => onAddService(provider)}
+              onClick={(e) => {
+                e.stopPropagation()
+                onAddService(provider)
+              }}
               title={t('serviceProviders.addService')}
             >
               <Plus className="w-4 h-4" />
@@ -56,7 +68,10 @@ export function ServiceProviderCard({ provider, onEdit, onDelete, onAddService, 
             <Button
               size="sm"
               variant="ghost"
-              onClick={() => onEdit(provider)}
+              onClick={(e) => {
+                e.stopPropagation()
+                onEdit(provider)
+              }}
               title={t('common.edit')}
             >
               <Edit className="w-4 h-4" />
@@ -64,7 +79,10 @@ export function ServiceProviderCard({ provider, onEdit, onDelete, onAddService, 
             <Button
               size="sm"
               variant="ghost"
-              onClick={() => onDelete(provider.id)}
+              onClick={(e) => {
+                e.stopPropagation()
+                onDelete(provider.id)
+              }}
               title={t('common.delete')}
             >
               <Trash2 className="w-4 h-4" />

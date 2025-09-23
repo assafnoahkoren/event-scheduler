@@ -330,6 +330,15 @@ export const arTranslation: TranslationType = {
     searchPlaceholder: "البحث عن مقدمي الخدمات...",
     noProviders: "لم يتم العثور على مقدمي خدمات",
     confirmDelete: "هل أنت متأكد من حذف مقدم الخدمة هذا؟",
-    events: "أحداث"
+    events: "أحداث",
+    providerDetails: "تفاصيل المقدم",
+    providerDetailsDescription: "إدارة معلومات المقدم وتفاصيل الاتصال",
+    totalEvents: "إجمالي الأحداث",
+    totalServices: "إجمالي الخدمات",
+    detailsTab: "التفاصيل",
+    servicesTab: "الخدمات",
+    backToProviders: "العودة إلى المقدمين",
+    providerIdLabel: "معرف المقدم",
+    providerNotFound: "لم يتم العثور على المقدم"
   }
 } as const
