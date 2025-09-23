@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { CurrentOrgProvider } from '@/contexts/CurrentOrgContext'
 import { CurrentSiteProvider } from '@/contexts/CurrentSiteContext'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import { Toaster } from 'sonner'
@@ -16,10 +17,12 @@ export function GlobalStateProvider({ children }: GlobalStateProviderProps) {
   return (
     <AuthProvider>
       <LanguageProvider>
-        <CurrentSiteProvider>
-          {children}
-          <Toaster position="top-center" richColors closeButton />
-        </CurrentSiteProvider>
+        <CurrentOrgProvider>
+          <CurrentSiteProvider>
+            {children}
+            <Toaster position="top-center" richColors closeButton />
+          </CurrentSiteProvider>
+        </CurrentOrgProvider>
       </LanguageProvider>
     </AuthProvider>
   )

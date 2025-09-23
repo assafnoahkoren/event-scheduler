@@ -57,38 +57,6 @@ export const organizationRouter = router({
       }
     }),
 
-  // Get an organization by slug
-  getBySlug: protectedProcedure
-    .input(z.object({ slug: z.string() }))
-    .query(async ({ ctx, input }) => {
-      try {
-        const org = await organizationService.getOrganizationBySlug(input.slug)
-
-        // Check if user has access
-        const hasAccess = await organizationService.checkUserAccess(
-          ctx.user.id,
-          org.id
-        )
-
-        if (!hasAccess) {
-          throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'You do not have access to this organization',
-          })
-        }
-
-        return org
-      } catch (error: any) {
-        if (error.code === 'NOT_FOUND' || error.code === 'FORBIDDEN') {
-          throw error
-        }
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: error.message || 'Failed to get organization',
-        })
-      }
-    }),
-
   // List user's organizations
   list: protectedProcedure
     .query(async ({ ctx }) => {

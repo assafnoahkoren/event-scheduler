@@ -24,6 +24,7 @@ export const enTranslation = {
     menu: "Menu",
     language: "Language",
     optional: "optional",
+    creating: "Creating",
     today: "Today",
     tomorrow: "Tomorrow",
     yesterday: "Yesterday"
@@ -200,6 +201,12 @@ export const enTranslation = {
   validation: {
     required: "This field is required",
     slugFormat: "Only lowercase letters, numbers, and hyphens are allowed"
+  },
+  organizations: {
+    welcomeTitle: "Welcome to Event Scheduler",
+    welcomeDescription: "Let's start by creating your organization",
+    namePlaceholder: "Enter organization name",
+    createButton: "Create Organization"
   },
   clients: {
     clients: "Clients",

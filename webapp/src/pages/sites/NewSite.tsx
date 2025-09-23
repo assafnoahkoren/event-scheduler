@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,6 +14,7 @@ export function NewSite() {
   const navigate = useNavigate()
   const [siteName, setSiteName] = useState('')
   const [error, setError] = useState('')
+  const { currentOrg } = useCurrentOrg()
   const utils = trpc.useUtils()
   const { setCurrentSite } = useCurrentSite()
 
@@ -38,7 +40,15 @@ export function NewSite() {
       return
     }
 
-    createMutation.mutate({ name: siteName.trim() })
+    if (!currentOrg) {
+      setError('No organization selected')
+      return
+    }
+
+    createMutation.mutate({
+      name: siteName.trim(),
+      organizationId: currentOrg.id
+    })
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

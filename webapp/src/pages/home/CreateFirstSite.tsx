@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -13,6 +14,7 @@ export function CreateFirstSite() {
   const [error, setError] = useState('')
   const utils = trpc.useUtils()
   const { setCurrentSite } = useCurrentSite()
+  const { currentOrg } = useCurrentOrg()
 
   // Fetch user's sites
   const { data: sites, isLoading } = trpc.sites.list.useQuery()
@@ -49,7 +51,15 @@ export function CreateFirstSite() {
       return
     }
 
-    createMutation.mutate({ name: siteName.trim() })
+    if (!currentOrg) {
+      setError('No organization selected')
+      return
+    }
+
+    createMutation.mutate({
+      name: siteName.trim(),
+      organizationId: currentOrg.id
+    })
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

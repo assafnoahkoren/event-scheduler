@@ -6,7 +6,6 @@ import { DEFAULT_SERVICE_CATEGORIES } from '../seed'
 // Schemas
 export const createOrganizationSchema = z.object({
   name: z.string().min(1).max(100),
-  slug: z.string().regex(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
   defaultCurrency: z.string().default('USD'),
   timezone: z.string().default('UTC'),
   plan: z.string().default('free'),
@@ -42,18 +41,6 @@ export type RemoveMemberInput = z.infer<typeof removeMemberSchema>
 
 class OrganizationService {
   async createOrganization(userId: string, input: CreateOrganizationInput) {
-    // Check if slug is already taken
-    const existing = await prisma.organization.findUnique({
-      where: { slug: input.slug },
-    })
-
-    if (existing) {
-      throw new TRPCError({
-        code: 'CONFLICT',
-        message: 'An organization with this slug already exists',
-      })
-    }
-
     // Create organization with owner as first member and default categories
     const organization = await prisma.organization.create({
       data: {
@@ -122,32 +109,6 @@ class OrganizationService {
     return organization
   }
 
-  async getOrganizationBySlug(slug: string) {
-    const organization = await prisma.organization.findUnique({
-      where: { slug, isDeleted: false },
-      include: {
-        owner: true,
-        members: {
-          where: { isDeleted: false },
-          include: {
-            user: true,
-          },
-        },
-        sites: {
-          where: { isDeleted: false },
-        },
-      },
-    })
-
-    if (!organization) {
-      throw new TRPCError({
-        code: 'NOT_FOUND',
-        message: 'Organization not found',
-      })
-    }
-
-    return organization
-  }
 
   async listUserOrganizations(userId: string) {
     const organizations = await prisma.organization.findMany({
@@ -335,11 +296,8 @@ class OrganizationService {
       ? `${user.firstName} ${user.lastName}'s Organization`
       : `${user.email.split('@')[0]}'s Organization`
 
-    const slug = `${user.email.split('@')[0]}-org-${Date.now()}`.toLowerCase().replace(/[^a-z0-9-]/g, '-')
-
     return await this.createOrganization(userId, {
       name: orgName,
-      slug,
       defaultCurrency: 'USD',
       timezone: 'UTC',
       plan: 'free',
