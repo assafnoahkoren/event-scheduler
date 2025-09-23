@@ -34,8 +34,9 @@ model ServiceProviderService {
   // Service details
   providerId String   @map("provider_id")
   categoryId    String   @map("category_id")
-  price         Float?   // Price for this service
-  currency      String?  // Currency for the price
+  price         Float?   // Price we charge the client for this service
+  providerPrice Float?   @map("provider_price") // Price the provider charges us (before commission)
+  currency      String?  // Currency for the prices
   fileLinks     String[] // Array of S3 links for documents/images related to this service
 
   // Soft delete

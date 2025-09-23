@@ -12,20 +12,17 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { X, Upload, File } from 'lucide-react'
 import { trpc } from '@/utils/trpc'
-import type { inferRouterOutputs } from '@trpc/server'
+import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
+type RouterInput = inferRouterInputs<AppRouter>
 type ServiceProvider = RouterOutput['serviceProviders']['list'][0]
 type ServiceCategory = RouterOutput['serviceProviders']['listCategories'][0]
 type ServiceProviderService = ServiceProvider['services'][0]
 
-interface ServiceFormData {
-  categoryId: string
-  price?: number
-  currency?: string
-  fileLinks?: string[]
-}
+// Use the input type from the addService mutation, excluding serviceProviderId
+type ServiceFormData = Omit<RouterInput['serviceProviders']['addService'], 'serviceProviderId'>
 
 interface ServiceProviderServiceFormProps {
   provider: ServiceProvider
@@ -46,6 +43,7 @@ export function ServiceProviderServiceForm({
   const [formData, setFormData] = useState<ServiceFormData>({
     categoryId: service?.categoryId || '',
     price: service?.price || undefined,
+    providerPrice: service?.providerPrice || undefined,
     currency: service?.currency || 'ILS',
     fileLinks: service?.fileLinks || [],
   })
@@ -135,24 +133,45 @@ export function ServiceProviderServiceForm({
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm font-medium mb-2 block">
-            {t('serviceProviders.price')} ({t('common.optional')})
-          </label>
-          <Input
-            type="number"
-            step="0.01"
-            min="0"
-            value={formData.price || ''}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                price: e.target.value ? parseFloat(e.target.value) : undefined,
-              })
-            }
-            placeholder={t('serviceProviders.pricePlaceholder')}
-          />
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium mb-2 block">
+              {t('serviceProviders.price')} ({t('common.optional')})
+            </label>
+            <Input
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.price || ''}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  price: e.target.value ? parseFloat(e.target.value) : undefined,
+                })
+              }
+              placeholder={t('serviceProviders.pricePlaceholder')}
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium mb-2 block">
+              {t('serviceProviders.providerPrice')} ({t('common.optional')})
+            </label>
+            <Input
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.providerPrice || ''}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  providerPrice: e.target.value ? parseFloat(e.target.value) : undefined,
+                })
+              }
+              placeholder={t('serviceProviders.providerPricePlaceholder')}
+            />
+          </div>
         </div>
 
         <div>

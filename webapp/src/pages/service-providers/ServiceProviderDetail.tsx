@@ -20,26 +20,17 @@ import {
 } from '@/components/ui/drawer'
 import { ServiceProviderServiceForm } from '@/components/ServiceProviderServiceForm'
 import { ServiceProviderServicesManager } from '@/components/ServiceProviderServicesManager'
-import type { inferRouterOutputs } from '@trpc/server'
+import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '../../../../server/src/routers/appRouter'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
+type RouterInput = inferRouterInputs<AppRouter>
 type ServiceProvider = RouterOutput['serviceProviders']['get']
 type ServiceProviderService = NonNullable<ServiceProvider>['services'][0]
 
-interface ServiceFormData {
-  categoryId: string
-  price?: number
-  currency?: string
-  fileLinks?: string[]
-}
-
-interface ProviderFormData {
-  name: string
-  phone?: string
-  email?: string
-  notes?: string
-}
+// Use tRPC inferred types instead of hard-coded interfaces
+type ServiceFormData = Omit<RouterInput['serviceProviders']['addService'], 'serviceProviderId'>
+type ProviderFormData = RouterInput['serviceProviders']['create']
 
 function ProviderDetailsTab({ provider }: { provider: NonNullable<ServiceProvider> }) {
   const { t } = useTranslation()

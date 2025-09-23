@@ -21,12 +21,14 @@ export const createServiceProviderServiceSchema = z.object({
   serviceProviderId: z.string().uuid(),
   categoryId: z.string().uuid(),
   price: z.number().positive().optional(),
+  providerPrice: z.number().positive().optional(),
   currency: z.string().max(3).optional(),
   fileLinks: z.array(z.string().url()).optional(),
 })
 
 export const updateServiceProviderServiceSchema = z.object({
   price: z.number().positive().optional(),
+  providerPrice: z.number().positive().optional(),
   currency: z.string().max(3).optional(),
   fileLinks: z.array(z.string().url()).optional(),
 })
@@ -229,6 +231,7 @@ class ServiceProviderService {
         providerId: input.serviceProviderId,
         categoryId: input.categoryId,
         price: input.price,
+        providerPrice: input.providerPrice,
         currency: input.currency,
         fileLinks: input.fileLinks || [],
       },

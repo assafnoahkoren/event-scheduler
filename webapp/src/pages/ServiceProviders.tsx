@@ -15,27 +15,18 @@ import {
 import { ServiceProviderCard } from '@/components/ServiceProviderCard'
 import { ServiceProviderServiceForm } from '@/components/ServiceProviderServiceForm'
 import { ServiceProviderServicesManager } from '@/components/ServiceProviderServicesManager'
-import type { inferRouterOutputs } from '@trpc/server'
+import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
+type RouterInput = inferRouterInputs<AppRouter>
 type ServiceProvider = RouterOutput['serviceProviders']['list'][0]
 type ServiceCategory = RouterOutput['serviceProviders']['listCategories'][0]
 type ServiceProviderService = ServiceProvider['services'][0]
 
-interface ServiceProviderFormData {
-  name: string
-  phone?: string
-  email?: string
-  notes?: string
-}
-
-interface ServiceFormData {
-  categoryId: string
-  price?: number
-  currency?: string
-  fileLinks?: string[]
-}
+// Use tRPC inferred types instead of hard-coded interfaces
+type ServiceProviderFormData = RouterInput['serviceProviders']['create']
+type ServiceFormData = Omit<RouterInput['serviceProviders']['addService'], 'serviceProviderId'>
 
 function ServiceProviderForm({
   provider,
