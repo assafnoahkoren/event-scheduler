@@ -301,7 +301,7 @@ export function WaitingList() {
           setSelectedEntry(null)
         }
       }}>
-        <DrawerContent className="overflow-y-auto">
+        <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>
               {selectedEntry ? t('waitingList.editEntry') : t('waitingList.newEntry')}
