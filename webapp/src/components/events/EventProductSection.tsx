@@ -56,7 +56,6 @@ export function EventProductSection({ event }: EventProductSectionProps) {
   const addEventProductMutation = trpc.eventProducts.add.useMutation({
     onSuccess: () => {
       utils.eventProducts.list.invalidate({ eventId: event.id })
-      toast.success(t('events.productAdded'))
     },
     onError: (error) => {
       console.error('Failed to add product:', error)
@@ -67,7 +66,6 @@ export function EventProductSection({ event }: EventProductSectionProps) {
   const removeEventProductMutation = trpc.eventProducts.remove.useMutation({
     onSuccess: () => {
       utils.eventProducts.list.invalidate({ eventId: event.id })
-      toast.success(t('events.productRemoved'))
     },
     onError: (error) => {
       console.error('Failed to remove product:', error)

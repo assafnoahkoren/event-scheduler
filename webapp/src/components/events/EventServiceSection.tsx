@@ -54,7 +54,6 @@ export function EventServiceSection({ event }: EventServiceSectionProps) {
   const addEventProviderMutation = trpc.eventProviders.add.useMutation({
     onSuccess: () => {
       utils.eventProviders.list.invalidate({ eventId: event.id })
-      toast.success(t('events.serviceAdded'))
       setDrawerOpen(false)
     },
     onError: (error) => {
@@ -66,7 +65,6 @@ export function EventServiceSection({ event }: EventServiceSectionProps) {
   const removeEventProviderMutation = trpc.eventProviders.remove.useMutation({
     onSuccess: () => {
       utils.eventProviders.list.invalidate({ eventId: event.id })
-      toast.success(t('events.serviceRemoved'))
     },
     onError: (error) => {
       console.error('Failed to remove service:', error)
@@ -77,7 +75,6 @@ export function EventServiceSection({ event }: EventServiceSectionProps) {
   const updateEventProviderMutation = trpc.eventProviders.update.useMutation({
     onSuccess: () => {
       utils.eventProviders.list.invalidate({ eventId: event.id })
-      toast.success(t('events.serviceUpdated'))
     },
     onError: (error) => {
       console.error('Failed to update service:', error)

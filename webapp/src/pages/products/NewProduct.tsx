@@ -16,7 +16,6 @@ export function NewProduct() {
   const createMutation = trpc.products.create.useMutation({
     onSuccess: () => {
       utils.products.list.invalidate()
-      toast.success(t('products.productCreated'))
       navigate('/products')
     },
     onError: (error) => {

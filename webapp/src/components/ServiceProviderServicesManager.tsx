@@ -110,15 +110,57 @@ export function ServiceProviderServicesManager({
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-1">
-                    <Coins className="w-4 h-4 text-gray-400" />
-                    <span className="font-medium">
-                      {formatPrice(service.price, service.currency)}
-                    </span>
+              <CardContent className="space-y-3">
+                {/* Pricing Summary Row */}
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  {/* Client Price */}
+                  <div className="text-center">
+                    <div className="text-xs text-gray-500 mb-1">{t('serviceProviders.price')}</div>
+                    <div className="font-semibold text-green-600">
+                      {service.price ? formatPrice(service.price, service.currency) : '-'}
+                    </div>
+                  </div>
+
+                  {/* Provider Cost */}
+                  <div className="text-center">
+                    <div className="text-xs text-gray-500 mb-1">{t('serviceProviders.providerPrice')}</div>
+                    <div className="font-semibold text-red-600">
+                      {service.providerPrice !== null && service.providerPrice !== undefined
+                        ? formatPrice(service.providerPrice, service.currency)
+                        : '-'}
+                    </div>
+                  </div>
+
+                  {/* Net Profit with Margin */}
+                  <div className="text-center">
+                    <div className="text-xs text-gray-500 mb-1">{t('events.profit')}</div>
+                    <div className={`font-semibold ${
+                      service.price !== null && service.price !== undefined &&
+                      service.providerPrice !== null && service.providerPrice !== undefined
+                        ? (service.price - service.providerPrice) >= 0 ? 'text-green-600' : 'text-red-600'
+                        : 'text-gray-400'
+                    }`}>
+                      {service.price !== null && service.price !== undefined &&
+                       service.providerPrice !== null && service.providerPrice !== undefined
+                        ? (
+                          <>
+                            {formatPrice(service.price - service.providerPrice, service.currency)}
+                            {service.price > 0 && (
+                              <span className="text-xs ms-1">
+                                ({Math.round(((service.price - service.providerPrice) / service.price) * 100)}%)
+                              </span>
+                            )}
+                          </>
+                        )
+                        : '-'}
+                    </div>
                   </div>
                 </div>
+
+                {/* Divider if documents exist */}
+                {service.fileLinks && service.fileLinks.length > 0 && (
+                  <hr className="border-gray-200" />
+                )}
 
                 {service.fileLinks && service.fileLinks.length > 0 && (
                   <div className="pt-2">

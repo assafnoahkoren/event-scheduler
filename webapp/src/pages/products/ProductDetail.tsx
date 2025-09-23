@@ -34,7 +34,6 @@ export function ProductDetail() {
     onSuccess: () => {
       utils.products.get.invalidate({ id: productId })
       utils.products.list.invalidate()
-      toast.success(t('products.productUpdated'))
       navigate('/products')
     },
     onError: (error) => {
@@ -45,7 +44,6 @@ export function ProductDetail() {
 
   const deleteMutation = trpc.products.delete.useMutation({
     onSuccess: () => {
-      toast.success(t('products.productDeleted'))
       navigate('/products')
     },
     onError: (error) => {
