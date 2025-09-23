@@ -15,15 +15,20 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer'
 import { EventForm, type EventFormData } from '@/components/EventForm'
+import { EventCard } from '@/components/EventCard'
+import { useDateFormatter } from '@/hooks/useDateFormatter'
 
 export function EventCalendar() {
   const { i18n, t } = useTranslation()
   const { currentSite } = useCurrentSite()
   const navigate = useNavigate()
+  const { formatFullDate } = useDateFormatter()
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [viewMonth, setViewMonth] = useState(new Date())
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [eventDate, setEventDate] = useState<Date>(new Date())
+  const [isEventsListOpen, setIsEventsListOpen] = useState(false)
+  const [selectedDateEvents, setSelectedDateEvents] = useState<any[]>([])
 
   const utils = trpc.useUtils()
 
@@ -81,8 +86,14 @@ export function EventCalendar() {
       const existingEvents = eventsByDate.get(dateKey)
 
       if (existingEvents && existingEvents.length > 0) {
-        // If events exist, navigate to the first event
-        navigateToEvent(navigate, existingEvents[0].id)
+        if (existingEvents.length === 1) {
+          // Single event, navigate directly
+          navigateToEvent(navigate, existingEvents[0].id)
+        } else {
+          // Multiple events, show list drawer
+          setSelectedDateEvents(existingEvents)
+          setIsEventsListOpen(true)
+        }
       } else {
         // No events, open creation dialog
         setEventDate(date)
@@ -118,6 +129,7 @@ export function EventCalendar() {
     const dayEvents = eventsByDate.get(format(date, 'yyyy-MM-dd')) || []
     const hasDraftEvent = dayEvents.some(event => event.status === 'DRAFT')
     const hasScheduledEvent = dayEvents.some(event => event.status !== 'DRAFT')
+    const eventCount = dayEvents.length
 
     // Use the long press hook
     const longPressHandlers = useLongPress(
@@ -161,6 +173,11 @@ export function EventCalendar() {
         )}>
           {format(date, 'd')}
         </span>
+        {eventCount > 1 && isCurrentMonth && (
+          <span className="absolute bottom-0.5 text-xs font-medium text-gray-600 pointer-events-none">
+            ({eventCount})
+          </span>
+        )}
       </div>
     )
   }
@@ -205,7 +222,7 @@ export function EventCalendar() {
         </div>
       </div>
 
-      {/* Event Drawer */}
+      {/* Event Creation Drawer */}
       <Drawer open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DrawerContent>
           <DrawerHeader>
@@ -218,6 +235,33 @@ export function EventCalendar() {
               onCancel={() => setIsDialogOpen(false)}
               isSubmitting={createEventMutation.isPending}
             />
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      {/* Events List Drawer */}
+      <Drawer open={isEventsListOpen} onOpenChange={setIsEventsListOpen}>
+        <DrawerContent halfScreen>
+          <DrawerHeader>
+            <DrawerTitle>
+              {selectedDateEvents.length > 0 &&
+                formatFullDate(new Date(selectedDateEvents[0].startDate))
+              } - {selectedDateEvents.length} {t('events.events')}
+            </DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-4 overflow-y-auto">
+            <div className="space-y-8">
+              {selectedDateEvents.map((event) => (
+                <EventCard
+                  key={event.id}
+                  event={event}
+                  onClick={() => {
+                    setIsEventsListOpen(false)
+                    navigateToEvent(navigate, event.id)
+                  }}
+                />
+              ))}
+            </div>
           </div>
         </DrawerContent>
       </Drawer>

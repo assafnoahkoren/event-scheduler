@@ -60,16 +60,21 @@ const DrawerOverlay = React.forwardRef<
 ))
 DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
 
+interface DrawerContentProps extends React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content> {
+  halfScreen?: boolean
+}
+
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+  DrawerContentProps
+>(({ className, children, halfScreen = false, ...props }, ref) => (
   <DrawerPortal>
     <DrawerOverlay />
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed end-0 top-[50px] bottom-0 z-50 flex w-full flex-col border-s bg-background rounded-t-2xl",
+        "fixed end-0 bottom-0 z-50 flex w-full flex-col border-s bg-background rounded-t-2xl",
+        halfScreen ? "top-[50vh]" : "top-[50px]",
         className
       )}
       {...props}
