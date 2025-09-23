@@ -1,17 +1,45 @@
 import * as React from "react"
 import { Drawer as DrawerPrimitive } from "vaul"
+import { useDrawerBackButton } from "@/hooks/useDrawerBackButton"
 
 import { cn } from "@/lib/utils"
 
+type DrawerProps = {
+  shouldScaleBackground?: boolean
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  backButtonId?: string
+  children?: React.ReactNode
+  [key: string]: any
+}
+
 const Drawer = ({
   shouldScaleBackground = true,
+  open,
+  onOpenChange,
+  backButtonId,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
-  <DrawerPrimitive.Root
-    shouldScaleBackground={shouldScaleBackground}
-    {...props}
-  />
-)
+}: DrawerProps) => {
+  // Generate a unique ID if not provided
+  const id = React.useId();
+  const identifier = backButtonId || `drawer-${id}`
+
+  // Handle back button behavior
+  useDrawerBackButton(
+    open || false,
+    () => onOpenChange?.(false),
+    identifier
+  )
+
+  return (
+    <DrawerPrimitive.Root
+      shouldScaleBackground={shouldScaleBackground}
+      open={open}
+      onOpenChange={onOpenChange}
+      {...props}
+    />
+  )
+}
 Drawer.displayName = "Drawer"
 
 const DrawerTrigger = DrawerPrimitive.Trigger
