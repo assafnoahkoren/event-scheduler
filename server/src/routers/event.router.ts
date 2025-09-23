@@ -43,4 +43,19 @@ export const eventRouter = router({
     .query(async ({ ctx, input }) => {
       return eventService.calculateEventCosts(ctx.user.id, input.eventId)
     }),
+
+  profitByDateRange: protectedProcedure
+    .input(z.object({
+      siteId: z.string().uuid(),
+      startDate: z.string(),
+      endDate: z.string()
+    }))
+    .query(async ({ ctx, input }) => {
+      return eventService.calculateProfitByDateRange(
+        ctx.user.id,
+        input.siteId,
+        input.startDate,
+        input.endDate
+      )
+    }),
 })

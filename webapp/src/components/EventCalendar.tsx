@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { SimpleCalendar } from '@/components/SimpleCalendar'
+import { ProfitChart } from '@/components/ProfitChart'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { trpc } from '@/utils/trpc'
@@ -205,8 +206,17 @@ export function EventCalendar() {
 
   return (
     <>
-      <div className="flex justify-center items-flex-start min-h-[500px] pt-2 bg-slate-50">
-        <div className="max-w-2xl w-md">
+      <div className="flex justify-center items-flex-start min-h-[500px] bg-slate-50">
+        <div className="max-w-2xl w-full">
+          {/* Profit Chart */}
+          <div className="mb-4 bg-background p-2">
+            <ProfitChart
+              startDate={format(startOfMonth(viewMonth), 'yyyy-MM-dd')}
+              endDate={format(endOfMonth(viewMonth), 'yyyy-MM-dd')}
+            />
+          </div>
+
+          {/* Calendar */}
           <SimpleCalendar
             selected={selectedDate}
             onSelect={handleDateSelect}

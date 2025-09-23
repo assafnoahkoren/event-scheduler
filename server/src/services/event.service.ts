@@ -305,6 +305,125 @@ export class EventService {
     return { success: true }
   }
 
+  async calculateProfitByDateRange(userId: string, siteId: string, startDate: string, endDate: string) {
+    // Verify user has access to this site
+    const siteUser = await prisma.siteUser.findFirst({
+      where: {
+        userId,
+        siteId
+      }
+    })
+
+    if (!siteUser) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You do not have permission to view this site'
+      })
+    }
+
+    // Get all events in the date range
+    // Add time to ensure we capture the full day in any timezone
+    const startDateTime = new Date(startDate + 'T00:00:00')
+    const endDateTime = new Date(endDate + 'T23:59:59')
+
+    const events = await prisma.event.findMany({
+      where: {
+        siteId,
+        startDate: {
+          gte: startDateTime,
+          lte: endDateTime
+        },
+        status: {
+          not: 'CANCELLED'
+        }
+      },
+      include: {
+        providers: {
+          include: {
+            providerService: true
+          }
+        },
+        products: {
+          include: {
+            product: true
+          }
+        }
+      }
+    })
+
+    // Create a map of dates to profit
+    const profitByDate: Record<string, number> = {}
+
+    // Initialize all dates in range with 0 profit
+    const currentDate = new Date(startDate + 'T00:00:00')
+    const end = new Date(endDate + 'T00:00:00')
+
+    while (currentDate <= end) {
+      // Format date as YYYY-MM-DD in local time
+      const year = currentDate.getFullYear()
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0')
+      const day = String(currentDate.getDate()).padStart(2, '0')
+      const dateKey = `${year}-${month}-${day}`
+      profitByDate[dateKey] = 0
+      currentDate.setDate(currentDate.getDate() + 1)
+    }
+
+    // Calculate profit for each event
+    for (const event of events) {
+      // Format event date as YYYY-MM-DD in local time
+      const eventDate = new Date(event.startDate)
+      const year = eventDate.getFullYear()
+      const month = String(eventDate.getMonth() + 1).padStart(2, '0')
+      const day = String(eventDate.getDate()).padStart(2, '0')
+      const dateKey = `${year}-${month}-${day}`
+
+      // Calculate client cost
+      let clientCost = 0
+
+      // Add service costs
+      for (const provider of event.providers) {
+        const servicePrice = provider.agreedPrice || provider.providerService.price || 0
+        clientCost += servicePrice
+      }
+
+      // Add product costs
+      for (const product of event.products) {
+        const productPrice = product.price || product.product?.price || 0
+        const quantity = product.quantity || 1
+        clientCost += productPrice * quantity
+      }
+
+      // Calculate provider cost
+      let providerCost = 0
+      for (const provider of event.providers) {
+        const providerPrice = provider.providerPrice || 0
+        providerCost += providerPrice
+      }
+
+      // Add profit for this date
+      const profit = clientCost - providerCost
+      if (profitByDate[dateKey] !== undefined) {
+        profitByDate[dateKey] += profit
+      }
+    }
+
+    // Convert to array format for chart
+    const profitData = Object.entries(profitByDate).map(([date, profit]) => ({
+      date,
+      profit,
+      displayDate: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    }))
+
+    // Calculate total profit
+    const totalProfit = profitData.reduce((sum, item) => sum + item.profit, 0)
+
+    return {
+      data: profitData,
+      totalProfit,
+      currency: 'ILS'
+    }
+  }
+
   async calculateEventCosts(userId: string, eventId: string) {
     // Check event exists and user has permission to view it
     const event = await prisma.event.findUnique({

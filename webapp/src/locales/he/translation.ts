@@ -189,7 +189,8 @@ export const heTranslation: TranslationType = {
     profit: "רווח",
     margin: "שולי רווח",
     profitMargin: "אחוז רווח",
-    costCalculationError: "לא ניתן לחשב עלויות"
+    costCalculationError: "לא ניתן לחשב עלויות",
+    monthlyProfit: "רווח חודשי"
   },
   navigation: {
     home: "בית",

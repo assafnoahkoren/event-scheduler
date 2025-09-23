@@ -1,0 +1,150 @@
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { trpc } from '@/utils/trpc'
+import { useCurrentSite } from '@/contexts/CurrentSiteContext'
+import { cn } from '@/lib/utils'
+import { Loader2, TrendingUp, TrendingDown } from 'lucide-react'
+
+interface ProfitChartProps {
+  startDate: string
+  endDate: string
+  className?: string
+}
+
+export function ProfitChart({ startDate, endDate, className }: ProfitChartProps) {
+  const { t } = useTranslation()
+  const { currentSite } = useCurrentSite()
+
+  const { data, isLoading } = trpc.events.profitByDateRange.useQuery(
+    {
+      siteId: currentSite?.id || '',
+      startDate,
+      endDate
+    },
+    { enabled: !!currentSite?.id && !!startDate && !!endDate }
+  )
+
+  const formatCurrency = (value: number) => {
+    return `₪${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+  }
+
+  const chartData = useMemo(() => {
+    if (!data?.data) return []
+    return data.data.map(item => ({
+      ...item,
+      displayDate: new Date(item.date).getDate().toString()
+    }))
+  }, [data])
+
+  const maxProfit = useMemo(() => {
+    if (!chartData.length) return 0
+    return Math.max(...chartData.map(d => d.profit))
+  }, [chartData])
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload[0]) {
+      const data = payload[0].payload
+      return (
+        <div className="bg-background border rounded-md p-2 shadow-sm">
+          <p className="text-xs font-medium">
+            {new Date(data.date).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric'
+            })}
+          </p>
+          <p className={cn(
+            "text-xs font-semibold",
+            data.profit >= 0 ? "text-green-600" : "text-red-600"
+          )}>
+            {formatCurrency(data.profit)}
+          </p>
+        </div>
+      )
+    }
+    return null
+  }
+
+  if (isLoading) {
+    return (
+      <div className={cn("flex items-center justify-center py-4", className)}>
+        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  if (!data || !chartData.length) {
+    return null
+  }
+
+  const isProfit = data.totalProfit >= 0
+
+  return (
+    <div className={cn("space-y-2", className)}>
+      {/* Summary */}
+      <div className="flex items-center justify-between px-2">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-muted-foreground">
+            {t('events.monthlyProfit')}
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className={cn(
+            "text-sm font-bold",
+            isProfit ? "text-green-600" : "text-red-600"
+          )}>
+            {formatCurrency(data.totalProfit)}
+          </span>
+          {isProfit ? (
+            <TrendingUp className="h-3 w-3 text-green-600" />
+          ) : (
+            <TrendingDown className="h-3 w-3 text-red-600" />
+          )}
+        </div>
+      </div>
+
+      {/* Chart */}
+      <div className="h-[100px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={chartData}
+            margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+          >
+            <defs>
+              <linearGradient id="profitGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+              </linearGradient>
+              <linearGradient id="lossGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <XAxis
+              dataKey="displayDate"
+              tick={{ fontSize: 10 }}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              hide
+              domain={[0, maxProfit * 1.1]}
+            />
+            <Tooltip
+              content={<CustomTooltip />}
+              cursor={{ strokeDasharray: '3 3' }}
+            />
+            <Area
+              type="monotone"
+              dataKey="profit"
+              stroke={isProfit ? "#10b981" : "#ef4444"}
+              strokeWidth={1.5}
+              fill={isProfit ? "url(#profitGradient)" : "url(#lossGradient)"}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  )
+}
