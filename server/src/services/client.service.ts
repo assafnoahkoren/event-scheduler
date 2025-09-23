@@ -4,13 +4,13 @@ import { TRPCError } from '@trpc/server'
 
 // Schemas
 export const searchClientsSchema = z.object({
-  siteId: z.string().uuid(),
+  organizationId: z.string().uuid(),
   query: z.string().optional(),
   limit: z.number().min(1).max(50).default(10)
 })
 
 export const createClientSchema = z.object({
-  siteId: z.string().uuid(),
+  organizationId: z.string().uuid(),
   name: z.string().min(1).max(255),
   email: z.string().email().optional(),
   phone: z.string().optional(),
@@ -35,27 +35,28 @@ export type UpdateClientInput = z.infer<typeof updateClientSchema>
 
 class ClientService {
   async searchClients(userId: string, input: SearchClientsInput) {
-    const { siteId, query, limit } = input
+    const { organizationId, query, limit } = input
 
-    // Verify user has access to the site
-    const siteUser = await prisma.siteUser.findFirst({
+    // Verify user has access to the organization
+    const member = await prisma.organizationMember.findFirst({
       where: {
         userId,
-        siteId,
-        isActive: true
+        organizationId,
+        isActive: true,
+        isDeleted: false
       }
     })
 
-    if (!siteUser) {
+    if (!member) {
       throw new TRPCError({
         code: 'FORBIDDEN',
-        message: 'Access denied to this site'
+        message: 'Access denied to this organization'
       })
     }
 
     // Search clients
     const where: any = {
-      siteId,
+      organizationId,
       isActive: true
     }
 
@@ -86,15 +87,17 @@ class ClientService {
   async getClient(userId: string, clientId: string) {
     const client = await prisma.client.findFirst({
       where: {
-        id: clientId
+        id: clientId,
+        isDeleted: false
       },
       include: {
-        site: {
+        organization: {
           include: {
-            siteUsers: {
+            members: {
               where: {
                 userId,
-                isActive: true
+                isActive: true,
+                isDeleted: false
               }
             }
           }
@@ -109,7 +112,7 @@ class ClientService {
       })
     }
 
-    if (client.site.siteUsers.length === 0) {
+    if (client.organization.members.length === 0) {
       throw new TRPCError({
         code: 'FORBIDDEN',
         message: 'Access denied to this client'
@@ -120,28 +123,29 @@ class ClientService {
   }
 
   async createClient(userId: string, input: CreateClientInput) {
-    const { siteId, ...clientData } = input
+    const { organizationId, ...clientData } = input
 
-    // Verify user has access to the site
-    const siteUser = await prisma.siteUser.findFirst({
+    // Verify user has access to the organization
+    const member = await prisma.organizationMember.findFirst({
       where: {
         userId,
-        siteId,
-        isActive: true
+        organizationId,
+        isActive: true,
+        isDeleted: false
       }
     })
 
-    if (!siteUser) {
+    if (!member) {
       throw new TRPCError({
         code: 'FORBIDDEN',
-        message: 'Access denied to this site'
+        message: 'Access denied to this organization'
       })
     }
 
     // Check if client with same name already exists
     const existingClient = await prisma.client.findFirst({
       where: {
-        siteId,
+        organizationId,
         name: clientData.name,
         isActive: true
       }
@@ -155,7 +159,7 @@ class ClientService {
     const client = await prisma.client.create({
       data: {
         ...clientData,
-        siteId,
+        organizationId,
         createdBy: userId
       }
     })
@@ -169,15 +173,17 @@ class ClientService {
     // Verify user has access to the client
     const client = await prisma.client.findFirst({
       where: {
-        id
+        id,
+        isDeleted: false
       },
       include: {
-        site: {
+        organization: {
           include: {
-            siteUsers: {
+            members: {
               where: {
                 userId,
-                isActive: true
+                isActive: true,
+                isDeleted: false
               }
             }
           }
@@ -192,7 +198,7 @@ class ClientService {
       })
     }
 
-    if (client.site.siteUsers.length === 0) {
+    if (client.organization.members.length === 0) {
       throw new TRPCError({
         code: 'FORBIDDEN',
         message: 'Access denied to this client'
@@ -212,18 +218,17 @@ class ClientService {
     // Verify user has access to the client
     const client = await prisma.client.findFirst({
       where: {
-        id: clientId
+        id: clientId,
+        isDeleted: false
       },
       include: {
-        site: {
+        organization: {
           include: {
-            siteUsers: {
+            members: {
               where: {
                 userId,
                 isActive: true,
-                role: {
-                  in: ['OWNER', 'ADMIN']
-                }
+                isDeleted: false
               }
             }
           }
@@ -238,10 +243,10 @@ class ClientService {
       })
     }
 
-    if (client.site.siteUsers.length === 0) {
+    if (client.organization.members.length === 0) {
       throw new TRPCError({
         code: 'FORBIDDEN',
-        message: 'Only site owners and admins can delete clients'
+        message: 'Access denied to this client'
       })
     }
 

@@ -27,7 +27,6 @@ model Site {
   siteUsers   SiteUser[]
   invitations SiteInvitation[]
   events      Event[]
-  clients     Client[]
   products    Product[]
   waitingListEntries WaitingListEntry[]
   // organizationPermissions OrganizationPermission[] // DEFERRED: Deep permissions for later

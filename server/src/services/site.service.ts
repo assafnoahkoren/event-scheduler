@@ -9,6 +9,7 @@ import { prisma } from '../db'
 // Schema definitions
 export const createSiteSchema = z.object({
   name: z.string().min(1).max(100),
+  organizationId: z.string().uuid(),
 })
 
 export const updateSiteSchema = z.object({
@@ -34,6 +35,7 @@ class SiteService {
     const site = await prisma.site.create({
       data: {
         name: input.name,
+        organizationId: input.organizationId,
         ownerId: userId,
         siteUsers: {
           create: {

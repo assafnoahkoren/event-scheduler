@@ -107,10 +107,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (email: string, password: string) => {
     // Pass the current UI language when registering
+    // Ensure we only send the base language code (en, he, ar)
+    const currentLang = i18n.language.split('-')[0] // Handle cases like 'en-US'
+    const validLang = ['en', 'he', 'ar'].includes(currentLang) ? currentLang : 'en'
+
     const result = await registerMutation.mutateAsync({
       email,
       password,
-      language: i18n.language as 'en' | 'he' | 'ar'
+      language: validLang as 'en' | 'he' | 'ar'
     })
     setUser(result.user)
     setAccessToken(result.accessToken)

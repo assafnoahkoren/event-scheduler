@@ -54,19 +54,32 @@ export class EventService {
       })
     }
 
-    // Validate client belongs to the same site if provided
+    // Validate client belongs to the same organization as the site if provided
     if (input.clientId) {
+      // Get the site's organizationId
+      const site = await prisma.site.findUnique({
+        where: { id: input.siteId },
+        select: { organizationId: true }
+      })
+
+      if (!site) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Site not found'
+        })
+      }
+
       const client = await prisma.client.findFirst({
         where: {
           id: input.clientId,
-          siteId: input.siteId
+          organizationId: site.organizationId
         }
       })
 
       if (!client) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: 'Client not found or does not belong to this site'
+          message: 'Client not found or does not belong to this organization'
         })
       }
     }
@@ -229,17 +242,30 @@ export class EventService {
 
     // Validate client if changed
     if (data.clientId && data.clientId !== event.clientId) {
+      // Get the site's organizationId
+      const site = await prisma.site.findUnique({
+        where: { id: event.siteId },
+        select: { organizationId: true }
+      })
+
+      if (!site) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Site not found'
+        })
+      }
+
       const client = await prisma.client.findFirst({
         where: {
           id: data.clientId,
-          siteId: event.siteId
+          organizationId: site.organizationId
         }
       })
 
       if (!client) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: 'Client not found or does not belong to this site'
+          message: 'Client not found or does not belong to this organization'
         })
       }
     }

@@ -1,4 +1,4 @@
-// Client model tied to sites
+// Client model at organization level
 
 model Client {
   id          String   @id @default(uuid())
@@ -6,10 +6,6 @@ model Client {
   // Organization this client belongs to
   organizationId String       @map("organization_id")
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  // Site this client belongs to
-  siteId      String   @map("site_id")
-  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
   // Client information
   name        String
@@ -39,11 +35,9 @@ model Client {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  @@index([siteId])
   @@index([organizationId])
   @@index([createdBy])
   @@index([isDeleted])
-  @@index([siteId, isDeleted]) // Composite index for common query
   @@index([organizationId, isDeleted]) // Composite index for org queries
   @@map("clients")
 }

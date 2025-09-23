@@ -4,13 +4,19 @@ import { TRPCError } from '@trpc/server'
 
 // ServiceProvider schemas
 export const createServiceProviderSchema = z.object({
+  organizationId: z.string().uuid(),
   name: z.string().min(1).max(100),
   phone: z.string().optional(),
   email: z.string().email().optional().or(z.literal('')),
   notes: z.string().optional(),
 })
 
-export const updateServiceProviderSchema = createServiceProviderSchema.partial()
+export const updateServiceProviderSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  phone: z.string().optional(),
+  email: z.string().email().optional().or(z.literal('')),
+  notes: z.string().optional(),
+})
 
 export const serviceProviderIdSchema = z.object({
   serviceProviderId: z.string().uuid(),
@@ -41,9 +47,10 @@ export type UpdateServiceProviderServiceInput = z.infer<typeof updateServiceProv
 
 class ServiceProviderService {
   // ServiceProvider CRUD operations
-  async listServiceProviders(search?: string, includeDeleted = false) {
+  async listServiceProviders(organizationId: string, search?: string, includeDeleted = false) {
     return prisma.serviceProvider.findMany({
       where: {
+        organizationId,
         ...(search ? {
           OR: [
             { name: { contains: search, mode: 'insensitive' } },
@@ -299,17 +306,21 @@ class ServiceProviderService {
   }
 
   // Category operations
-  async listCategories() {
+  async listCategories(organizationId: string) {
     return prisma.serviceCategory.findMany({
-      where: { isDeleted: false },
+      where: {
+        organizationId,
+        isDeleted: false
+      },
       orderBy: { name: 'asc' },
     })
   }
 
   // Get serviceProviders by category
-  async getServiceProvidersByCategory(categoryId: string) {
+  async getServiceProvidersByCategory(organizationId: string, categoryId: string) {
     return prisma.serviceProvider.findMany({
       where: {
+        organizationId,
         isDeleted: false,
         services: {
           some: {

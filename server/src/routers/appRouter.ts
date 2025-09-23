@@ -1,6 +1,7 @@
 import { router, publicProcedure, protectedProcedure } from '../trpc';
 import { z } from 'zod';
 import { authRouter } from './auth.router';
+import { organizationRouter } from './organization.router';
 import { siteRouter } from './site.router';
 import { eventRouter } from './event.router';
 import { clientRouter } from './client.router';
@@ -13,6 +14,9 @@ import { eventProviderRouter } from './event-provider.router';
 export const appRouter = router({
   // Auth routes
   auth: authRouter,
+
+  // Organization management routes
+  organizations: organizationRouter,
 
   // Site management routes
   sites: siteRouter,

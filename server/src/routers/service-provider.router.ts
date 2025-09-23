@@ -14,14 +14,16 @@ export const serviceProviderRouter = router({
   // List all serviceProviders
   list: protectedProcedure
     .input(z.object({
+      organizationId: z.string().uuid(),
       search: z.string().optional(),
       includeDeleted: z.boolean().optional(),
-    }).optional())
+    }))
     .query(async ({ input }) => {
       try {
         return await serviceProviderService.listServiceProviders(
-          input?.search,
-          input?.includeDeleted
+          input.organizationId,
+          input.search,
+          input.includeDeleted
         )
       } catch (error: any) {
         throw new TRPCError({
@@ -158,9 +160,12 @@ export const serviceProviderRouter = router({
 
   // List all categories
   listCategories: protectedProcedure
-    .query(async () => {
+    .input(z.object({
+      organizationId: z.string().uuid(),
+    }))
+    .query(async ({ input }) => {
       try {
-        return await serviceProviderService.listCategories()
+        return await serviceProviderService.listCategories(input.organizationId)
       } catch (error: any) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -172,11 +177,15 @@ export const serviceProviderRouter = router({
   // Get serviceProviders by category
   getByCategory: protectedProcedure
     .input(z.object({
+      organizationId: z.string().uuid(),
       categoryId: z.string().uuid(),
     }))
     .query(async ({ input }) => {
       try {
-        return await serviceProviderService.getServiceProvidersByCategory(input.categoryId)
+        return await serviceProviderService.getServiceProvidersByCategory(
+          input.organizationId,
+          input.categoryId
+        )
       } catch (error: any) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
