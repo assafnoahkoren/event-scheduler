@@ -46,26 +46,27 @@ export function Products() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-4xl">
+    <div className="container mx-auto px-4 py-4 max-w-4xl">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">{t('products.products')}</h1>
-
-        {/* Search and Add button */}
-        <div className="flex gap-2 mb-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder={t('products.searchProducts')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-          <Button onClick={() => navigate('/products/new')} size="icon">
-            <Plus className="h-4 w-4" />
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold">{t('products.products')}</h1>
+          <Button onClick={() => navigate('/products/new')}>
+            <Plus className="h-4 w-4 me-2" />
+            {t('products.newProduct')}
           </Button>
+        </div>
+
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder={t('products.searchProducts')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
         </div>
       </div>
 

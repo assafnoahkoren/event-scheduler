@@ -202,27 +202,27 @@ export function WaitingList() {
   }) || []
 
   return (
-    <div className="container py-8 px-4 max-w-6xl">
+    <div className="container py-4 px-4 max-w-6xl">
       {/* Header */}
       <div className="flex flex-col gap-4 mb-8">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">{t('waitingList.title')}</h1>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowMatches(!showMatches)
-                if (!showMatches) refetchMatches()
-              }}
-            >
-              <CalendarSearch className="h-4 w-4 me-2" />
-              {t('waitingList.checkMatches')}
-            </Button>
-            <Button onClick={handleNewEntry}>
-              <Plus className="h-4 w-4 me-2" />
-              {t('waitingList.newEntry')}
-            </Button>
-          </div>
+        <h1 className="text-xl font-bold">{t('waitingList.title')}</h1>
+
+        {/* Action Buttons */}
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            onClick={() => {
+              setShowMatches(!showMatches)
+              if (!showMatches) refetchMatches()
+            }}
+          >
+            <CalendarSearch className="h-4 w-4 me-2" />
+            {t('waitingList.checkMatches')}
+          </Button>
+          <Button onClick={handleNewEntry}>
+            <Plus className="h-4 w-4 me-2" />
+            {t('waitingList.newEntry')}
+          </Button>
         </div>
 
         {/* Filters */}
