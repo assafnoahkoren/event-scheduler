@@ -39,20 +39,19 @@ export function CurrentSiteProvider({ children }: CurrentSiteProviderProps) {
       } else {
         // Default to first site
         setCurrentSite(sites[0])
-        localStorage.setItem('currentSiteId', sites[0].id)
       }
       setHasInitialized(true)
     }
   }, [sites, hasInitialized])
 
-  // Update localStorage when current site changes
+  // Update localStorage when current site changes (but only after initialization)
   useEffect(() => {
-    if (currentSite) {
+    if (hasInitialized && currentSite) {
       localStorage.setItem('currentSiteId', currentSite.id)
-    } else {
+    } else if (hasInitialized && !currentSite) {
       localStorage.removeItem('currentSiteId')
     }
-  }, [currentSite])
+  }, [currentSite, hasInitialized])
 
   const switchSite = (siteId: string) => {
     const site = sites?.find(s => s.id === siteId)
