@@ -24,6 +24,7 @@ type Event = RouterOutput['events']['get']
 interface EventFormProps {
   event?: Event | null
   initialDate?: Date
+  initialClientId?: string | null
   onSubmit: (data: EventFormData) => void
   onCancel?: () => void
   isSubmitting?: boolean
@@ -42,6 +43,7 @@ export interface EventFormData {
 export function EventForm({
   event,
   initialDate,
+  initialClientId,
   onSubmit,
   onCancel,
   isSubmitting = false
@@ -60,7 +62,7 @@ export function EventForm({
     event?.endDate ? new Date(event.endDate) : undefined
   )
   const [isAllDay, setIsAllDay] = useState(event?.isAllDay || false)
-  const [clientId, setClientId] = useState<string | null>(event?.clientId || null)
+  const [clientId, setClientId] = useState<string | null>(event?.clientId || initialClientId || null)
   const [status, setStatus] = useState<'DRAFT' | 'SCHEDULED' | 'CANCELLED'>(
     event?.status || 'DRAFT'
   )
