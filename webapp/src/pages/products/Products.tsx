@@ -50,7 +50,7 @@ export function Products() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold">{t('products.products')}</h1>
+          <h1 className="text-xl font-bold">{t('products.products')}</h1>
           <Button onClick={() => navigate('/products/new')}>
             <Plus className="h-4 w-4 me-2" />
             {t('products.newProduct')}

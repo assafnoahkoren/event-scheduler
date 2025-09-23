@@ -40,15 +40,8 @@ export function NewProduct() {
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-lg">
-      <div className="mb-6">
-        <Button variant="ghost" size="sm" onClick={() => navigate('/products')}>
-          <ArrowLeft className="h-4 w-4 me-2" />
-          {t('common.back')}
-        </Button>
-      </div>
-
-      <div className="bg-background rounded-lg p-6 border">
-        <h1 className="text-2xl font-bold mb-6">{t('products.newProduct')}</h1>
+      <div className="bg-background rounded-lg">
+        <h1 className="text-xl font-bold mb-6">{t('products.newProduct')}</h1>
 
         <ProductForm
           onSubmit={handleSubmit}

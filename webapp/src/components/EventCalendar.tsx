@@ -249,8 +249,8 @@ export function EventCalendar() {
               } - {selectedDateEvents.length} {t('events.events')}
             </DrawerTitle>
           </DrawerHeader>
-          <div className="px-4 pb-4 overflow-y-auto">
-            <div className="space-y-8">
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
+            <div className="space-y-8 pt-4">
               {selectedDateEvents.map((event) => (
                 <EventCard
                   key={event.id}
