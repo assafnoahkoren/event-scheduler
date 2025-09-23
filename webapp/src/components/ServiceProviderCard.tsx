@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Phone, Mail, Edit, Trash2, FileText } from 'lucide-react'
+import { Phone, Mail, Edit, Trash2, FileText, Plus, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -19,9 +19,11 @@ interface ServiceProviderCardProps {
   provider: ServiceProvider
   onEdit: (provider: ServiceProvider) => void
   onDelete: (providerId: string) => void
+  onAddService: (provider: ServiceProvider) => void
+  onManageServices: (provider: ServiceProvider) => void
 }
 
-export function ServiceProviderCard({ provider, onEdit, onDelete }: ServiceProviderCardProps) {
+export function ServiceProviderCard({ provider, onEdit, onDelete, onAddService, onManageServices }: ServiceProviderCardProps) {
   const { t } = useTranslation()
 
   return (
@@ -38,7 +40,24 @@ export function ServiceProviderCard({ provider, onEdit, onDelete }: ServiceProvi
             <Button
               size="sm"
               variant="ghost"
+              onClick={() => onManageServices(provider)}
+              title={t('serviceProviders.manageServices')}
+            >
+              <Settings className="w-4 h-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onAddService(provider)}
+              title={t('serviceProviders.addService')}
+            >
+              <Plus className="w-4 h-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
               onClick={() => onEdit(provider)}
+              title={t('common.edit')}
             >
               <Edit className="w-4 h-4" />
             </Button>
@@ -46,6 +65,7 @@ export function ServiceProviderCard({ provider, onEdit, onDelete }: ServiceProvi
               size="sm"
               variant="ghost"
               onClick={() => onDelete(provider.id)}
+              title={t('common.delete')}
             >
               <Trash2 className="w-4 h-4" />
             </Button>

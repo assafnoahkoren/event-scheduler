@@ -13,18 +13,28 @@ import {
   DrawerFooter,
 } from '@/components/ui/drawer'
 import { ServiceProviderCard } from '@/components/ServiceProviderCard'
+import { ServiceProviderServiceForm } from '@/components/ServiceProviderServiceForm'
+import { ServiceProviderServicesManager } from '@/components/ServiceProviderServicesManager'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
 type ServiceProvider = RouterOutput['serviceProviders']['list'][0]
 type ServiceCategory = RouterOutput['serviceProviders']['listCategories'][0]
+type ServiceProviderService = ServiceProvider['services'][0]
 
 interface ServiceProviderFormData {
   name: string
   phone?: string
   email?: string
   notes?: string
+}
+
+interface ServiceFormData {
+  categoryId: string
+  price?: number
+  currency?: string
+  fileLinks?: string[]
 }
 
 function ServiceProviderForm({
@@ -118,6 +128,11 @@ export function ServiceProviders() {
   const [searchQuery, setSearchQuery] = useState('')
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null)
+  const [isServiceDrawerOpen, setIsServiceDrawerOpen] = useState(false)
+  const [providerForService, setProviderForService] = useState<ServiceProvider | null>(null)
+  const [editingService, setEditingService] = useState<ServiceProviderService | null>(null)
+  const [isServicesManagerOpen, setIsServicesManagerOpen] = useState(false)
+  const [managingProvider, setManagingProvider] = useState<ServiceProvider | null>(null)
 
   const utils = trpc.useUtils()
 
@@ -158,6 +173,33 @@ export function ServiceProviders() {
     },
   })
 
+  // Add service mutation
+  const addServiceMutation = trpc.serviceProviders.addService.useMutation({
+    onSuccess: () => {
+      utils.serviceProviders.list.invalidate()
+      setIsServiceDrawerOpen(false)
+      setProviderForService(null)
+      setEditingService(null)
+    },
+  })
+
+  // Update service mutation
+  const updateServiceMutation = trpc.serviceProviders.updateService.useMutation({
+    onSuccess: () => {
+      utils.serviceProviders.list.invalidate()
+      setIsServiceDrawerOpen(false)
+      setProviderForService(null)
+      setEditingService(null)
+    },
+  })
+
+  // Delete service mutation
+  const deleteServiceMutation = trpc.serviceProviders.deleteService.useMutation({
+    onSuccess: () => {
+      utils.serviceProviders.list.invalidate()
+    },
+  })
+
   const handleSubmit = (data: ServiceProviderFormData) => {
     if (selectedProvider) {
       updateMutation.mutate({
@@ -183,6 +225,44 @@ export function ServiceProviders() {
   const handleCreateNew = () => {
     setSelectedProvider(null)
     setIsDrawerOpen(true)
+  }
+
+  const handleAddService = (provider: ServiceProvider) => {
+    setProviderForService(provider)
+    setEditingService(null)
+    setIsServiceDrawerOpen(true)
+  }
+
+  const handleManageServices = (provider: ServiceProvider) => {
+    setManagingProvider(provider)
+    setIsServicesManagerOpen(true)
+  }
+
+  const handleEditService = (service: ServiceProviderService) => {
+    setEditingService(service)
+    setProviderForService(managingProvider)
+    setIsServicesManagerOpen(false)
+    setIsServiceDrawerOpen(true)
+  }
+
+  const handleDeleteService = (serviceId: string) => {
+    deleteServiceMutation.mutate({ serviceId })
+  }
+
+  const handleServiceSubmit = (data: ServiceFormData) => {
+    if (!providerForService) return
+
+    if (editingService) {
+      updateServiceMutation.mutate({
+        serviceId: editingService.id,
+        ...data,
+      })
+    } else {
+      addServiceMutation.mutate({
+        serviceProviderId: providerForService.id,
+        ...data,
+      })
+    }
   }
 
   if (!currentSite) {
@@ -227,6 +307,8 @@ export function ServiceProviders() {
               provider={provider}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onAddService={handleAddService}
+              onManageServices={handleManageServices}
             />
           ))}
         </div>
@@ -249,6 +331,56 @@ export function ServiceProviders() {
               onCancel={() => setIsDrawerOpen(false)}
               isSubmitting={createMutation.isPending || updateMutation.isPending}
             />
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      {/* Service Management Drawer */}
+      <Drawer open={isServiceDrawerOpen} onOpenChange={setIsServiceDrawerOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>
+              {editingService
+                ? t('serviceProviders.editService')
+                : t('serviceProviders.addServiceFor', { provider: providerForService?.name })}
+            </DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-4">
+            {providerForService && (
+              <ServiceProviderServiceForm
+                provider={providerForService}
+                service={editingService || undefined}
+                onSubmit={handleServiceSubmit}
+                onCancel={() => setIsServiceDrawerOpen(false)}
+                isSubmitting={addServiceMutation.isPending || updateServiceMutation.isPending}
+              />
+            )}
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      {/* Services Manager Drawer */}
+      <Drawer open={isServicesManagerOpen} onOpenChange={setIsServicesManagerOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>
+              {managingProvider?.name} - {t('serviceProviders.manageServices')}
+            </DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
+            {managingProvider && (
+              <ServiceProviderServicesManager
+                provider={managingProvider}
+                onAddService={() => {
+                  setProviderForService(managingProvider)
+                  setEditingService(null)
+                  setIsServicesManagerOpen(false)
+                  setIsServiceDrawerOpen(true)
+                }}
+                onEditService={handleEditService}
+                onDeleteService={handleDeleteService}
+              />
+            )}
           </div>
         </DrawerContent>
       </Drawer>
