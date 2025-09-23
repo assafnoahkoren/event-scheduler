@@ -3,7 +3,6 @@
 model Organization {
   id          String   @id @default(uuid())
   name        String
-  slug        String   @unique // URL-friendly identifier
 
   // Owner (always has full permissions)
   ownerId     String   @map("owner_id")
@@ -33,7 +32,6 @@ model Organization {
   serviceProviders   ServiceProvider[]
   serviceCategories  ServiceCategory[]
 
-  @@index([slug])
   @@index([ownerId])
   @@index([isDeleted])
   @@map("organizations")
