@@ -76,6 +76,7 @@ export function ServiceSelectionDrawer({
     if (selectedService?.serviceId === service.id) {
       setSelectedService(null)
       setCustomPrice(undefined)
+      setProviderPrice(0)
     } else {
       // Select the new service
       setSelectedService({
@@ -84,6 +85,8 @@ export function ServiceSelectionDrawer({
         price: service.price || undefined,
       })
       setCustomPrice(service.price || undefined)
+      // Automatically populate provider price from service data
+      setProviderPrice(service.providerPrice || 0)
     }
     setTimeout(() => setIsSelecting(false), 100)
   }

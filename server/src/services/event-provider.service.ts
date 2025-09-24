@@ -99,7 +99,7 @@ class EventProviderService {
         providerId: input.providerId,
         providerServiceId: input.providerServiceId,
         agreedPrice: input.price ?? providerService.price,
-        providerPrice: input.providerPrice ?? 0,
+        providerPrice: input.providerPrice ?? providerService.providerPrice ?? 0,
         currency: providerService.currency,
         notes: input.notes,
       },
