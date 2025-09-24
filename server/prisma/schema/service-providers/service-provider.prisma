@@ -39,7 +39,8 @@ model ServiceProviderService {
 
   // Service details
   providerId String   @map("provider_id")
-  categoryId    String   @map("category_id")
+  name          String   // Name of the service
+  categoryId    String?  @map("category_id") // Optional category
   price         Float?   // Price we charge the client for this service
   providerPrice Float?   @map("provider_price") // Price the provider charges us (before commission)
   currency      String?  // Currency for the prices
@@ -55,10 +56,9 @@ model ServiceProviderService {
 
   // Relations
   provider   ServiceProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
-  category      ServiceCategory @relation(fields: [categoryId], references: [id])
+  category      ServiceCategory? @relation(fields: [categoryId], references: [id])
   eventProviders EventProvider[]
 
-  @@unique([providerId, categoryId])
   @@index([providerId])
   @@index([categoryId])
   @@index([isDeleted])

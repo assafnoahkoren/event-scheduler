@@ -65,7 +65,7 @@ export function EventServiceCard({ eventProvider, onRemove, onUpdate }: EventSer
               {eventProvider.provider.name}
             </CardTitle>
             <CardDescription>
-              {eventProvider.providerService?.category.name}
+              {eventProvider.providerService?.category?.name || eventProvider.providerService?.name}
             </CardDescription>
           </div>
           <div className="flex gap-1">

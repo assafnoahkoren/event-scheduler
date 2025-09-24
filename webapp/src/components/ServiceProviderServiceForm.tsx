@@ -43,7 +43,8 @@ export function ServiceProviderServiceForm({
   const { t } = useTranslation()
   const { currentOrg } = useCurrentOrg()
   const [formData, setFormData] = useState<ServiceFormData>({
-    categoryId: service?.categoryId || '',
+    name: service?.name || '',
+    categoryId: service?.categoryId || undefined,
     price: service?.price || undefined,
     providerPrice: service?.providerPrice || undefined,
     currency: service?.currency || 'ILS',
@@ -67,7 +68,7 @@ export function ServiceProviderServiceForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.categoryId) {
+    if (!formData.name || formData.name.trim() === '') {
       return
     }
     onSubmit(formData)
@@ -102,11 +103,25 @@ export function ServiceProviderServiceForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="text-sm font-medium mb-2 block">
-          {t('serviceProviders.serviceCategory')}
+          {t('serviceProviders.name')} *
+        </label>
+        <Input
+          type="text"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          placeholder={t('serviceProviders.namePlaceholder')}
+          required
+          maxLength={100}
+        />
+      </div>
+
+      <div>
+        <label className="text-sm font-medium mb-2 block">
+          {t('serviceProviders.serviceCategory')} ({t('common.optional')})
         </label>
         <Select
-          value={formData.categoryId}
-          onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+          value={formData.categoryId || ''}
+          onValueChange={(value) => setFormData({ ...formData, categoryId: value || undefined })}
           disabled={!!service} // Disable category change when editing
         >
           <SelectTrigger>
@@ -263,7 +278,7 @@ export function ServiceProviderServiceForm({
       <div className="flex gap-2">
         <Button
           type="submit"
-          disabled={isSubmitting || !formData.categoryId || availableCategories.length === 0}
+          disabled={isSubmitting || !formData.name || formData.name.trim() === ''}
         >
           {service ? t('common.update') : t('common.create')}
         </Button>

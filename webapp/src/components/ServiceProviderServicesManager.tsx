@@ -80,9 +80,9 @@ export function ServiceProviderServicesManager({
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <CardTitle className="text-base">
-                      {service.category.name}
+                      {service.category?.name || service.name}
                     </CardTitle>
-                    {service.category.description && (
+                    {service.category?.description && (
                       <CardDescription className="text-sm">
                         {service.category.description}
                       </CardDescription>

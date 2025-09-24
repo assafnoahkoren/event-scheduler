@@ -53,7 +53,7 @@ export function ServiceProviderCard({ provider }: ServiceProviderCardProps) {
             <div className="flex flex-wrap gap-1">
               {provider.services.slice(0, 3).map((service) => (
                 <Badge key={service.id} variant="secondary" className="text-xs py-0 px-1.5">
-                  {service.category.name}
+                  {service.category?.name || service.name}
                 </Badge>
               ))}
               {provider.services.length > 3 && (

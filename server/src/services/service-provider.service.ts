@@ -25,7 +25,8 @@ export const serviceProviderIdSchema = z.object({
 // ServiceProvider Service schemas
 export const createServiceProviderServiceSchema = z.object({
   serviceProviderId: z.string().uuid(),
-  categoryId: z.string().uuid(),
+  name: z.string().min(1).max(100),
+  categoryId: z.string().uuid().optional(),
   price: z.number().positive().optional(),
   providerPrice: z.number().positive().optional(),
   currency: z.string().max(3).optional(),
@@ -33,6 +34,8 @@ export const createServiceProviderServiceSchema = z.object({
 })
 
 export const updateServiceProviderServiceSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  categoryId: z.string().uuid().optional(),
   price: z.number().positive().optional(),
   providerPrice: z.number().positive().optional(),
   currency: z.string().max(3).optional(),
@@ -205,37 +208,40 @@ class ServiceProviderService {
       })
     }
 
-    // Check if category exists
-    const category = await prisma.serviceCategory.findFirst({
-      where: { id: input.categoryId, isDeleted: false },
-    })
-
-    if (!category) {
-      throw new TRPCError({
-        code: 'NOT_FOUND',
-        message: 'Category not found',
+    // Check if category exists if provided
+    if (input.categoryId) {
+      const category = await prisma.serviceCategory.findFirst({
+        where: { id: input.categoryId, isDeleted: false },
       })
-    }
 
-    // Check if service already exists
-    const existingService = await prisma.serviceProviderService.findFirst({
-      where: {
-        providerId: input.serviceProviderId,
-        categoryId: input.categoryId,
-        isDeleted: false,
-      },
-    })
+      if (!category) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Category not found',
+        })
+      }
 
-    if (existingService) {
-      throw new TRPCError({
-        code: 'CONFLICT',
-        message: 'This service already exists for this serviceProvider',
+      // Check if service already exists with same category
+      const existingService = await prisma.serviceProviderService.findFirst({
+        where: {
+          providerId: input.serviceProviderId,
+          categoryId: input.categoryId,
+          isDeleted: false,
+        },
       })
+
+      if (existingService) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'This service already exists for this serviceProvider',
+        })
+      }
     }
 
     return prisma.serviceProviderService.create({
       data: {
         providerId: input.serviceProviderId,
+        name: input.name,
         categoryId: input.categoryId,
         price: input.price,
         providerPrice: input.providerPrice,
@@ -258,6 +264,20 @@ class ServiceProviderService {
         code: 'NOT_FOUND',
         message: 'Service not found',
       })
+    }
+
+    // Check if category exists if provided
+    if (input.categoryId) {
+      const category = await prisma.serviceCategory.findFirst({
+        where: { id: input.categoryId, isDeleted: false },
+      })
+
+      if (!category) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Category not found',
+        })
+      }
     }
 
     return prisma.serviceProviderService.update({

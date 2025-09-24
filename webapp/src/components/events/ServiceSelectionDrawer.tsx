@@ -64,7 +64,7 @@ export function ServiceSelectionDrawer({
     const matchesSearch = searchQuery === '' ||
       provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       provider.services.some(service =>
-        service.category.name.toLowerCase().includes(searchQuery.toLowerCase())
+        (service.category?.name || service.name || '').toLowerCase().includes(searchQuery.toLowerCase())
       )
     const hasServices = provider.services.length > 0
     return matchesSearch && hasServices
@@ -164,9 +164,9 @@ export function ServiceSelectionDrawer({
                               <div className="flex items-center justify-between">
                                 <div>
                                   <CardTitle className="text-sm">
-                                    {service.category.name}
+                                    {service.category?.name || service.name}
                                   </CardTitle>
-                                  {service.category.description && (
+                                  {service.category?.description && (
                                     <CardDescription className="text-xs mt-1">
                                       {service.category.description}
                                     </CardDescription>
