@@ -1,6 +1,6 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, CreateBucketCommand, HeadBucketCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { v4 as uuidv4 } from 'uuid'
+import { randomUUID } from 'crypto'
 
 export interface StorageConfig {
   endpoint: string
@@ -104,7 +104,7 @@ export class StorageService {
     }
 
     // Generate unique file key
-    const fileId = uuidv4()
+    const fileId = randomUUID()
     const extension = this.getExtensionFromContentType(contentType) || 'bin'
     const key = `${folder}/${fileId}${fileName ? `_${fileName}` : ''}.${extension}`
 
