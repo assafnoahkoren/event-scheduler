@@ -12,6 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { X, Upload, File } from 'lucide-react'
 import { trpc } from '@/utils/trpc'
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
@@ -40,6 +41,7 @@ export function ServiceProviderServiceForm({
   isSubmitting,
 }: ServiceProviderServiceFormProps) {
   const { t } = useTranslation()
+  const { currentOrg } = useCurrentOrg()
   const [formData, setFormData] = useState<ServiceFormData>({
     categoryId: service?.categoryId || '',
     price: service?.price || undefined,
@@ -50,7 +52,10 @@ export function ServiceProviderServiceForm({
   const [newFileLink, setNewFileLink] = useState('')
 
   // Fetch categories
-  const { data: categories = [] } = trpc.serviceProviders.listCategories.useQuery()
+  const { data: categories = [] } = trpc.serviceProviders.listCategories.useQuery(
+    { organizationId: currentOrg?.id || '' },
+    { enabled: !!currentOrg?.id }
+  )
 
   // Filter out categories that the provider already has (except if editing that service)
   const availableCategories = categories.filter(category => {

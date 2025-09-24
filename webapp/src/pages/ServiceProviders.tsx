@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import { Plus, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -25,7 +26,7 @@ type ServiceCategory = RouterOutput['serviceProviders']['listCategories'][0]
 type ServiceProviderService = ServiceProvider['services'][0]
 
 // Use tRPC inferred types instead of hard-coded interfaces
-type ServiceProviderFormData = RouterInput['serviceProviders']['create']
+type ServiceProviderFormData = Omit<RouterInput['serviceProviders']['create'], 'organizationId'>
 type ServiceFormData = Omit<RouterInput['serviceProviders']['addService'], 'serviceProviderId'>
 
 function ServiceProviderForm({
@@ -116,6 +117,7 @@ function ServiceProviderForm({
 export function ServiceProviders() {
   const { t } = useTranslation()
   const { currentSite } = useCurrentSite()
+  const { currentOrg } = useCurrentOrg()
   const [searchQuery, setSearchQuery] = useState('')
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null)
@@ -129,14 +131,14 @@ export function ServiceProviders() {
 
   // Fetch providers
   const { data: providers = [], isLoading } = trpc.serviceProviders.list.useQuery(
-    { search: searchQuery },
-    { enabled: !!currentSite?.id }
+    { organizationId: currentOrg?.id || '', search: searchQuery },
+    { enabled: !!currentOrg?.id }
   )
 
   // Fetch categories
   const { data: categories = [] } = trpc.serviceProviders.listCategories.useQuery(
-    undefined,
-    { enabled: !!currentSite?.id }
+    { organizationId: currentOrg?.id || '' },
+    { enabled: !!currentOrg?.id }
   )
 
   // Create provider mutation
@@ -198,7 +200,10 @@ export function ServiceProviders() {
         ...data,
       })
     } else {
-      createMutation.mutate(data)
+      createMutation.mutate({
+        organizationId: currentOrg?.id || '',
+        ...data,
+      })
     }
   }
 

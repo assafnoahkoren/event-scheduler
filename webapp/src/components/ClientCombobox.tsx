@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/drawer'
 import { trpc } from '@/utils/trpc'
 import { useTranslation } from 'react-i18next'
-import { useCurrentSite } from '@/contexts/CurrentSiteContext'
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import { useDebounce } from '@/hooks/useDebounce'
 import { ClientForm, type ClientFormData } from '@/components/ClientForm'
 import { PhoneCallButton } from '@/components/PhoneCallButton'
@@ -36,7 +36,7 @@ export function ClientCombobox({
   disabled = false
 }: ClientComboboxProps) {
   const { t } = useTranslation()
-  const { currentSite } = useCurrentSite()
+  const { currentOrg } = useCurrentOrg()
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [showClientDialog, setShowClientDialog] = useState(false)
@@ -48,12 +48,12 @@ export function ClientCombobox({
   // Search clients
   const { data: clients = [], isLoading } = trpc.clients.search.useQuery(
     {
-      siteId: currentSite?.id || '',
+      organizationId: currentOrg?.id || '',
       query: debouncedSearchQuery,
       limit: 20
     },
     {
-      enabled: !!currentSite?.id
+      enabled: !!currentOrg?.id
     }
   )
 
@@ -85,13 +85,13 @@ export function ClientCombobox({
   }, [])
 
   const handleCreateClient = useCallback((formData: ClientFormData) => {
-    if (!currentSite?.id) return
+    if (!currentOrg?.id) return
 
     createClientMutation.mutate({
-      siteId: currentSite.id,
+      organizationId: currentOrg.id,
       ...formData
     })
-  }, [currentSite?.id, createClientMutation])
+  }, [currentOrg?.id, createClientMutation])
 
   const handleSelect = useCallback((clientId: string) => {
     onValueChange(clientId === value ? null : clientId)

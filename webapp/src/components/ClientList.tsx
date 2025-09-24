@@ -12,7 +12,7 @@ type RouterOutput = inferRouterOutputs<AppRouter>
 type ClientSearchResult = RouterOutput['clients']['search'][0]
 
 interface ClientListProps {
-  siteId: string
+  organizationId: string
   searchQuery: string
   onEdit: (client: ClientSearchResult) => void
   onDelete: (client: ClientSearchResult) => void
@@ -20,7 +20,7 @@ interface ClientListProps {
 }
 
 export const ClientList = memo(function ClientList({
-  siteId,
+  organizationId,
   searchQuery,
   onEdit,
   onDelete,
@@ -31,11 +31,11 @@ export const ClientList = memo(function ClientList({
   // Fetch clients
   const { data: clients, isLoading } = trpc.clients.search.useQuery(
     {
-      siteId: siteId,
+      organizationId: organizationId,
       query: searchQuery,
       limit: 50
     },
-    { enabled: !!siteId }
+    { enabled: !!organizationId }
   )
 
   if (isLoading) {

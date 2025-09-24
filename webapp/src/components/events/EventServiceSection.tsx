@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import { Button } from '@/components/ui/button'
 import {
   Drawer,
@@ -26,6 +27,7 @@ interface EventServiceSectionProps {
 
 export function EventServiceSection({ event }: EventServiceSectionProps) {
   const { t } = useTranslation()
+  const { currentOrg } = useCurrentOrg()
   const utils = trpc.useUtils()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -35,10 +37,10 @@ export function EventServiceSection({ event }: EventServiceSectionProps) {
     drawerOpenRef.current = drawerOpen
   }, [drawerOpen])
 
-  // Get available service providers for the site
+  // Get available service providers for the organization
   const { data: providers } = trpc.serviceProviders.list.useQuery(
-    {},
-    { enabled: !!event.siteId }
+    { organizationId: currentOrg?.id || '' },
+    { enabled: !!currentOrg?.id && !!event.siteId }
   )
 
   // Get existing event providers (services)

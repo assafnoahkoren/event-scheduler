@@ -26,6 +26,7 @@ export const arTranslation: TranslationType = {
     menu: "القائمة",
     language: "اللغة",
     optional: "اختياري",
+    creating: "جاري الإنشاء",
     today: "اليوم",
     tomorrow: "غداً",
     yesterday: "أمس"
@@ -202,6 +203,12 @@ export const arTranslation: TranslationType = {
   validation: {
     required: "هذا الحقل مطلوب",
     slugFormat: "يُسمح فقط بالأحرف الصغيرة والأرقام والشرطات"
+  },
+  organizations: {
+    welcomeTitle: "مرحباً بك في منظم الأحداث",
+    welcomeDescription: "لنبدأ بإنشاء منظمتك",
+    namePlaceholder: "أدخل اسم المنظمة",
+    createButton: "إنشاء المنظمة"
   },
   clients: {
     clients: "العملاء",

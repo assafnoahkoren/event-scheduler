@@ -26,6 +26,7 @@ export const heTranslation: TranslationType = {
     menu: "תפריט",
     language: "שפה",
     optional: "אופציונלי",
+    creating: "יוצר",
     today: "היום",
     tomorrow: "מחר",
     yesterday: "אתמול"
@@ -202,6 +203,12 @@ export const heTranslation: TranslationType = {
   validation: {
     required: "שדה זה חובה",
     slugFormat: "מותרות רק אותיות קטנות, מספרים ומקפים"
+  },
+  organizations: {
+    welcomeTitle: "ברוכים הבאים למארגן אירועים",
+    welcomeDescription: "בואו נתחיל ביצירת הארגון שלכם",
+    namePlaceholder: "הזן את שם הארגון",
+    createButton: "צור ארגון"
   },
   clients: {
     clients: "לקוחות",

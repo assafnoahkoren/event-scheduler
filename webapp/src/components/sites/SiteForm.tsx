@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,6 +15,7 @@ interface SiteFormProps {
 
 export function SiteForm({ siteId, onSuccess, onCancel }: SiteFormProps) {
   const { t } = useTranslation()
+  const { currentOrg } = useCurrentOrg()
   const utils = trpc.useUtils()
 
   const [formData, setFormData] = useState({
@@ -80,7 +82,11 @@ export function SiteForm({ siteId, onSuccess, onCancel }: SiteFormProps) {
         ...formData
       })
     } else {
-      createMutation.mutate(formData)
+      if (!currentOrg) return
+      createMutation.mutate({
+        organizationId: currentOrg.id,
+        ...formData
+      })
     }
   }
 

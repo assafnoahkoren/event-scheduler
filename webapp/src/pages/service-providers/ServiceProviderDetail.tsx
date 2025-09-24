@@ -30,7 +30,7 @@ type ServiceProviderService = NonNullable<ServiceProvider>['services'][0]
 
 // Use tRPC inferred types instead of hard-coded interfaces
 type ServiceFormData = Omit<RouterInput['serviceProviders']['addService'], 'serviceProviderId'>
-type ProviderFormData = RouterInput['serviceProviders']['create']
+type ProviderFormData = Omit<RouterInput['serviceProviders']['create'], 'organizationId'>
 
 function ProviderDetailsTab({ provider }: { provider: NonNullable<ServiceProvider> }) {
   const { t } = useTranslation()

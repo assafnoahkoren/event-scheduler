@@ -66,7 +66,18 @@ class OrganizationService {
             user: true,
           },
         },
-        serviceCategories: true,
+        sites: {
+          where: { isDeleted: false },
+        },
+        _count: {
+          select: {
+            sites: true,
+            members: true,
+            clients: true,
+            serviceProviders: true,
+            serviceCategories: true,
+          },
+        },
       },
     })
 

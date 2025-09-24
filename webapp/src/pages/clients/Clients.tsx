@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { cn } from '@/lib/utils'
-import { useCurrentSite } from '@/contexts/CurrentSiteContext'
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@/../../server/src/routers/appRouter'
 
@@ -34,7 +34,7 @@ type ClientFull = RouterOutput['clients']['get']
 
 export function Clients() {
   const { t } = useTranslation()
-  const { currentSite } = useCurrentSite()
+  const { currentOrg } = useCurrentOrg()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedClient, setSelectedClient] = useState<ClientFull | null>(null)
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null)
@@ -88,7 +88,7 @@ export function Clients() {
   })
 
   const handleSubmit = (data: ClientFormData) => {
-    if (!currentSite) return
+    if (!currentOrg) return
 
     if (selectedClient) {
       updateMutation.mutate({
@@ -97,7 +97,7 @@ export function Clients() {
       })
     } else {
       createMutation.mutate({
-        siteId: currentSite.id,
+        organizationId: currentOrg.id,
         ...data
       })
     }
@@ -124,10 +124,10 @@ export function Clients() {
     setIsFormOpen(true)
   }
 
-  if (!currentSite) {
+  if (!currentOrg) {
     return (
       <div className="container py-8 flex items-center justify-center">
-        <div>{t('sites.noSiteSelected')}</div>
+        <div>No organization selected</div>
       </div>
     )
   }
@@ -158,7 +158,7 @@ export function Clients() {
 
       {/* Clients List */}
       <ClientList
-        siteId={currentSite.id}
+        organizationId={currentOrg.id}
         searchQuery={searchQuery}
         onEdit={handleEdit}
         onDelete={handleDelete}
