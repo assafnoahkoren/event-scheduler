@@ -1,0 +1,50 @@
+// UploadedFile - Tracks all files uploaded to object storage
+
+model UploadedFile {
+  id            String   @id @default(uuid())
+
+  // File information
+  originalName  String   @map("original_name")
+  key           String   @unique // S3 object key
+  url           String   // Public URL to access the file
+  bucket        String   // S3 bucket name
+  size          Int?     // File size in bytes
+  contentType   String?  @map("content_type") // MIME type
+
+  // Organization
+  folder        String?  // Logical folder/category (profiles, services, events, etc.)
+
+  // Related object (polymorphic relation)
+  objectId      String?  @map("object_id")   // ID of the related object
+  objectType    String?  @map("object_type") // Type of the related object (event, service, user, etc.)
+  relation      String?  // Relation type (attachment, document, avatar, etc.)
+
+  // Upload metadata
+  uploadedBy    String   @map("uploaded_by")
+
+  // Soft delete
+  deletedAt     DateTime? @map("deleted_at")
+  isDeleted     Boolean   @default(false) @map("is_deleted")
+
+  // Timestamps
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  uploadedByUser User @relation(fields: [uploadedBy], references: [id])
+
+  // Indexes
+  @@index([uploadedBy])
+  @@index([folder])
+  @@index([objectId])
+  @@index([objectType])
+  @@index([relation])
+  @@index([isDeleted])
+  @@index([createdAt])
+  @@index([uploadedBy, isDeleted])
+  @@index([objectId, objectType])
+  @@index([objectType, relation])
+  @@index([objectId, objectType, relation])
+
+  @@map("uploaded_files")
+}

@@ -51,6 +51,7 @@ model User {
   events        Event[]
   clients       Client[]
   waitingListEntries WaitingListEntry[] @relation("WaitingListCreator")
+  uploadedFiles UploadedFile[]
 
   @@index([email])
   @@index([isDeleted])

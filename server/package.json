@@ -15,6 +15,8 @@
     "vercel-build": "prisma generate && npm run build"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.895.0",
+    "@aws-sdk/s3-request-presigner": "^3.895.0",
     "@prisma/client": "6.16.2",
     "@trpc/server": "^11.5.1",
     "@types/bcryptjs": "^2.4.6",
@@ -22,15 +24,19 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
     "@types/node": "^24.5.2",
+    "@types/uuid": "^10.0.0",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
     "prisma": "6.16.2",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
+    "uuid": "^13.0.0",
     "zod": "^4.1.9"
   },
   "devDependencies": {

@@ -10,6 +10,7 @@ import { eventProductsRouter } from './eventProducts.router';
 import { waitingListRouter } from './waiting-list.router';
 import { serviceProviderRouter } from './service-provider.router';
 import { eventProviderRouter } from './event-provider.router';
+import { filesRouter } from './files.router';
 
 export const appRouter = router({
   // Auth routes
@@ -41,6 +42,9 @@ export const appRouter = router({
 
   // Event-Provider relation routes
   eventProviders: eventProviderRouter,
+
+  // File upload and management routes
+  files: filesRouter,
 
   // Public routes
   ping: publicProcedure
