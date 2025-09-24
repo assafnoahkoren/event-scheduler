@@ -7,12 +7,14 @@ import { ArrowLeft, ArrowRight, Menu, Home } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useIsRtl } from '@/hooks/useIsRtl'
 import { trpc } from '@/utils/trpc'
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 
 export function Header() {
   const { t } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
   const isRtl = useIsRtl()
+  const { currentOrg } = useCurrentOrg()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const { data: sites } = trpc.sites.list.useQuery()
 
@@ -40,7 +42,6 @@ export function Header() {
               variant="ghost"
               size="icon"
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="me-2"
               title={t('common.menu')}
             >
               <Menu className="h-4 w-4" />
@@ -50,7 +51,6 @@ export function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={handleBack}
-                className="me-2"
                 title={t('common.back')}
               >
                 <BackIcon className="h-4 w-4" />
@@ -64,6 +64,15 @@ export function Header() {
             >
               <Home className="h-4 w-4" />
             </Button>
+          </div>
+
+          {/* Organization name in the center */}
+          <div className="flex-1 text-center">
+            {currentOrg && (
+              <span className="text-sm text-gray-400">
+                {currentOrg.name}
+              </span>
+            )}
           </div>
 
           <div className="flex items-center">
