@@ -40,10 +40,12 @@ export class StorageService {
 
     this.s3Client = new S3Client({
       endpoint: config.endpoint,
-      region: config.region || 'auto', // Use 'auto' if no region specified (works for most providers)
+      region: config.region, // Use explicit region for signed URLs
       credentials: config.credentials,
-      forcePathStyle: config.forcePathStyle, // Required for MinIO
+      forcePathStyle: config.forcePathStyle, // Required for MinIO and Backblaze B2
     })
+
+    console.log(`🔧 S3Client initialized with endpoint: ${config.endpoint}, region: ${config.region}`)
 
     // Ensure bucket exists (mainly for development/MinIO)
     this.ensureBucketExists()
@@ -159,14 +161,25 @@ export class StorageService {
     expiresIn: number = 3600
   ): Promise<string> {
     try {
+      console.log(`🔧 Generating signed URL - Endpoint: ${this.config.endpoint}, Bucket: ${this.bucket}, Key: ${key}`)
+
       const command = new PutObjectCommand({
         Bucket: this.bucket,
         Key: key,
         ContentType: contentType,
       })
 
-      return await getSignedUrl(this.s3Client, command, { expiresIn })
+      const signedUrl = await getSignedUrl(this.s3Client, command, { expiresIn })
+      console.log(`✅ Generated signed URL successfully`)
+      return signedUrl
     } catch (error) {
+      console.error(`❌ Error generating signed URL:`, {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        endpoint: this.config.endpoint,
+        bucket: this.bucket,
+        key: key,
+        contentType: contentType
+      })
       throw new Error(`Failed to generate signed upload URL: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
@@ -292,7 +305,7 @@ export class StorageService {
 const createStorageService = (): StorageService => {
   const config: StorageConfig = {
     endpoint: process.env.S3_ENDPOINT || 'http://localhost:9000',
-    region: process.env.S3_REGION, // Optional - leave undefined if not needed
+    region: process.env.S3_REGION || 'us-east-1', // Default region for signed URL generation
     credentials: {
       accessKeyId: process.env.S3_ACCESS_KEY_ID || 'minioadmin',
       secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || 'minioadmin',
@@ -300,6 +313,14 @@ const createStorageService = (): StorageService => {
     bucket: process.env.S3_BUCKET || 'event-scheduler-uploads',
     forcePathStyle: process.env.S3_FORCE_PATH_STYLE === 'true' || true,
   }
+
+  console.log(`🔧 Storage service config:`, {
+    endpoint: config.endpoint,
+    region: config.region,
+    bucket: config.bucket,
+    forcePathStyle: config.forcePathStyle,
+    hasCredentials: !!(config.credentials.accessKeyId && config.credentials.secretAccessKey)
+  })
 
   return new StorageService(config)
 }
