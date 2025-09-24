@@ -8,13 +8,8 @@ import { createContext } from './trpc';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: (_origin, callback) => {
-    // Allow all origins
-    callback(null, true)
-  },
-  credentials: true
-}));
+// CORS configuration following Vercel guide
+app.use(cors());
 
 app.use(cookieParser());
 app.use(express.json());
