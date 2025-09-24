@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { X, Upload, File } from 'lucide-react'
 import { trpc } from '@/utils/trpc'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
+import { FileManager } from '@/components/files/FileManager'
 import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
@@ -274,6 +275,17 @@ export function ServiceProviderServiceForm({
           </div>
         </div>
       </div>
+
+      {service && (
+        <div>
+          <FileManager
+            objectId={service.id}
+            objectType="service"
+            relation="document"
+            title={t('files.title')}
+          />
+        </div>
+      )}
 
       <div className="flex gap-2">
         <Button

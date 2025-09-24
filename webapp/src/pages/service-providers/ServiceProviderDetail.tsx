@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/drawer'
 import { ServiceProviderServiceForm } from '@/components/ServiceProviderServiceForm'
 import { ServiceProviderServicesManager } from '@/components/ServiceProviderServicesManager'
+import { FileManager } from '@/components/files/FileManager'
 import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '../../../../server/src/routers/appRouter'
 
@@ -152,6 +153,14 @@ function ProviderDetailsTab({ provider }: { provider: NonNullable<ServiceProvide
           </div>
         </CardContent>
       </Card>
+
+      {/* File Manager */}
+      <FileManager
+        objectId={provider.id}
+        objectType="serviceProvider"
+        relation="document"
+        title={t('files.title')}
+      />
 
       {/* Edit Provider Drawer */}
       <Drawer open={isEditDrawerOpen} onOpenChange={setIsEditDrawerOpen}>

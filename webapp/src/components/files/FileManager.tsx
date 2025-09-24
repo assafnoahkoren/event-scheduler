@@ -29,7 +29,7 @@ import { cn } from '@/lib/utils'
 
 interface FileManagerProps {
   objectId: string
-  objectType: 'event' | 'service' | 'user' | 'organization' | 'site'
+  objectType: 'event' | 'service' | 'serviceProvider' | 'user' | 'organization' | 'site'
   relation: 'attachment' | 'photo' | 'document' | 'image' | 'contract' | 'avatar' | 'logo' | 'banner'
   title?: string
   className?: string
@@ -206,6 +206,7 @@ export function FileManager({
         <div className="flex justify-between items-center">
           <h4 className="text-sm font-medium">{t('files.uploadFiles')}</h4>
           <Button
+            type="button"
             onClick={handleUploadClick}
             disabled={isUploading}
             size="sm"
@@ -256,6 +257,7 @@ export function FileManager({
                 </div>
                 <div className="flex items-center gap-1">
                   <Button
+                    type="button"
                     variant="outline"
                     size="sm"
                     onClick={() => handleDownload(file)}
@@ -264,6 +266,7 @@ export function FileManager({
                     <Download className="h-3 w-3" />
                   </Button>
                   <Button
+                    type="button"
                     variant="outline"
                     size="sm"
                     onClick={() => handleDelete(file)}

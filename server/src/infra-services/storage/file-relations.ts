@@ -5,6 +5,7 @@ import type { Prisma } from '@prisma/client'
 export const FILE_OBJECT_TYPES = {
   EVENT: 'event',
   SERVICE: 'service',
+  SERVICE_PROVIDER: 'serviceProvider',
   USER: 'user',
   ORGANIZATION: 'organization',
   SITE: 'site',
@@ -19,6 +20,11 @@ export const FILE_RELATIONS = {
   SERVICE_DOCUMENT: 'document',
   SERVICE_IMAGE: 'image',
   SERVICE_CONTRACT: 'contract',
+
+  // Service Provider relations
+  SERVICE_PROVIDER_DOCUMENT: 'document',
+  SERVICE_PROVIDER_LOGO: 'logo',
+  SERVICE_PROVIDER_CONTRACT: 'contract',
 
   // User relations
   USER_AVATAR: 'avatar',
@@ -46,6 +52,10 @@ export interface ObjectTypeMapping {
     model: typeof prisma.serviceProviderService
     include: Prisma.ServiceProviderServiceInclude
   }
+  [FILE_OBJECT_TYPES.SERVICE_PROVIDER]: {
+    model: typeof prisma.serviceProvider
+    include: Prisma.ServiceProviderInclude
+  }
   [FILE_OBJECT_TYPES.USER]: {
     model: typeof prisma.user
     include: Prisma.UserInclude
@@ -71,6 +81,11 @@ export const VALID_RELATIONS: Record<FileObjectType, FileRelation[]> = {
     FILE_RELATIONS.SERVICE_IMAGE,
     FILE_RELATIONS.SERVICE_CONTRACT,
   ],
+  [FILE_OBJECT_TYPES.SERVICE_PROVIDER]: [
+    FILE_RELATIONS.SERVICE_PROVIDER_DOCUMENT,
+    FILE_RELATIONS.SERVICE_PROVIDER_LOGO,
+    FILE_RELATIONS.SERVICE_PROVIDER_CONTRACT,
+  ],
   [FILE_OBJECT_TYPES.USER]: [
     FILE_RELATIONS.USER_AVATAR,
     FILE_RELATIONS.USER_DOCUMENT,
@@ -92,6 +107,8 @@ export function getModelForObjectType(objectType: FileObjectType) {
       return prisma.event
     case FILE_OBJECT_TYPES.SERVICE:
       return prisma.serviceProviderService
+    case FILE_OBJECT_TYPES.SERVICE_PROVIDER:
+      return prisma.serviceProvider
     case FILE_OBJECT_TYPES.USER:
       return prisma.user
     case FILE_OBJECT_TYPES.ORGANIZATION:
@@ -183,6 +200,33 @@ export async function verifyUserAccess(
           where: {
             userId,
             organizationId: service.provider.organizationId,
+            isActive: true,
+            isDeleted: false
+          }
+        })
+
+        return !!orgMember
+      }
+
+      case FILE_OBJECT_TYPES.SERVICE_PROVIDER: {
+        // User can upload to service provider if they're a member of the organization that owns the service provider
+        const serviceProvider = await prisma.serviceProvider.findFirst({
+          where: {
+            id: objectId,
+            isDeleted: false
+          },
+          include: {
+            organization: true
+          }
+        })
+
+        if (!serviceProvider) return false
+
+        // Check if user is a member of the organization that owns the service provider
+        const orgMember = await prisma.organizationMember.findFirst({
+          where: {
+            userId,
+            organizationId: serviceProvider.organizationId,
             isActive: true,
             isDeleted: false
           }
@@ -327,6 +371,7 @@ export async function getFileWithObjectVerification(
 export const DEFAULT_FOLDERS: Record<FileObjectType, string> = {
   [FILE_OBJECT_TYPES.EVENT]: 'events',
   [FILE_OBJECT_TYPES.SERVICE]: 'services',
+  [FILE_OBJECT_TYPES.SERVICE_PROVIDER]: 'service-providers',
   [FILE_OBJECT_TYPES.USER]: 'users',
   [FILE_OBJECT_TYPES.ORGANIZATION]: 'organizations',
   [FILE_OBJECT_TYPES.SITE]: 'sites',
