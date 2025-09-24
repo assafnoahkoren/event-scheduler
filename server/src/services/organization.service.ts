@@ -1,13 +1,14 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { prisma } from '../db'
-import { DEFAULT_SERVICE_CATEGORIES } from '../seed'
+import { createI18n, type SupportedLanguage } from '../i18n'
 
 // Schemas
 export const createOrganizationSchema = z.object({
   name: z.string().min(1).max(100),
   defaultCurrency: z.string().default('USD'),
   timezone: z.string().default('UTC'),
+  language: z.enum(['en', 'ar', 'he']).default('en'),
   plan: z.string().default('free'),
   maxSites: z.number().int().positive().default(3),
   maxUsers: z.number().int().positive().default(10),
@@ -17,6 +18,7 @@ export const updateOrganizationSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   defaultCurrency: z.string().optional(),
   timezone: z.string().optional(),
+  language: z.enum(['en', 'ar', 'he']).optional(),
   plan: z.string().optional(),
   maxSites: z.number().int().positive().optional(),
   maxUsers: z.number().int().positive().optional(),
@@ -40,7 +42,28 @@ export type AddMemberInput = z.infer<typeof addMemberSchema>
 export type RemoveMemberInput = z.infer<typeof removeMemberSchema>
 
 class OrganizationService {
+  private getServiceCategories(language: SupportedLanguage) {
+    const i18n = createI18n(language)
+    const categories = i18n.getSection('serviceCategories')
+
+    // Define the order of categories
+    const categoryKeys = [
+      'photography', 'catering', 'music', 'decoration', 'venue',
+      'flowers', 'transportation', 'coordination', 'security',
+      'lighting', 'videography', 'makeup', 'rental', 'printing', 'other'
+    ] as const
+
+    return categoryKeys.map(key => ({
+      name: categories[key].name,
+      description: categories[key].description,
+    }))
+  }
+
   async createOrganization(userId: string, input: CreateOrganizationInput) {
+    // Get language-specific categories
+    const language = (input.language || 'en') as SupportedLanguage
+    const serviceCategories = this.getServiceCategories(language)
+
     // Create organization with owner as first member and default categories
     const organization = await prisma.organization.create({
       data: {
@@ -53,10 +76,7 @@ class OrganizationService {
           },
         },
         serviceCategories: {
-          create: DEFAULT_SERVICE_CATEGORIES.map(cat => ({
-            name: cat.name,
-            description: cat.description,
-          })),
+          create: serviceCategories,
         },
       },
       include: {
@@ -302,15 +322,20 @@ class OrganizationService {
       })
     }
 
-    // Create a default organization for the user
+    // Get user's preferred language
+    const userLanguage = (user.language || 'en') as SupportedLanguage
+    const i18n = createI18n(userLanguage)
+
+    // Create localized organization name
     const orgName = user.firstName && user.lastName
-      ? `${user.firstName} ${user.lastName}'s Organization`
-      : `${user.email.split('@')[0]}'s Organization`
+      ? i18n.t('organization.defaultName').replace('{{userName}}', `${user.firstName} ${user.lastName}`)
+      : i18n.t('organization.defaultNameFromEmail').replace('{{emailPrefix}}', user.email.split('@')[0])
 
     return await this.createOrganization(userId, {
       name: orgName,
       defaultCurrency: 'USD',
       timezone: 'UTC',
+      language: userLanguage,
       plan: 'free',
       maxSites: 3,
       maxUsers: 10,

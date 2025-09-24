@@ -21,14 +21,43 @@ function getDefaultCurrency(timezone: string): string {
   return 'USD'
 }
 
+// Function to infer language based on timezone
+function getDefaultLanguage(timezone: string): 'en' | 'ar' | 'he' {
+  // Hebrew for Israel
+  if (timezone.includes('Jerusalem') || timezone.includes('Tel_Aviv')) return 'he'
+
+  // Arabic for Middle East countries
+  if (timezone.includes('Dubai') ||
+      timezone.includes('Abu_Dhabi') ||
+      timezone.includes('Riyadh') ||
+      timezone.includes('Saudi') ||
+      timezone.includes('Kuwait') ||
+      timezone.includes('Bahrain') ||
+      timezone.includes('Qatar') ||
+      timezone.includes('Amman') ||
+      timezone.includes('Beirut') ||
+      timezone.includes('Damascus') ||
+      timezone.includes('Baghdad') ||
+      timezone.includes('Cairo') ||
+      timezone.includes('Algeria') ||
+      timezone.includes('Tunisia') ||
+      timezone.includes('Casablanca')) {
+    return 'ar'
+  }
+
+  // Default to English for all other regions
+  return 'en'
+}
+
 export function CreateFirstOrg() {
   const { t } = useTranslation()
   const { setCurrentOrg } = useCurrentOrg()
   const utils = trpc.useUtils()
 
-  // Get user's timezone (will be used in the background)
+  // Get user's timezone and infer language and currency from it
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const defaultCurrency = getDefaultCurrency(userTimezone)
+  const defaultLanguage = getDefaultLanguage(userTimezone)
 
   const [orgName, setOrgName] = useState('')
   const [error, setError] = useState('')
@@ -55,6 +84,7 @@ export function CreateFirstOrg() {
       name: orgName.trim(),
       defaultCurrency: defaultCurrency,
       timezone: userTimezone,
+      language: defaultLanguage,
     })
   }
 

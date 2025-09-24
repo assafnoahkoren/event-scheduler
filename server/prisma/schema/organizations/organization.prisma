@@ -11,6 +11,7 @@ model Organization {
   // Settings
   defaultCurrency String @default("USD") @map("default_currency")
   timezone        String @default("UTC")
+  language        String @default("en") // en, ar, he
 
   // Billing/Plan info
   plan        String   @default("free") // free, pro, enterprise
