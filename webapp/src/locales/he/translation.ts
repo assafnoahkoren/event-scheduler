@@ -381,5 +381,28 @@ export const heTranslation: TranslationType = {
     providerNotFound: "הספק לא נמצא",
     phoneCall: "התקשר לספק",
     whatsappMessage: "שלח הודעת וואטסאפ"
+  },
+  files: {
+    title: "קבצים",
+    file: "קובץ",
+    files: "קבצים",
+    upload: "העלה",
+    download: "הורד",
+    delete: "מחק",
+    selectFiles: "בחר קבצים",
+    uploadFiles: "העלה קבצים",
+    uploading: "מעלה...",
+    uploadingFiles: "מעלה קבצים",
+    uploadedFiles: "קבצים שהועלו",
+    noFiles: "לא הועלו קבצים עדיין",
+    uploadSuccess: "העלאה הצליחה",
+    uploadError: "שגיאת העלאה",
+    downloadError: "שגיאת הורדה",
+    deleteSuccess: "מחיקה הצליחה",
+    deleteError: "שגיאת מחיקה",
+    fileUploadedSuccessfully: "הקובץ הועלה בהצלחה",
+    fileDeletedSuccessfully: "הקובץ נמחק בהצלחה",
+    confirmDelete: "מחק קובץ",
+    confirmDeleteDescription: "האם אתה בטוח שברצונך למחוק את {{fileName}}? לא ניתן לבטל פעולה זו."
   }
 } as const

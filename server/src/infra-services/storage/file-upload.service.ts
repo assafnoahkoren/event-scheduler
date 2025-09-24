@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { prisma } from '../../db'
-import { storageService, UploadResult } from './storage.service'
+import { storageService } from './storage.service'
+import type { UploadResult } from './storage.service'
 import { TRPCError } from '@trpc/server'
 import {
   FILE_OBJECT_TYPES,

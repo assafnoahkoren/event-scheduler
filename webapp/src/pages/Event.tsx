@@ -20,6 +20,7 @@ import { EventForm, type EventFormData } from '@/components/EventForm'
 import { EventProductSection } from '@/components/events/EventProductSection'
 import { EventServiceSection } from '@/components/events/EventServiceSection'
 import { EventCostsSection } from '@/components/events/EventCostsSection'
+import { FileManager } from '@/components/files/FileManager'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { WaitingListForm, type WaitingListFormData } from '@/components/WaitingListForm'
 import { Card, CardContent } from '@/components/ui/card'
@@ -250,6 +251,16 @@ export function Event() {
                   onSubmit={handleUpdate}
                   isSubmitting={updateMutation.isPending}
                 />
+
+                {/* File Management */}
+                {eventId && (
+                  <FileManager
+                    objectId={eventId}
+                    objectType="event"
+                    relation="attachment"
+                    title={t('files.title')}
+                  />
+                )}
 
                 <div className="pt-4 border-t">
                   <Button

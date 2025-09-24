@@ -379,5 +379,28 @@ export const enTranslation = {
     providerNotFound: "Provider not found",
     phoneCall: "Call provider",
     whatsappMessage: "Send WhatsApp message"
+  },
+  files: {
+    title: "Files",
+    file: "file",
+    files: "files",
+    upload: "Upload",
+    download: "Download",
+    delete: "Delete",
+    selectFiles: "Select Files",
+    uploadFiles: "Upload Files",
+    uploading: "Uploading...",
+    uploadingFiles: "Uploading Files",
+    uploadedFiles: "Uploaded Files",
+    noFiles: "No files uploaded yet",
+    uploadSuccess: "Upload Successful",
+    uploadError: "Upload Error",
+    downloadError: "Download Error",
+    deleteSuccess: "Delete Successful",
+    deleteError: "Delete Error",
+    fileUploadedSuccessfully: "File uploaded successfully",
+    fileDeletedSuccessfully: "File deleted successfully",
+    confirmDelete: "Delete File",
+    confirmDeleteDescription: "Are you sure you want to delete {{fileName}}? This action cannot be undone."
   }
 } as const

@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, CreateBucketCommand, HeadBucketCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -44,6 +44,38 @@ export class StorageService {
       credentials: config.credentials,
       forcePathStyle: config.forcePathStyle, // Required for MinIO
     })
+
+    // Ensure bucket exists (mainly for development/MinIO)
+    this.ensureBucketExists()
+  }
+
+  /**
+   * Ensure the configured bucket exists (create if it doesn't)
+   * This is mainly useful for development with MinIO
+   */
+  private async ensureBucketExists(): Promise<void> {
+    try {
+      // Check if bucket exists
+      await this.s3Client.send(new HeadBucketCommand({
+        Bucket: this.bucket
+      }))
+    } catch (error: any) {
+      if (error.name === 'NotFound' || error.$metadata?.httpStatusCode === 404) {
+        try {
+          // Bucket doesn't exist, create it
+          await this.s3Client.send(new CreateBucketCommand({
+            Bucket: this.bucket
+          }))
+          console.log(`✅ Created storage bucket: ${this.bucket}`)
+        } catch (createError) {
+          console.warn(`⚠️  Failed to create bucket ${this.bucket}:`, createError)
+          // Don't throw - let the app continue, uploads will fail with clear error messages
+        }
+      } else {
+        console.warn(`⚠️  Error checking bucket ${this.bucket}:`, error)
+        // Don't throw - let the app continue
+      }
+    }
   }
 
   /**

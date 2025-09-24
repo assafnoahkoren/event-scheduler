@@ -381,5 +381,28 @@ export const arTranslation: TranslationType = {
     providerNotFound: "لم يتم العثور على المقدم",
     phoneCall: "اتصل بالمزود",
     whatsappMessage: "إرسال رسالة واتساب"
+  },
+  files: {
+    title: "الملفات",
+    file: "ملف",
+    files: "ملفات",
+    upload: "رفع",
+    download: "تحميل",
+    delete: "حذف",
+    selectFiles: "اختيار ملفات",
+    uploadFiles: "رفع الملفات",
+    uploading: "جارٍ الرفع...",
+    uploadingFiles: "رفع الملفات",
+    uploadedFiles: "الملفات المرفوعة",
+    noFiles: "لم يتم رفع ملفات بعد",
+    uploadSuccess: "نجح الرفع",
+    uploadError: "خطأ في الرفع",
+    downloadError: "خطأ في التحميل",
+    deleteSuccess: "نجح الحذف",
+    deleteError: "خطأ في الحذف",
+    fileUploadedSuccessfully: "تم رفع الملف بنجاح",
+    fileDeletedSuccessfully: "تم حذف الملف بنجاح",
+    confirmDelete: "حذف الملف",
+    confirmDeleteDescription: "هل أنت متأكد أنك تريد حذف {{fileName}}؟ لا يمكن التراجع عن هذا الإجراء."
   }
 } as const
