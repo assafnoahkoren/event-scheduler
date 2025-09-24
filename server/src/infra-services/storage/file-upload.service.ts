@@ -464,7 +464,7 @@ class FileUploadService {
   }
 
   /**
-   * Delete file (both from storage and database)
+   * Delete file (soft delete from database only, keep S3 file for data safety)
    */
   async deleteFile(userId: string, fileId: string) {
     // Use the access-controlled file getter
@@ -488,18 +488,13 @@ class FileUploadService {
       })
     }
 
-    try {
-      // Delete from storage
-      await storageService.deleteFile(file.key)
-    } catch (error) {
-      console.error('Failed to delete file from storage:', error)
-      // Continue with database deletion even if storage deletion fails
-    }
-
-    // Soft delete from database
+    // Only soft delete from database - keep S3 file for data safety and recovery
+    // The actual S3 files can be cleaned up later via a separate cleanup job if needed
     await prisma.uploadedFile.delete({
       where: { id: fileId },
     })
+
+    console.log(`🗑️ Soft deleted file record: ${file.originalName} (S3 key: ${file.key})`)
 
     return { success: true }
   }
@@ -513,7 +508,7 @@ class FileUploadService {
   }
 
   /**
-   * Bulk delete files
+   * Bulk delete files (soft delete from database only, keep S3 files)
    */
   async deleteFiles(userId: string, fileIds: string[]) {
     const files = await prisma.uploadedFile.findMany({
@@ -531,21 +526,14 @@ class FileUploadService {
       })
     }
 
-    // Delete from storage
-    const storageKeys = files.map(file => file.key)
-    try {
-      await storageService.deleteFiles(storageKeys)
-    } catch (error) {
-      console.error('Failed to delete some files from storage:', error)
-      // Continue with database deletion
-    }
-
-    // Soft delete from database
+    // Only soft delete from database - keep S3 files for data safety
     await prisma.uploadedFile.deleteMany({
       where: {
         id: { in: files.map(file => file.id) },
       },
     })
+
+    console.log(`🗑️ Soft deleted ${files.length} file records (S3 files preserved)`)
 
     return {
       success: true,

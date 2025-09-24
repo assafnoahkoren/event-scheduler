@@ -101,6 +101,26 @@ For production, you need to manually create the S3 bucket:
 3. **Server confirms upload** - Client notifies server, creates database record
 4. **Access control** - Downloads use signed URLs for security
 
+## File Deletion Behavior
+
+⚠️ **Important**: File deletion only removes database records, not S3 files!
+
+### Why This Approach?
+- **Data Safety**: Prevents accidental permanent data loss
+- **Recovery**: Files can be restored if needed
+- **Audit Trail**: S3 files remain for compliance/backup purposes
+- **Cost vs. Safety**: Small storage cost for significant data protection
+
+### How It Works:
+1. **User deletes file** → Database record is soft-deleted
+2. **File disappears from UI** → No longer visible to users
+3. **S3 file remains** → Still exists in storage for recovery
+
+### Cleanup Options:
+- **Manual**: Use AWS CLI or console to remove old S3 files
+- **Lifecycle Policies**: Configure S3 to auto-delete files after X days
+- **Future Enhancement**: Implement background cleanup job
+
 ## Bucket Policies & CORS
 
 For production S3 buckets, ensure:

@@ -249,7 +249,9 @@ export class StorageService {
   }
 
   /**
-   * Delete multiple files
+   * Delete multiple files from S3 storage
+   * NOTE: This method is kept for cleanup operations and failed uploads.
+   * User-initiated deletions now only soft-delete database records.
    */
   async deleteFiles(keys: string[]): Promise<void> {
     const deletePromises = keys.map(key => this.deleteFile(key))
