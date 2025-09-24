@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 export interface StorageConfig {
   endpoint: string
-  region: string
+  region?: string // Optional - not needed for some providers like Backblaze B2
   credentials: {
     accessKeyId: string
     secretAccessKey: string
@@ -40,7 +40,7 @@ export class StorageService {
 
     this.s3Client = new S3Client({
       endpoint: config.endpoint,
-      region: config.region,
+      region: config.region || 'auto', // Use 'auto' if no region specified (works for most providers)
       credentials: config.credentials,
       forcePathStyle: config.forcePathStyle, // Required for MinIO
     })
@@ -292,7 +292,7 @@ export class StorageService {
 const createStorageService = (): StorageService => {
   const config: StorageConfig = {
     endpoint: process.env.S3_ENDPOINT || 'http://localhost:9000',
-    region: process.env.S3_REGION || 'us-east-1',
+    region: process.env.S3_REGION, // Optional - leave undefined if not needed
     credentials: {
       accessKeyId: process.env.S3_ACCESS_KEY_ID || 'minioadmin',
       secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || 'minioadmin',

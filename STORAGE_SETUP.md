@@ -74,7 +74,7 @@ For production, you need to manually create the S3 bucket:
 3. Configure endpoints:
    ```
    S3_ENDPOINT=https://s3.us-west-000.backblazeb2.com
-   S3_REGION=us-west-000
+   # S3_REGION is NOT needed for Backblaze B2 (region is in the endpoint)
    S3_ACCESS_KEY_ID=your-key-id
    S3_SECRET_ACCESS_KEY=your-application-key
    S3_BUCKET=your-bucket-name
