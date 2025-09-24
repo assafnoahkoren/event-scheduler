@@ -48,7 +48,6 @@ export function ServiceSelectionDrawer({
   } | null>(null)
   const [customPrice, setCustomPrice] = useState<number | undefined>()
   const [providerPrice, setProviderPrice] = useState<number>(0)
-  const [isSelecting, setIsSelecting] = useState(false)
 
   // Reset state when drawer closes
   useEffect(() => {
@@ -71,7 +70,6 @@ export function ServiceSelectionDrawer({
   })
 
   const handleSelectService = (provider: ServiceProvider, service: ServiceProviderService) => {
-    setIsSelecting(true)
     // If clicking on the already selected service, deselect it
     if (selectedService?.serviceId === service.id) {
       setSelectedService(null)
@@ -88,7 +86,6 @@ export function ServiceSelectionDrawer({
       // Automatically populate provider price from service data
       setProviderPrice(service.providerPrice || 0)
     }
-    setTimeout(() => setIsSelecting(false), 100)
   }
 
   const handleAddService = () => {
@@ -122,11 +119,7 @@ export function ServiceSelectionDrawer({
   return (
     <Drawer
       open={open}
-      onOpenChange={(newOpen) => {
-        // Prevent closing while selecting
-        if (!newOpen && isSelecting) return
-        onOpenChange(newOpen)
-      }}
+      onOpenChange={onOpenChange}
       noBodyStyles
       disablePreventScroll
     >
