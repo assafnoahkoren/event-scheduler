@@ -55,12 +55,6 @@ export const ClientList = memo(function ClientList({
           <p className="text-muted-foreground text-center">
             {searchQuery ? t('clients.noClientsFound') : t('clients.noClients')}
           </p>
-          {!searchQuery && (
-            <Button onClick={onNewClient} className="mt-4">
-              <Plus className="h-4 w-4 me-2" />
-              {t('clients.createFirstClient')}
-            </Button>
-          )}
         </CardContent>
       </Card>
     )

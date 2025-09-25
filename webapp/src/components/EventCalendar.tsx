@@ -132,6 +132,17 @@ export function EventCalendar() {
     const hasScheduledEvent = dayEvents.some(event => event.status !== 'DRAFT')
     const eventCount = dayEvents.length
 
+    // Handle click events manually to avoid mobile scroll interference
+    const handleClick = (e: React.MouseEvent | React.TouchEvent) => {
+      // Prevent if it's part of a scroll gesture
+      if ('touches' in e && e.touches.length > 1) return
+
+      // Only handle if it's current month
+      if (isCurrentMonth) {
+        handleDateSelect(date)
+      }
+    }
+
     // Use the long press hook
     const longPressHandlers = useLongPress(
       () => {
@@ -143,10 +154,8 @@ export function EventCalendar() {
       },
       {
         onCancel: () => {
-          // Single click - navigate or create based on existing events
-          if (isCurrentMonth) {
-            handleDateSelect(date)
-          }
+          // Don't handle single click here - let the onClick handle it
+          // This prevents scroll gestures from triggering clicks
         },
         threshold: 500, // 500ms for long press
         cancelOnMovement: true,
@@ -166,6 +175,7 @@ export function EventCalendar() {
           isCurrentMonth && "cursor-pointer select-none"
         )}
         {...(isCurrentMonth ? longPressHandlers() : {})}
+        onClick={isCurrentMonth ? handleClick : undefined}
       >
         <span className={cn(
           "flex items-center justify-center w-8 h-8 rounded-full pointer-events-none",
