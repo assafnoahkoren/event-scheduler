@@ -388,7 +388,8 @@ export const enTranslation = {
     providerCount_two: "{{count}} providers",
     providerCount_few: "{{count}} providers",
     providerCount_many: "{{count}} providers",
-    providerCount_other: "{{count}} providers"
+    providerCount_other: "{{count}} providers",
+    addProviderToCategory: "Add {{category}} Provider"
   },
   files: {
     title: "Files",

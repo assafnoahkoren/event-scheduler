@@ -390,7 +390,8 @@ export const arTranslation: TranslationType = {
     providerCount_two: "{{count}} مزودان",
     providerCount_few: "{{count}} مزودين",
     providerCount_many: "{{count}} مزود",
-    providerCount_other: "{{count}} مزود"
+    providerCount_other: "{{count}} مزود",
+    addProviderToCategory: "إضافة مزود {{category}}"
   },
   files: {
     title: "الملفات",

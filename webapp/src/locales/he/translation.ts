@@ -390,7 +390,8 @@ export const heTranslation: TranslationType = {
     providerCount_two: "{{count}} ספקים",
     providerCount_few: "{{count}} ספקים",
     providerCount_many: "{{count}} ספקים",
-    providerCount_other: "{{count}} ספקים"
+    providerCount_other: "{{count}} ספקים",
+    addProviderToCategory: "הוסף ספק {{category}}"
   },
   files: {
     title: "קבצים",

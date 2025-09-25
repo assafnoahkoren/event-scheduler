@@ -23,6 +23,7 @@ import { ServiceProviderCard } from '@/components/ServiceProviderCard'
 import { ServiceProviderServiceForm } from '@/components/ServiceProviderServiceForm'
 import { ServiceProviderServicesManager } from '@/components/ServiceProviderServicesManager'
 import { CategorySelect } from '@/components/CategorySelect'
+import { CreateServiceProviderButton } from '@/components/CreateServiceProviderButton'
 import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
@@ -38,11 +39,13 @@ type ServiceFormData = Omit<RouterInput['serviceProviders']['addService'], 'serv
 
 function ServiceProviderForm({
   provider,
+  prefilledCategoryId,
   onSubmit,
   onCancel,
   isSubmitting,
 }: {
   provider?: ServiceProvider | null
+  prefilledCategoryId?: string
   onSubmit: (data: ServiceProviderFormData) => void
   onCancel: () => void
   isSubmitting: boolean
@@ -53,7 +56,7 @@ function ServiceProviderForm({
     phone: provider?.phone || '',
     email: provider?.email || '',
     notes: provider?.notes || '',
-    categoryId: provider?.categoryId || undefined,
+    categoryId: provider?.categoryId || prefilledCategoryId || undefined,
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -143,6 +146,7 @@ export function ServiceProviders() {
   const [editingService, setEditingService] = useState<ServiceProviderService | null>(null)
   const [isServicesManagerOpen, setIsServicesManagerOpen] = useState(false)
   const [managingProvider, setManagingProvider] = useState<ServiceProvider | null>(null)
+  const [prefilledCategoryId, setPrefilledCategoryId] = useState<string | undefined>(undefined)
 
   const utils = trpc.useUtils()
 
@@ -195,6 +199,7 @@ export function ServiceProviders() {
       utils.serviceProviders.list.invalidate()
       setIsDrawerOpen(false)
       setSelectedProvider(null)
+      setPrefilledCategoryId(undefined)
     },
   })
 
@@ -204,6 +209,7 @@ export function ServiceProviders() {
       utils.serviceProviders.list.invalidate()
       setIsDrawerOpen(false)
       setSelectedProvider(null)
+      setPrefilledCategoryId(undefined)
     },
   })
 
@@ -266,8 +272,9 @@ export function ServiceProviders() {
     }
   }
 
-  const handleCreateNew = () => {
+  const handleCreateNew = (categoryId?: string) => {
     setSelectedProvider(null)
+    setPrefilledCategoryId(categoryId)
     setIsDrawerOpen(true)
   }
 
@@ -317,7 +324,7 @@ export function ServiceProviders() {
     <div className="container mx-auto">
       <div className="flex justify-between items-center mb-6 pt-4 px-4">
         <h1 className="text-2xl font-bold">{t('serviceProviders.title')}</h1>
-        <Button onClick={handleCreateNew}>
+        <Button onClick={() => handleCreateNew()}>
           <Plus className="w-4 h-4 me-2" />
           {t('serviceProviders.addProvider')}
         </Button>
@@ -362,6 +369,13 @@ export function ServiceProviders() {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4">
+                <div className="my-2 flex justify-center">
+                  <CreateServiceProviderButton
+                    category={group.category}
+                    onClick={handleCreateNew}
+                    showText={true}
+                  />
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                   {group.providers.map((provider) => (
                     <ServiceProviderCard
@@ -377,7 +391,16 @@ export function ServiceProviders() {
       )}
 
       {/* Create/Edit Drawer */}
-      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+      <Drawer
+        open={isDrawerOpen}
+        onOpenChange={(open) => {
+          setIsDrawerOpen(open)
+          if (!open) {
+            setPrefilledCategoryId(undefined)
+            setSelectedProvider(null)
+          }
+        }}
+      >
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>
@@ -389,6 +412,7 @@ export function ServiceProviders() {
           <div className="px-4 pb-4">
             <ServiceProviderForm
               provider={selectedProvider}
+              prefilledCategoryId={prefilledCategoryId}
               onSubmit={handleSubmit}
               onCancel={() => setIsDrawerOpen(false)}
               isSubmitting={createMutation.isPending || updateMutation.isPending}
