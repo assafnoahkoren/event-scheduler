@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
@@ -13,9 +13,16 @@ import {
   DrawerTitle,
   DrawerFooter,
 } from '@/components/ui/drawer'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { ServiceProviderCard } from '@/components/ServiceProviderCard'
 import { ServiceProviderServiceForm } from '@/components/ServiceProviderServiceForm'
 import { ServiceProviderServicesManager } from '@/components/ServiceProviderServicesManager'
+import { CategorySelect } from '@/components/CategorySelect'
 import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
@@ -46,6 +53,7 @@ function ServiceProviderForm({
     phone: provider?.phone || '',
     email: provider?.email || '',
     notes: provider?.notes || '',
+    categoryId: provider?.categoryId || undefined,
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -55,6 +63,7 @@ function ServiceProviderForm({
       email: formData.email || undefined,
       phone: formData.phone || undefined,
       notes: formData.notes || undefined,
+      categoryId: formData.categoryId || undefined,
     }
     onSubmit(submitData)
   }
@@ -70,6 +79,14 @@ function ServiceProviderForm({
           required
         />
       </div>
+
+      <CategorySelect
+        value={formData.categoryId}
+        onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+        label={t('serviceProviders.serviceCategory')}
+        allowClear={true}
+        disabled={isSubmitting}
+      />
 
       <div>
         <label className="text-sm font-medium">{t('serviceProviders.phone')} ({t('common.optional')})</label>
@@ -140,6 +157,37 @@ export function ServiceProviders() {
     { organizationId: currentOrg?.id || '' },
     { enabled: !!currentOrg?.id }
   )
+
+  // Group providers by category
+  const groupedProviders = useMemo(() => {
+    const grouped = new Map<string | null, { category: ServiceCategory | null, providers: ServiceProvider[] }>()
+
+    // Initialize with all categories
+    categories.forEach(category => {
+      grouped.set(category.id, { category, providers: [] })
+    })
+
+    // Add uncategorized group
+    grouped.set(null, { category: null, providers: [] })
+
+    // Group providers
+    providers.forEach(provider => {
+      const categoryId = provider.categoryId || null
+      const group = grouped.get(categoryId)
+      if (group) {
+        group.providers.push(provider)
+      } else {
+        // If provider has a category that doesn't exist, put in uncategorized
+        const uncategorized = grouped.get(null)!
+        uncategorized.providers.push(provider)
+      }
+    })
+
+    // Return all categories (including empty ones), but filter out uncategorized if empty
+    return Array.from(grouped.entries())
+      .filter(([categoryId, group]) => categoryId !== null || group.providers.length > 0)
+      .map(([categoryId, group]) => group)
+  }, [providers, categories])
 
   // Create provider mutation
   const createMutation = trpc.serviceProviders.create.useMutation({
@@ -266,8 +314,8 @@ export function ServiceProviders() {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-6">
+    <div className="container mx-auto">
+      <div className="flex justify-between items-center mb-6 pt-4 px-4">
         <h1 className="text-2xl font-bold">{t('serviceProviders.title')}</h1>
         <Button onClick={handleCreateNew}>
           <Plus className="w-4 h-4 me-2" />
@@ -276,7 +324,7 @@ export function ServiceProviders() {
       </div>
 
       {/* Search */}
-      <div className="mb-6">
+      <div className="mb-6 px-4">
         <div className="relative">
           <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
@@ -288,7 +336,7 @@ export function ServiceProviders() {
         </div>
       </div>
 
-      {/* Providers Grid */}
+      {/* Providers Accordion */}
       {isLoading ? (
         <div className="text-center py-8">{t('common.loading')}</div>
       ) : providers.length === 0 ? (
@@ -296,14 +344,36 @@ export function ServiceProviders() {
           {t('serviceProviders.noProviders')}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {providers.map((provider) => (
-            <ServiceProviderCard
-              key={provider.id}
-              provider={provider}
-            />
+        <Accordion type="multiple" className="w-full">
+          {groupedProviders.map((group, index) => (
+            <AccordionItem
+              key={group.category?.id || 'uncategorized'}
+              value={group.category?.id || 'uncategorized'}
+              className="border-0"
+            >
+              <AccordionTrigger className={`px-4 py-5 hover:no-underline ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                <div className="flex items-center justify-between w-full me-4">
+                  <h3 className="text-lg font-semibold">
+                    {group.category?.name || t('serviceProviders.uncategorized')}
+                  </h3>
+                  <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                    {t('serviceProviders.providerCount', { count: group.providers.length })}
+                  </span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                  {group.providers.map((provider) => (
+                    <ServiceProviderCard
+                      key={provider.id}
+                      provider={provider}
+                    />
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
           ))}
-        </div>
+        </Accordion>
       )}
 
       {/* Create/Edit Drawer */}

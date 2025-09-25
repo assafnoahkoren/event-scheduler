@@ -381,7 +381,16 @@ export const arTranslation: TranslationType = {
     providerIdLabel: "معرف المقدم",
     providerNotFound: "لم يتم العثور على المقدم",
     phoneCall: "اتصل بالمزود",
-    whatsappMessage: "إرسال رسالة واتساب"
+    whatsappMessage: "إرسال رسالة واتساب",
+    uncategorized: "غير مصنف",
+    provider: "مزود",
+    providers: "مزودون",
+    providerCount_zero: "{{count}} مزود",
+    providerCount_one: "{{count}} مزود",
+    providerCount_two: "{{count}} مزودان",
+    providerCount_few: "{{count}} مزودين",
+    providerCount_many: "{{count}} مزود",
+    providerCount_other: "{{count}} مزود"
   },
   files: {
     title: "الملفات",

@@ -381,7 +381,16 @@ export const heTranslation: TranslationType = {
     providerIdLabel: "מזהה ספק",
     providerNotFound: "הספק לא נמצא",
     phoneCall: "התקשר לספק",
-    whatsappMessage: "שלח הודעת וואטסאפ"
+    whatsappMessage: "שלח הודעת וואטסאפ",
+    uncategorized: "לא מקוטלג",
+    provider: "ספק",
+    providers: "ספקים",
+    providerCount_zero: "{{count}} ספקים",
+    providerCount_one: "ספק {{count}}",
+    providerCount_two: "{{count}} ספקים",
+    providerCount_few: "{{count}} ספקים",
+    providerCount_many: "{{count}} ספקים",
+    providerCount_other: "{{count}} ספקים"
   },
   files: {
     title: "קבצים",

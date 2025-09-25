@@ -379,7 +379,16 @@ export const enTranslation = {
     providerIdLabel: "Provider ID",
     providerNotFound: "Provider not found",
     phoneCall: "Call provider",
-    whatsappMessage: "Send WhatsApp message"
+    whatsappMessage: "Send WhatsApp message",
+    uncategorized: "Uncategorized",
+    provider: "provider",
+    providers: "providers",
+    providerCount_zero: "{{count}} providers",
+    providerCount_one: "{{count}} provider",
+    providerCount_two: "{{count}} providers",
+    providerCount_few: "{{count}} providers",
+    providerCount_many: "{{count}} providers",
+    providerCount_other: "{{count}} providers"
   },
   files: {
     title: "Files",
