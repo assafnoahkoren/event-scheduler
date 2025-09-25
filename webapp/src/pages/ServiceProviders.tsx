@@ -162,36 +162,75 @@ export function ServiceProviders() {
     { enabled: !!currentOrg?.id }
   )
 
-  // Group providers by category
+  // Group providers by category with smart search filtering
   const groupedProviders = useMemo(() => {
     const grouped = new Map<string | null, { category: ServiceCategory | null, providers: ServiceProvider[] }>()
 
-    // Initialize with all categories
-    categories.forEach(category => {
-      grouped.set(category.id, { category, providers: [] })
+    // Filter providers based on search query
+    const filteredProviders = providers.filter(provider => {
+      if (!searchQuery) return true
+      const query = searchQuery.toLowerCase()
+
+      // Search in provider fields
+      const providerMatch = provider.name.toLowerCase().includes(query) ||
+                           provider.phone?.toLowerCase().includes(query) ||
+                           provider.email?.toLowerCase().includes(query) ||
+                           provider.notes?.toLowerCase().includes(query)
+
+      // Search in category name
+      const providerCategory = categories.find(cat => cat.id === provider.categoryId)
+      const categoryMatch = providerCategory?.name?.toLowerCase().includes(query)
+
+      return providerMatch || categoryMatch
     })
 
-    // Add uncategorized group
-    grouped.set(null, { category: null, providers: [] })
+    // Initialize with all categories (but only if search is empty or they have matching providers)
+    if (!searchQuery) {
+      // Show all categories when no search
+      categories.forEach(category => {
+        grouped.set(category.id, { category, providers: [] })
+      })
+      // Add uncategorized group
+      grouped.set(null, { category: null, providers: [] })
+    } else {
+      // Only initialize categories that will have matching providers
+      const categoriesWithMatches = new Set<string | null>()
+      filteredProviders.forEach(provider => {
+        categoriesWithMatches.add(provider.categoryId || null)
+      })
 
-    // Group providers
-    providers.forEach(provider => {
+      categoriesWithMatches.forEach(categoryId => {
+        if (categoryId === null) {
+          grouped.set(null, { category: null, providers: [] })
+        } else {
+          const category = categories.find(cat => cat.id === categoryId)
+          if (category) {
+            grouped.set(categoryId, { category, providers: [] })
+          }
+        }
+      })
+    }
+
+    // Group filtered providers
+    filteredProviders.forEach(provider => {
       const categoryId = provider.categoryId || null
       const group = grouped.get(categoryId)
       if (group) {
         group.providers.push(provider)
-      } else {
-        // If provider has a category that doesn't exist, put in uncategorized
+      } else if (!searchQuery) {
+        // If provider has a category that doesn't exist, put in uncategorized (only when not searching)
         const uncategorized = grouped.get(null)!
         uncategorized.providers.push(provider)
       }
     })
 
-    // Return all categories (including empty ones), but filter out uncategorized if empty
+    // Return categories with providers, filter out empty uncategorized
     return Array.from(grouped.entries())
-      .filter(([categoryId, group]) => categoryId !== null || group.providers.length > 0)
+      .filter(([categoryId, group]) =>
+        group.providers.length > 0 || (categoryId !== null && !searchQuery)
+      )
       .map(([categoryId, group]) => group)
-  }, [providers, categories])
+  }, [providers, categories, searchQuery])
 
   // Create provider mutation
   const createMutation = trpc.serviceProviders.create.useMutation({
@@ -369,14 +408,14 @@ export function ServiceProviders() {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4">
-                <div className="my-2 flex justify-center">
+                <div className=" flex justify-center mt-2">
                   <CreateServiceProviderButton
                     category={group.category}
                     onClick={handleCreateNew}
                     showText={true}
                   />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
                   {group.providers.map((provider) => (
                     <ServiceProviderCard
                       key={provider.id}

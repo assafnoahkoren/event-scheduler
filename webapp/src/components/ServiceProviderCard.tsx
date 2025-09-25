@@ -23,7 +23,7 @@ export function ServiceProviderCard({ provider }: ServiceProviderCardProps) {
   }
 
   return (
-    <Card className="overflow-hidden shadow-none transition-shadow hover:shadow-md">
+    <Card className="overflow-hidden shadow-none">
       <div className="flex">
         {/* Main content area */}
         <div
@@ -31,38 +31,6 @@ export function ServiceProviderCard({ provider }: ServiceProviderCardProps) {
           className="flex-1 min-w-0 p-3 cursor-pointer hover:bg-accent/50 transition-colors"
         >
           <h3 className="font-medium text-sm line-clamp-1 mb-1">{provider.name}</h3>
-
-          {/* Contact info */}
-          <div className="flex items-center gap-3 mb-2">
-            {provider.email && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Mail className="h-3 w-3 shrink-0" />
-                <span className="truncate">{provider.email}</span>
-              </div>
-            )}
-            {provider.phone && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Phone className="h-3 w-3 shrink-0" />
-                <span className="truncate">{provider.phone}</span>
-              </div>
-            )}
-          </div>
-
-          {/* Services badges */}
-          {provider.services.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {provider.services.slice(0, 3).map((service) => (
-                <Badge key={service.id} variant="secondary" className="text-xs py-0 px-1.5">
-                  {service.category?.name || service.name}
-                </Badge>
-              ))}
-              {provider.services.length > 3 && (
-                <Badge variant="outline" className="text-xs py-0 px-1.5">
-                  +{provider.services.length - 3}
-                </Badge>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Action buttons - full height */}
