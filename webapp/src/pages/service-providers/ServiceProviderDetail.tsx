@@ -21,6 +21,7 @@ import {
 import { ServiceProviderServiceForm } from '@/components/ServiceProviderServiceForm'
 import { ServiceProviderServicesManager } from '@/components/ServiceProviderServicesManager'
 import { FileManager } from '@/components/files/FileManager'
+import { CategorySelect } from '@/components/CategorySelect'
 import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '../../../../server/src/routers/appRouter'
 
@@ -97,6 +98,15 @@ function ProviderDetailsTab({ provider }: { provider: NonNullable<ServiceProvide
               </label>
               <p className="text-sm">{provider.name}</p>
             </div>
+
+            {provider.category && (
+              <div>
+                <label className="text-sm font-medium text-gray-500">
+                  {t('serviceProviders.serviceCategory')}
+                </label>
+                <p className="text-sm">{provider.category.name}</p>
+              </div>
+            )}
 
             {provider.phone && (
               <div>
@@ -199,6 +209,7 @@ function ProviderEditForm({
     phone: provider.phone || '',
     email: provider.email || '',
     notes: provider.notes || '',
+    categoryId: provider.categoryId || undefined,
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -208,6 +219,7 @@ function ProviderEditForm({
       email: formData.email || undefined,
       phone: formData.phone || undefined,
       notes: formData.notes || undefined,
+      categoryId: formData.categoryId || undefined,
     }
     onSubmit(submitData)
   }
@@ -224,6 +236,14 @@ function ProviderEditForm({
           required
         />
       </div>
+
+      <CategorySelect
+        value={formData.categoryId}
+        onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+        label={t('serviceProviders.serviceCategory')}
+        allowClear={true}
+        disabled={isSubmitting}
+      />
 
       <div>
         <label className="text-sm font-medium">

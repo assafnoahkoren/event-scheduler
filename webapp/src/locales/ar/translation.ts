@@ -29,7 +29,8 @@ export const arTranslation: TranslationType = {
     creating: "جاري الإنشاء",
     today: "اليوم",
     tomorrow: "غداً",
-    yesterday: "أمس"
+    yesterday: "أمس",
+    clear: "مسح"
   },
   calendar: {
     months: {

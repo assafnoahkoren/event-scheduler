@@ -12,6 +12,7 @@ model ServiceProvider {
   phone       String?
   email       String?
   notes       String?  // General notes about the constructor
+  categoryId  String?  @map("category_id") // Optional category for the service provider
 
   // Soft delete
   deletedAt   DateTime? @map("deleted_at")
@@ -25,11 +26,13 @@ model ServiceProvider {
   // Relations
   services    ServiceProviderService[]
   eventProviders EventProvider[]
+  category    ServiceCategory? @relation(fields: [categoryId], references: [id])
 
   @@index([isDeleted])
   @@index([name])
   @@index([organizationId])
   @@index([organizationId, isDeleted])
+  @@index([categoryId])
   @@map("service_providers")
 }
 

@@ -29,7 +29,8 @@ export const heTranslation: TranslationType = {
     creating: "יוצר",
     today: "היום",
     tomorrow: "מחר",
-    yesterday: "אתמול"
+    yesterday: "אתמול",
+    clear: "נקה"
   },
   calendar: {
     months: {

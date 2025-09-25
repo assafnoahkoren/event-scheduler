@@ -9,10 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { CategorySelect } from '@/components/CategorySelect'
 import { Badge } from '@/components/ui/badge'
 import { X, Upload, File } from 'lucide-react'
 import { trpc } from '@/utils/trpc'
-import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import { FileManager } from '@/components/files/FileManager'
 import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
@@ -20,7 +20,6 @@ import type { AppRouter } from '../../../server/src/routers/appRouter'
 type RouterOutput = inferRouterOutputs<AppRouter>
 type RouterInput = inferRouterInputs<AppRouter>
 type ServiceProvider = RouterOutput['serviceProviders']['list'][0]
-type ServiceCategory = RouterOutput['serviceProviders']['listCategories'][0]
 type ServiceProviderService = ServiceProvider['services'][0]
 
 // Use the input type from the addService mutation, excluding serviceProviderId
@@ -42,7 +41,6 @@ export function ServiceProviderServiceForm({
   isSubmitting,
 }: ServiceProviderServiceFormProps) {
   const { t } = useTranslation()
-  const { currentOrg } = useCurrentOrg()
   const [formData, setFormData] = useState<ServiceFormData>({
     name: service?.name || '',
     categoryId: service?.categoryId || undefined,
@@ -53,19 +51,6 @@ export function ServiceProviderServiceForm({
   })
   const [newFileLink, setNewFileLink] = useState('')
 
-  // Fetch categories
-  const { data: categories = [] } = trpc.serviceProviders.listCategories.useQuery(
-    { organizationId: currentOrg?.id || '' },
-    { enabled: !!currentOrg?.id }
-  )
-
-  // Filter out categories that the provider already has (except if editing that service)
-  const availableCategories = categories.filter(category => {
-    if (service && category.id === service.categoryId) {
-      return true // Allow current category when editing
-    }
-    return !provider.services.some(s => s.categoryId === category.id)
-  })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -116,43 +101,13 @@ export function ServiceProviderServiceForm({
         />
       </div>
 
-      <div>
-        <label className="text-sm font-medium mb-2 block">
-          {t('serviceProviders.serviceCategory')} ({t('common.optional')})
-        </label>
-        <Select
-          value={formData.categoryId || ''}
-          onValueChange={(value) => setFormData({ ...formData, categoryId: value || undefined })}
-          disabled={!!service} // Disable category change when editing
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={t('serviceProviders.selectCategory')} />
-          </SelectTrigger>
-          <SelectContent>
-            {availableCategories.length === 0 ? (
-              <div className="px-2 py-1 text-sm text-gray-500">
-                {t('serviceProviders.noAvailableCategories')}
-              </div>
-            ) : (
-              availableCategories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                  {category.description && (
-                    <span className="text-xs text-gray-500 ms-2">
-                      {category.description}
-                    </span>
-                  )}
-                </SelectItem>
-              ))
-            )}
-          </SelectContent>
-        </Select>
-        {service && (
-          <p className="text-xs text-gray-500 mt-1">
-            {t('serviceProviders.categoryCannotBeChanged')}
-          </p>
-        )}
-      </div>
+      <CategorySelect
+        value={formData.categoryId}
+        onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+        label={t('serviceProviders.serviceCategory')}
+        disabled={!!service} // Disable category change when editing
+        helperText={service ? t('serviceProviders.categoryCannotBeChanged') : undefined}
+      />
 
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">

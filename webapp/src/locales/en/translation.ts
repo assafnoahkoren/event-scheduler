@@ -27,7 +27,8 @@ export const enTranslation = {
     creating: "Creating",
     today: "Today",
     tomorrow: "Tomorrow",
-    yesterday: "Yesterday"
+    yesterday: "Yesterday",
+    clear: "Clear"
   },
   calendar: {
     months: {

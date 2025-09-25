@@ -9,6 +9,7 @@ export const createServiceProviderSchema = z.object({
   phone: z.string().optional(),
   email: z.string().email().optional().or(z.literal('')),
   notes: z.string().optional(),
+  categoryId: z.string().uuid().optional(),
 })
 
 export const updateServiceProviderSchema = z.object({
@@ -16,6 +17,7 @@ export const updateServiceProviderSchema = z.object({
   phone: z.string().optional(),
   email: z.string().email().optional().or(z.literal('')),
   notes: z.string().optional(),
+  categoryId: z.string().uuid().optional(),
 })
 
 export const serviceProviderIdSchema = z.object({
@@ -88,6 +90,7 @@ class ServiceProviderService {
         _count: {
           select: { eventProviders: true },
         },
+        category: true,
         services: {
           where: { isDeleted: false },
           include: {

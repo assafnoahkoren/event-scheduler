@@ -21,6 +21,7 @@ model ServiceCategory {
 
   // Relations
   services    ServiceProviderService[]
+  providers   ServiceProvider[]
 
   @@unique([organizationId, name]) // Name must be unique within organization
   @@index([isDeleted])
