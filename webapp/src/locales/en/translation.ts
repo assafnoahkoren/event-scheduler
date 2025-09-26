@@ -420,6 +420,7 @@ export const enTranslation = {
     noCategories: "No categories yet",
     confirmDelete: "Are you sure you want to delete {{name}}?",
     newCategoryPlaceholder: "Enter category name...",
-    getStarted: "Add a category using the field above"
+    getStarted: "Add a category using the field above",
+    cannotDeleteWithProviders: "Cannot delete '{{name}}' because it has {{count}} provider(s) assigned to it."
   }
 } as const

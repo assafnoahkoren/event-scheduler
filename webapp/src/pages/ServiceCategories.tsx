@@ -110,6 +110,14 @@ export function ServiceCategories() {
   }
 
   const handleDelete = (category: ServiceCategory) => {
+    if (category._count.providers > 0) {
+      alert(t('serviceCategories.cannotDeleteWithProviders', {
+        name: category.name,
+        count: category._count.providers
+      }))
+      return
+    }
+
     if (confirm(t('serviceCategories.confirmDelete', { name: category.name }))) {
       deleteMutation.mutate({ categoryId: category.id })
     }
@@ -169,7 +177,7 @@ export function ServiceCategories() {
                 variant="ghost"
                 size="sm"
                 onClick={() => handleDelete(category)}
-                disabled={deleteMutation.isPending || category._count.providers > 0}
+                disabled={deleteMutation.isPending}
                 className="text-red-600 hover:text-red-700"
               >
                 <Trash2 className="w-4 h-4" />

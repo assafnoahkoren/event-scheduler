@@ -422,6 +422,7 @@ export const arTranslation: TranslationType = {
     noCategories: "لا توجد فئات بعد",
     confirmDelete: "هل أنت متأكد أنك تريد حذف {{name}}؟",
     newCategoryPlaceholder: "أدخل اسم الفئة...",
-    getStarted: "أضف فئة باستخدام الحقل أعلاه"
+    getStarted: "أضف فئة باستخدام الحقل أعلاه",
+    cannotDeleteWithProviders: "لا يمكن حذف '{{name}}' لأنه يحتوي على {{count}} مزود(ين) مرتبط(ين) به."
   }
 } as const

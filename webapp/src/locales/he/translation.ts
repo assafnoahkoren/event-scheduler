@@ -422,6 +422,7 @@ export const heTranslation: TranslationType = {
     noCategories: "אין קטגוריות עדיין",
     confirmDelete: "האם אתה בטוח שאתה רוצה למחוק את {{name}}?",
     newCategoryPlaceholder: "הכנס שם קטגוריה...",
-    getStarted: "הוסף קטגוריה באמצעות השדה למעלה"
+    getStarted: "הוסף קטגוריה באמצעות השדה למעלה",
+    cannotDeleteWithProviders: "לא ניתן למחוק את '{{name}}' כי יש לו {{count}} ספק(ים) המוקצה(ים) אליו."
   }
 } as const
