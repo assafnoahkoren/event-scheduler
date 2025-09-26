@@ -391,7 +391,8 @@ export const arTranslation: TranslationType = {
     providerCount_few: "{{count}} مزودين",
     providerCount_many: "{{count}} مزود",
     providerCount_other: "{{count}} مزود",
-    addProviderToCategory: "إضافة مزود {{category}}"
+    addProviderToCategory: "إضافة مزود {{category}}",
+    editCategories: "تحرير الفئات"
   },
   files: {
     title: "الملفات",
@@ -415,5 +416,12 @@ export const arTranslation: TranslationType = {
     fileDeletedSuccessfully: "تم حذف الملف بنجاح",
     confirmDelete: "حذف الملف",
     confirmDeleteDescription: "هل أنت متأكد أنك تريد حذف {{fileName}}؟ لا يمكن التراجع عن هذا الإجراء."
+  },
+  serviceCategories: {
+    title: "فئات الخدمة",
+    noCategories: "لا توجد فئات بعد",
+    confirmDelete: "هل أنت متأكد أنك تريد حذف {{name}}؟",
+    newCategoryPlaceholder: "أدخل اسم الفئة...",
+    getStarted: "أضف فئة باستخدام الحقل أعلاه"
   }
 } as const

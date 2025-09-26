@@ -389,7 +389,8 @@ export const enTranslation = {
     providerCount_few: "{{count}} providers",
     providerCount_many: "{{count}} providers",
     providerCount_other: "{{count}} providers",
-    addProviderToCategory: "Add {{category}} Provider"
+    addProviderToCategory: "Add {{category}} Provider",
+    editCategories: "Edit Categories"
   },
   files: {
     title: "Files",
@@ -413,5 +414,12 @@ export const enTranslation = {
     fileDeletedSuccessfully: "File deleted successfully",
     confirmDelete: "Delete File",
     confirmDeleteDescription: "Are you sure you want to delete {{fileName}}? This action cannot be undone."
+  },
+  serviceCategories: {
+    title: "Service Categories",
+    noCategories: "No categories yet",
+    confirmDelete: "Are you sure you want to delete {{name}}?",
+    newCategoryPlaceholder: "Enter category name...",
+    getStarted: "Add a category using the field above"
   }
 } as const

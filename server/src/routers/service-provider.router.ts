@@ -8,6 +8,9 @@ import {
   serviceProviderIdSchema,
   createServiceProviderServiceSchema,
   updateServiceProviderServiceSchema,
+  createServiceCategorySchema,
+  updateServiceCategorySchema,
+  serviceCategoryIdSchema,
 } from '../services/service-provider.service'
 
 export const serviceProviderRouter = router({
@@ -190,6 +193,56 @@ export const serviceProviderRouter = router({
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: error.message || 'Failed to fetch serviceProviders by category',
+        })
+      }
+    }),
+
+  // Create a new category
+  createCategory: protectedProcedure
+    .input(createServiceCategorySchema)
+    .mutation(async ({ input }) => {
+      try {
+        return await serviceProviderService.createCategory(input)
+      } catch (error: any) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: error.message || 'Failed to create category',
+        })
+      }
+    }),
+
+  // Update a category
+  updateCategory: protectedProcedure
+    .input(serviceCategoryIdSchema.merge(updateServiceCategorySchema))
+    .mutation(async ({ input }) => {
+      try {
+        const { categoryId, ...data } = input
+        return await serviceProviderService.updateCategory(categoryId, data)
+      } catch (error: any) {
+        if (error.code === 'NOT_FOUND') {
+          throw error
+        }
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: error.message || 'Failed to update category',
+        })
+      }
+    }),
+
+  // Delete a category
+  deleteCategory: protectedProcedure
+    .input(serviceCategoryIdSchema)
+    .mutation(async ({ input }) => {
+      try {
+        await serviceProviderService.deleteCategory(input.categoryId)
+        return { success: true }
+      } catch (error: any) {
+        if (error.code === 'NOT_FOUND' || error.code === 'PRECONDITION_FAILED') {
+          throw error
+        }
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: error.message || 'Failed to delete category',
         })
       }
     }),

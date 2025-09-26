@@ -391,7 +391,8 @@ export const heTranslation: TranslationType = {
     providerCount_few: "{{count}} ספקים",
     providerCount_many: "{{count}} ספקים",
     providerCount_other: "{{count}} ספקים",
-    addProviderToCategory: "הוסף ספק {{category}}"
+    addProviderToCategory: "הוסף ספק {{category}}",
+    editCategories: "ערוך קטגוריות"
   },
   files: {
     title: "קבצים",
@@ -415,5 +416,12 @@ export const heTranslation: TranslationType = {
     fileDeletedSuccessfully: "הקובץ נמחק בהצלחה",
     confirmDelete: "מחק קובץ",
     confirmDeleteDescription: "האם אתה בטוח שברצונך למחוק את {{fileName}}? לא ניתן לבטל פעולה זו."
+  },
+  serviceCategories: {
+    title: "קטגוריות שירות",
+    noCategories: "אין קטגוריות עדיין",
+    confirmDelete: "האם אתה בטוח שאתה רוצה למחוק את {{name}}?",
+    newCategoryPlaceholder: "הכנס שם קטגוריה...",
+    getStarted: "הוסף קטגוריה באמצעות השדה למעלה"
   }
 } as const

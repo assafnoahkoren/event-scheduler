@@ -44,11 +44,27 @@ export const updateServiceProviderServiceSchema = z.object({
   fileLinks: z.array(z.string().url()).optional(),
 })
 
+// ServiceCategory schemas
+export const createServiceCategorySchema = z.object({
+  organizationId: z.string().uuid(),
+  name: z.string().min(1).max(100),
+})
+
+export const updateServiceCategorySchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+})
+
+export const serviceCategoryIdSchema = z.object({
+  categoryId: z.string().uuid(),
+})
+
 // Type exports
 export type CreateServiceProviderInput = z.infer<typeof createServiceProviderSchema>
 export type UpdateServiceProviderInput = z.infer<typeof updateServiceProviderSchema>
 export type CreateServiceProviderServiceInput = z.infer<typeof createServiceProviderServiceSchema>
 export type UpdateServiceProviderServiceInput = z.infer<typeof updateServiceProviderServiceSchema>
+export type CreateServiceCategoryInput = z.infer<typeof createServiceCategorySchema>
+export type UpdateServiceCategoryInput = z.infer<typeof updateServiceCategorySchema>
 
 class ServiceProviderService {
   // ServiceProvider CRUD operations
@@ -335,7 +351,84 @@ class ServiceProviderService {
         organizationId,
         isDeleted: false
       },
+      include: {
+        _count: {
+          select: {
+            providers: { where: { isDeleted: false } }
+          }
+        }
+      },
       orderBy: { name: 'asc' },
+    })
+  }
+
+  async createCategory(input: CreateServiceCategoryInput) {
+    return prisma.serviceCategory.create({
+      data: input,
+      include: {
+        _count: {
+          select: {
+            providers: { where: { isDeleted: false } }
+          }
+        }
+      }
+    })
+  }
+
+  async updateCategory(categoryId: string, input: UpdateServiceCategoryInput) {
+    const category = await prisma.serviceCategory.findFirst({
+      where: { id: categoryId, isDeleted: false }
+    })
+
+    if (!category) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Category not found',
+      })
+    }
+
+    return prisma.serviceCategory.update({
+      where: { id: categoryId },
+      data: input,
+      include: {
+        _count: {
+          select: {
+            providers: { where: { isDeleted: false } }
+          }
+        }
+      }
+    })
+  }
+
+  async deleteCategory(categoryId: string) {
+    const category = await prisma.serviceCategory.findFirst({
+      where: { id: categoryId, isDeleted: false }
+    })
+
+    if (!category) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Category not found',
+      })
+    }
+
+    // Check if category has any providers
+    const providersCount = await prisma.serviceProvider.count({
+      where: {
+        categoryId,
+        isDeleted: false
+      }
+    })
+
+    if (providersCount > 0) {
+      throw new TRPCError({
+        code: 'PRECONDITION_FAILED',
+        message: 'Cannot delete category that has providers assigned to it',
+      })
+    }
+
+    return prisma.serviceCategory.delete({
+      where: { id: categoryId }
     })
   }
 

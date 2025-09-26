@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -136,6 +137,7 @@ function ServiceProviderForm({
 
 export function ServiceProviders() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { currentSite } = useCurrentSite()
   const { currentOrg } = useCurrentOrg()
   const [searchQuery, setSearchQuery] = useState('')
@@ -363,10 +365,16 @@ export function ServiceProviders() {
     <div className="container mx-auto">
       <div className="flex justify-between items-center mb-6 pt-4 px-4">
         <h1 className="text-2xl font-bold">{t('serviceProviders.title')}</h1>
-        <Button onClick={() => handleCreateNew()}>
-          <Plus className="w-4 h-4 me-2" />
-          {t('serviceProviders.addProvider')}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => navigate('/service-categories')}>
+            <Settings className="w-4 h-4 me-2" />
+            {t('serviceProviders.editCategories')}
+          </Button>
+          <Button onClick={() => handleCreateNew()}>
+            <Plus className="w-4 h-4 me-2" />
+            {t('serviceProviders.addProvider')}
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
