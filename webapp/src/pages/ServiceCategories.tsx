@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import { Plus, Trash2, GripVertical } from 'lucide-react'
+import { debounce } from 'lodash'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { More, type ActionItem } from '@/components/ui/More'
@@ -131,18 +132,40 @@ export function ServiceCategories() {
   const { t } = useTranslation()
   const { currentOrg } = useCurrentOrg()
   const [newCategoryName, setNewCategoryName] = useState('')
+  const [localCategories, setLocalCategories] = useState<ServiceCategory[]>([])
+  const [isDragging, setIsDragging] = useState(false)
 
   const utils = trpc.useUtils()
 
-  // Fetch categories
-  const { data: categories = [], isLoading } = trpc.serviceProviders.listCategories.useQuery(
+  // Fetch categories from server (initial load)
+  const { data: serverCategories = [], isLoading } = trpc.serviceProviders.listCategories.useQuery(
     { organizationId: currentOrg?.id || '' },
     { enabled: !!currentOrg?.id }
+  )
+
+  // Sync server data to local state on initial load
+  useEffect(() => {
+    setLocalCategories(serverCategories)
+  }, [serverCategories])
+
+  // Debounced sync to server
+  const debouncedSyncToServer = useCallback(
+    debounce((categories: ServiceCategory[]) => {
+      const updates = categories.map((category) => ({
+        categoryId: category.id,
+        order: category.order
+      }))
+      updateOrdersMutation.mutate(updates)
+    }, 500),
+    [currentOrg?.id]
   )
 
   // Mutations
   const createMutation = trpc.serviceProviders.createCategory.useMutation({
     onSuccess: (newCategory) => {
+      // Add to local state
+      setLocalCategories(prev => [...prev, newCategory])
+      // Also update server cache
       if (currentOrg?.id) {
         utils.serviceProviders.listCategories.setData(
           { organizationId: currentOrg.id },
@@ -155,6 +178,11 @@ export function ServiceCategories() {
 
   const updateMutation = trpc.serviceProviders.updateCategory.useMutation({
     onSuccess: (updatedCategory) => {
+      // Update local state
+      setLocalCategories(prev =>
+        prev.map(cat => cat.id === updatedCategory.id ? updatedCategory : cat)
+      )
+      // Also update server cache
       if (currentOrg?.id) {
         utils.serviceProviders.listCategories.setData(
           { organizationId: currentOrg.id },
@@ -169,6 +197,9 @@ export function ServiceCategories() {
 
   const deleteMutation = trpc.serviceProviders.deleteCategory.useMutation({
     onSuccess: (_, variables) => {
+      // Remove from local state
+      setLocalCategories(prev => prev.filter(cat => cat.id !== variables.categoryId))
+      // Also update server cache
       if (currentOrg?.id) {
         utils.serviceProviders.listCategories.setData(
           { organizationId: currentOrg.id },
@@ -212,7 +243,13 @@ export function ServiceCategories() {
     }
   }
 
+  const handleDragStart = () => {
+    setIsDragging(true)
+  }
+
   const handleDragEnd = (result: DropResult) => {
+    setIsDragging(false)
+
     if (!result.destination || !currentOrg?.id) {
       return
     }
@@ -224,7 +261,8 @@ export function ServiceCategories() {
       return
     }
 
-    const reorderedCategories = Array.from(categories)
+    // Work with local categories
+    const reorderedCategories = Array.from(localCategories)
     const [removed] = reorderedCategories.splice(sourceIndex, 1)
     reorderedCategories.splice(destinationIndex, 0, removed)
 
@@ -233,19 +271,11 @@ export function ServiceCategories() {
       order: index
     }))
 
-    utils.serviceProviders.listCategories.setData(
-      { organizationId: currentOrg.id },
-      updatedCategories
-    )
+    // Update local state immediately
+    setLocalCategories(updatedCategories)
 
-    const updates = updatedCategories.map((category) => ({
-      categoryId: category.id,
-      order: category.order
-    }))
-
-    updateOrdersMutation.mutateAsync(updates).catch(() => {
-      utils.serviceProviders.listCategories.invalidate({ organizationId: currentOrg.id })
-    })
+    // Debounce sync to server
+    debouncedSyncToServer(updatedCategories)
   }
 
   if (isLoading) {
@@ -278,7 +308,7 @@ export function ServiceCategories() {
           placeholder={t('serviceCategories.newCategoryPlaceholder')}
         />
 
-        <DragDropContext onDragEnd={handleDragEnd}>
+        <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           <Droppable droppableId="categories">
             {(provided) => (
               <div
@@ -287,7 +317,7 @@ export function ServiceCategories() {
                 style={{ opacity: 1 }}
                 className="opacity-100"
               >
-                {categories.map((category, index) => (
+                {localCategories.map((category, index) => (
                   <DraggableCategoryItem
                     key={category.id}
                     category={category}
@@ -312,7 +342,7 @@ export function ServiceCategories() {
           className="mb-4 mt-4"
         />
 
-        {categories.length === 0 && (
+        {localCategories.length === 0 && (
           <div className="text-center py-8">
             <p className="text-gray-500 mb-4">{t('serviceCategories.noCategories')}</p>
             <p className="text-sm text-gray-400">{t('serviceCategories.getStarted')}</p>
