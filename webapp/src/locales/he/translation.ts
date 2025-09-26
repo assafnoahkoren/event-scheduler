@@ -157,7 +157,7 @@ export const heTranslation: TranslationType = {
     dangerZone: "אזור מסוכן",
     dangerZoneDescription: "פעולות כאן לא ניתנות לביטול. אנא המשך בזהירות.",
     products: "מוצרים",
-    services: "שירותים",
+    services: "ספקים",
     eventServices: "שירותי אירוע",
     addService: "הוסף שירות",
     serviceAdded: "השירות נוסף בהצלחה",
