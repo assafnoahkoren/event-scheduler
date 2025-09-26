@@ -22,6 +22,7 @@ import { ServiceProviderServiceForm } from '@/components/ServiceProviderServiceF
 import { ServiceProviderServicesManager } from '@/components/ServiceProviderServicesManager'
 import { FileManager } from '@/components/files/FileManager'
 import { CategorySelect } from '@/components/CategorySelect'
+import { ContactImportButton } from '@/components/ContactImportButton'
 import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '../../../../server/src/routers/appRouter'
 
@@ -224,10 +225,29 @@ function ProviderEditForm({
     onSubmit(submitData)
   }
 
+  const handleImportContact = (contact: { name?: string; phone?: string }) => {
+    const updates: Partial<ProviderFormData> = {}
+
+    if (contact.name) {
+      updates.name = contact.name
+    }
+    if (contact.phone) {
+      updates.phone = contact.phone
+    }
+
+    setFormData(prev => ({ ...prev, ...updates }))
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="text-sm font-medium">{t('serviceProviders.name')}</label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-sm font-medium">{t('serviceProviders.name')}</label>
+          <ContactImportButton
+            onContactImported={handleImportContact}
+            disabled={isSubmitting}
+          />
+        </div>
         <input
           type="text"
           value={formData.name}

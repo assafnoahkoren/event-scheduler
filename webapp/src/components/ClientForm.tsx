@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { UserPlus } from 'lucide-react'
+import { ContactImportButton } from '@/components/ContactImportButton'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@/../../server/src/routers/appRouter'
 
@@ -57,41 +57,12 @@ export function ClientForm({
 
   const isValid = name.trim().length > 0
 
-  // Contact Picker API
-  const handleImportContact = async () => {
-    // Check if the Contact Picker API is supported
-    if (!('contacts' in navigator && 'ContactsManager' in window)) {
-      // API not supported, could show a message or fallback
-      alert(t('clients.contactPickerNotSupported', 'Your browser does not support importing contacts'))
-      return
+  const handleImportContact = (contact: { name?: string; phone?: string }) => {
+    if (contact.name) {
+      setName(contact.name)
     }
-
-    try {
-      // @ts-ignore - TypeScript doesn't have types for this API yet
-      const props = ['name', 'tel']
-      const opts = { multiple: false }
-
-      // @ts-ignore
-      const contacts = await navigator.contacts.select(props, opts)
-
-      if (contacts && contacts.length > 0) {
-        const contact = contacts[0]
-
-        // Set name if available
-        if (contact.name && contact.name.length > 0) {
-          setName(contact.name[0])
-        }
-
-        // Set phone if available
-        if (contact.tel && contact.tel.length > 0) {
-          // Clean and format the phone number
-          const phoneNumber = contact.tel[0].replace(/[^\d+]/g, '')
-          setPhone(phoneNumber)
-        }
-      }
-    } catch (error) {
-      // User cancelled or error occurred
-      console.error('Error selecting contact:', error)
+    if (contact.phone) {
+      setPhone(contact.phone)
     }
   }
 
@@ -107,19 +78,10 @@ export function ClientForm({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="name">{t('clients.name')}</Label>
-          {'contacts' in navigator && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleImportContact}
-              disabled={isSubmitting}
-              className="h-auto py-1 px-2 text-xs"
-            >
-              <UserPlus className="h-3 w-3 me-1" />
-              {t('clients.importContact', 'Import Contact')}
-            </Button>
-          )}
+          <ContactImportButton
+            onContactImported={handleImportContact}
+            disabled={isSubmitting}
+          />
         </div>
         <Input
           id="name"
