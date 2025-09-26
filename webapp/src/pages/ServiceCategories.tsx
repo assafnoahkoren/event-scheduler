@@ -119,9 +119,10 @@ function SortableCategoryItem({
       <div
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600"
+        className="cursor-grab active:cursor-grabbing p-2 text-gray-400 hover:text-gray-600 touch-none"
+        style={{ touchAction: 'none' }}
       >
-        <GripVertical className="w-4 h-4" />
+        <GripVertical className="w-5 h-5" />
       </div>
       <Input
         value={category.name}
@@ -206,13 +207,15 @@ export function ServiceCategories() {
 
   // Drag and drop sensors
   const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(TouchSensor, {
-      // Require a 5px movement before activating touch sensor
-      // This prevents conflicts with scrolling and tapping
+    useSensor(PointerSensor, {
       activationConstraint: {
-        delay: 250,
-        tolerance: 5,
+        distance: 8, // Prevent accidental drags on desktop
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200,
+        tolerance: 8,
       },
     }),
     useSensor(KeyboardSensor, {
