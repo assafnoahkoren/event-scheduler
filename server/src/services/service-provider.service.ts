@@ -52,6 +52,12 @@ export const createServiceCategorySchema = z.object({
 
 export const updateServiceCategorySchema = z.object({
   name: z.string().min(1).max(100).optional(),
+  order: z.number().int().optional(),
+})
+
+export const updateCategoryOrderSchema = z.object({
+  categoryId: z.string().uuid(),
+  order: z.number().int(),
 })
 
 export const serviceCategoryIdSchema = z.object({
@@ -65,6 +71,7 @@ export type CreateServiceProviderServiceInput = z.infer<typeof createServiceProv
 export type UpdateServiceProviderServiceInput = z.infer<typeof updateServiceProviderServiceSchema>
 export type CreateServiceCategoryInput = z.infer<typeof createServiceCategorySchema>
 export type UpdateServiceCategoryInput = z.infer<typeof updateServiceCategorySchema>
+export type UpdateCategoryOrderInput = z.infer<typeof updateCategoryOrderSchema>
 
 class ServiceProviderService {
   // ServiceProvider CRUD operations
@@ -358,13 +365,31 @@ class ServiceProviderService {
           }
         }
       },
-      orderBy: { name: 'asc' },
+      orderBy: [
+        { order: 'asc' },
+        { name: 'asc' }
+      ],
     })
   }
 
   async createCategory(input: CreateServiceCategoryInput) {
+    // Get the highest order value for this organization
+    const maxOrder = await prisma.serviceCategory.findFirst({
+      where: {
+        organizationId: input.organizationId,
+        isDeleted: false
+      },
+      orderBy: { order: 'desc' },
+      select: { order: true }
+    })
+
+    const nextOrder = (maxOrder?.order ?? -1) + 1
+
     return prisma.serviceCategory.create({
-      data: input,
+      data: {
+        ...input,
+        order: nextOrder
+      },
       include: {
         _count: {
           select: {
@@ -430,6 +455,18 @@ class ServiceProviderService {
     return prisma.serviceCategory.delete({
       where: { id: categoryId }
     })
+  }
+
+  async updateCategoryOrders(updates: UpdateCategoryOrderInput[]) {
+    // Use transaction to update all orders atomically
+    return prisma.$transaction(
+      updates.map(({ categoryId, order }) =>
+        prisma.serviceCategory.update({
+          where: { id: categoryId },
+          data: { order }
+        })
+      )
+    )
   }
 
   // Get serviceProviders by category

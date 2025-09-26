@@ -3,9 +3,28 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
-import { Plus, Trash2, ArrowLeft } from 'lucide-react'
+import { Plus, Trash2, ArrowLeft, GripVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import type { DragEndEvent } from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable'
+import {
+  CSS,
+} from '@dnd-kit/utilities'
 import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
@@ -57,6 +76,76 @@ function NewCategoryInput({
   )
 }
 
+function SortableCategoryItem({
+  category,
+  onUpdate,
+  onDelete,
+  disabled,
+}: {
+  category: ServiceCategory
+  onUpdate: (category: ServiceCategory, newName: string) => void
+  onDelete: (category: ServiceCategory) => void
+  disabled: boolean
+}) {
+  const { t } = useTranslation()
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
+    if (e.key === 'Enter') {
+      action()
+    }
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center gap-2  bg-white"
+    >
+      <div
+        {...attributes}
+        {...listeners}
+        className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600"
+      >
+        <GripVertical className="w-4 h-4" />
+      </div>
+      <Input
+        value={category.name}
+        onChange={(e) => onUpdate(category, e.target.value)}
+        onKeyPress={(e) => handleKeyPress(e, () => onUpdate(category, e.currentTarget.value))}
+        onBlur={(e) => onUpdate(category, e.target.value)}
+        className="flex-1 me-2"
+        disabled={disabled}
+      />
+      <span className="text-sm text-gray-500 min-w-fit">
+        {category._count.providers} {t('serviceProviders.providers')}
+      </span>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => onDelete(category)}
+        disabled={disabled}
+        className="text-red-600 hover:text-red-700"
+      >
+        <Trash2 className="w-4 h-4" />
+      </Button>
+    </div>
+  )
+}
+
 export function ServiceCategories() {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -90,6 +179,16 @@ export function ServiceCategories() {
       utils.serviceProviders.listCategories.invalidate()
     },
   })
+
+  const updateOrdersMutation = trpc.serviceProviders.updateCategoryOrders.useMutation()
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
 
   const handleCreate = () => {
     if (!currentOrg?.id || !newCategoryName.trim()) return
@@ -129,6 +228,41 @@ export function ServiceCategories() {
     }
   }
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+
+    if (!over || active.id === over.id || !currentOrg?.id) {
+      return
+    }
+
+    const oldIndex = categories.findIndex(category => category.id === active.id)
+    const newIndex = categories.findIndex(category => category.id === over.id)
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const reorderedCategories = arrayMove(categories, oldIndex, newIndex)
+
+      // Update the orders based on the new positions
+      const updates = reorderedCategories.map((category, index) => ({
+        categoryId: category.id,
+        order: index
+      }))
+
+      // Optimistic update
+      utils.serviceProviders.listCategories.setData(
+        { organizationId: currentOrg.id },
+        reorderedCategories
+      )
+
+      // Perform the actual mutation
+      updateOrdersMutation.mutate(updates, {
+        onError: () => {
+          // Revert on error
+          utils.serviceProviders.listCategories.invalidate({ organizationId: currentOrg.id })
+        }
+      })
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-96">
@@ -159,42 +293,35 @@ export function ServiceCategories() {
           placeholder={t('serviceCategories.newCategoryPlaceholder')}
         />
 
-        <div>
-          {categories.map((category) => (
-            <div key={category.id} className="flex items-center gap-2 p-2">
-              <Input
-                value={category.name}
-                onChange={(e) => handleUpdate(category, e.target.value)}
-                onKeyPress={(e) => handleKeyPress(e, () => handleUpdate(category, e.currentTarget.value))}
-                onBlur={(e) => handleUpdate(category, e.target.value)}
-                className="flex-1 me-2"
-                disabled={updateMutation.isPending}
-              />
-              <span className="text-sm text-gray-500 min-w-fit">
-                {category._count.providers} {t('serviceProviders.providers')}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleDelete(category)}
-                disabled={deleteMutation.isPending}
-                className="text-red-600 hover:text-red-700"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={categories.map(c => c.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-2">
+              {categories.map((category) => (
+                <SortableCategoryItem
+                  key={category.id}
+                  category={category}
+                  onUpdate={handleUpdate}
+                  onDelete={handleDelete}
+                  disabled={updateMutation.isPending || updateOrdersMutation.isPending}
+                />
+              ))}
             </div>
-          ))}
+          </SortableContext>
+        </DndContext>
 
-          {/* Add new category at bottom */}
-          <NewCategoryInput
-            value={newCategoryName}
-            onChange={setNewCategoryName}
-            onSubmit={handleCreate}
-            disabled={createMutation.isPending}
-            placeholder={t('serviceCategories.newCategoryPlaceholder')}
-            className="mb-4"
-          />
-        </div>
+        {/* Add new category at bottom */}
+        <NewCategoryInput
+          value={newCategoryName}
+          onChange={setNewCategoryName}
+          onSubmit={handleCreate}
+          disabled={createMutation.isPending}
+          placeholder={t('serviceCategories.newCategoryPlaceholder')}
+          className="mb-4 mt-4"
+        />
 
         {categories.length === 0 && (
           <div className="text-center py-8">

@@ -10,6 +10,7 @@ model ServiceCategory {
   // Category details
   name        String   // e.g., "Photography", "Catering", "Sound & Lighting"
   description String?
+  order       Int      @default(0)  // Display order
 
   // Soft delete
   deletedAt   DateTime? @map("deleted_at")
@@ -27,5 +28,6 @@ model ServiceCategory {
   @@index([isDeleted])
   @@index([organizationId])
   @@index([organizationId, isDeleted])
+  @@index([organizationId, order]) // For sorting categories within organization
   @@map("service_categories")
 }

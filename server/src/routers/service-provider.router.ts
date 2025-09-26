@@ -11,6 +11,7 @@ import {
   createServiceCategorySchema,
   updateServiceCategorySchema,
   serviceCategoryIdSchema,
+  updateCategoryOrderSchema,
 } from '../services/service-provider.service'
 
 export const serviceProviderRouter = router({
@@ -243,6 +244,21 @@ export const serviceProviderRouter = router({
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: error.message || 'Failed to delete category',
+        })
+      }
+    }),
+
+  // Update category orders
+  updateCategoryOrders: protectedProcedure
+    .input(z.array(updateCategoryOrderSchema))
+    .mutation(async ({ input }) => {
+      try {
+        await serviceProviderService.updateCategoryOrders(input)
+        return { success: true }
+      } catch (error: any) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: error.message || 'Failed to update category orders',
         })
       }
     }),
