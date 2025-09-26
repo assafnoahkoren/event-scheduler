@@ -63,13 +63,11 @@ function DraggableCategoryItem({
   category,
   onUpdate,
   onDelete,
-  disabled,
   index,
 }: {
   category: ServiceCategory
   onUpdate: (category: ServiceCategory, newName: string) => void
   onDelete: (category: ServiceCategory) => void
-  disabled: boolean
   index: number
 }) {
   const { t } = useTranslation()
@@ -81,12 +79,12 @@ function DraggableCategoryItem({
   }
 
   return (
-    <Draggable draggableId={category.id} index={index} isDragDisabled={disabled}>
+    <Draggable draggableId={category.id} index={index} isDragDisabled={false}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          className={`flex items-center gap-2 p-2 bg-white border rounded-md mb-2 ${
+          className={`flex items-center gap-2 p-2 bg-slate-50 mb-2 rounded-lg ${
             snapshot.isDragging ? 'shadow-lg' : ''
           }`}
           style={{
@@ -106,7 +104,6 @@ function DraggableCategoryItem({
             onKeyPress={(e) => handleKeyPress(e, () => onUpdate(category, e.currentTarget.value))}
             onBlur={(e) => onUpdate(category, e.target.value)}
             className="flex-1 me-2"
-            disabled={disabled}
           />
           <span className="text-sm text-gray-500 min-w-fit">
             {category._count.providers} {t('serviceProviders.providers')}
@@ -115,7 +112,6 @@ function DraggableCategoryItem({
             variant="ghost"
             size="sm"
             onClick={() => onDelete(category)}
-            disabled={disabled}
             className="text-red-600 hover:text-red-700"
           >
             <Trash2 className="w-4 h-4" />
@@ -143,7 +139,6 @@ export function ServiceCategories() {
   // Mutations
   const createMutation = trpc.serviceProviders.createCategory.useMutation({
     onSuccess: (newCategory) => {
-      // Optimistic update for create
       if (currentOrg?.id) {
         utils.serviceProviders.listCategories.setData(
           { organizationId: currentOrg.id },
@@ -156,7 +151,6 @@ export function ServiceCategories() {
 
   const updateMutation = trpc.serviceProviders.updateCategory.useMutation({
     onSuccess: (updatedCategory) => {
-      // Optimistic update for category name changes
       if (currentOrg?.id) {
         utils.serviceProviders.listCategories.setData(
           { organizationId: currentOrg.id },
@@ -171,7 +165,6 @@ export function ServiceCategories() {
 
   const deleteMutation = trpc.serviceProviders.deleteCategory.useMutation({
     onSuccess: (_, variables) => {
-      // Optimistic update for delete
       if (currentOrg?.id) {
         utils.serviceProviders.listCategories.setData(
           { organizationId: currentOrg.id },
@@ -215,12 +208,6 @@ export function ServiceCategories() {
     }
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
-    if (e.key === 'Enter') {
-      action()
-    }
-  }
-
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination || !currentOrg?.id) {
       return
@@ -233,35 +220,27 @@ export function ServiceCategories() {
       return
     }
 
-    // Reorder the categories array
     const reorderedCategories = Array.from(categories)
     const [removed] = reorderedCategories.splice(sourceIndex, 1)
     reorderedCategories.splice(destinationIndex, 0, removed)
 
-    // Update order values
     const updatedCategories = reorderedCategories.map((category, index) => ({
       ...category,
       order: index
     }))
 
-    // Optimistic update - set the new data immediately
     utils.serviceProviders.listCategories.setData(
       { organizationId: currentOrg.id },
       updatedCategories
     )
 
-    // Prepare updates for server
     const updates = updatedCategories.map((category) => ({
       categoryId: category.id,
       order: category.order
     }))
 
-    // Perform the actual mutation
-    updateOrdersMutation.mutate(updates, {
-      onError: () => {
-        // Revert on error by refetching from server
-        utils.serviceProviders.listCategories.invalidate({ organizationId: currentOrg.id })
-      }
+    updateOrdersMutation.mutateAsync(updates).catch(() => {
+      utils.serviceProviders.listCategories.invalidate({ organizationId: currentOrg.id })
     })
   }
 
@@ -298,7 +277,12 @@ export function ServiceCategories() {
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="categories">
             {(provided) => (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                style={{ opacity: 1 }}
+                className="opacity-100"
+              >
                 {categories.map((category, index) => (
                   <DraggableCategoryItem
                     key={category.id}
@@ -306,7 +290,6 @@ export function ServiceCategories() {
                     index={index}
                     onUpdate={handleUpdate}
                     onDelete={handleDelete}
-                    disabled={updateMutation.isPending || updateOrdersMutation.isPending}
                   />
                 ))}
                 {provided.placeholder}
