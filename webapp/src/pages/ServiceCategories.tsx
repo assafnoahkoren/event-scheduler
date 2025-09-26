@@ -11,6 +11,7 @@ import {
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
@@ -162,21 +163,42 @@ export function ServiceCategories() {
 
   // Mutations
   const createMutation = trpc.serviceProviders.createCategory.useMutation({
-    onSuccess: () => {
-      utils.serviceProviders.listCategories.invalidate()
+    onSuccess: (newCategory) => {
+      // Optimistic update for create
+      if (currentOrg?.id) {
+        utils.serviceProviders.listCategories.setData(
+          { organizationId: currentOrg.id },
+          (oldData) => oldData ? [...oldData, newCategory] : [newCategory]
+        )
+      }
       setNewCategoryName('')
     },
   })
 
   const updateMutation = trpc.serviceProviders.updateCategory.useMutation({
-    onSuccess: () => {
-      utils.serviceProviders.listCategories.invalidate()
+    onSuccess: (updatedCategory) => {
+      // Optimistic update for category name changes
+      if (currentOrg?.id) {
+        utils.serviceProviders.listCategories.setData(
+          { organizationId: currentOrg.id },
+          (oldData) =>
+            oldData?.map(cat =>
+              cat.id === updatedCategory.id ? updatedCategory : cat
+            ) ?? []
+        )
+      }
     },
   })
 
   const deleteMutation = trpc.serviceProviders.deleteCategory.useMutation({
-    onSuccess: () => {
-      utils.serviceProviders.listCategories.invalidate()
+    onSuccess: (_, variables) => {
+      // Optimistic update for delete
+      if (currentOrg?.id) {
+        utils.serviceProviders.listCategories.setData(
+          { organizationId: currentOrg.id },
+          (oldData) => oldData?.filter(cat => cat.id !== variables.categoryId) ?? []
+        )
+      }
     },
   })
 
@@ -185,6 +207,14 @@ export function ServiceCategories() {
   // Drag and drop sensors
   const sensors = useSensors(
     useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      // Require a 5px movement before activating touch sensor
+      // This prevents conflicts with scrolling and tapping
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -239,24 +269,28 @@ export function ServiceCategories() {
     const newIndex = categories.findIndex(category => category.id === over.id)
 
     if (oldIndex !== -1 && newIndex !== -1) {
-      const reorderedCategories = arrayMove(categories, oldIndex, newIndex)
-
-      // Update the orders based on the new positions
-      const updates = reorderedCategories.map((category, index) => ({
-        categoryId: category.id,
+      // Create the reordered list with updated order values
+      const reorderedCategories = arrayMove(categories, oldIndex, newIndex).map((category, index) => ({
+        ...category,
         order: index
       }))
 
-      // Optimistic update
+      // Optimistic update - set the new data immediately
       utils.serviceProviders.listCategories.setData(
         { organizationId: currentOrg.id },
         reorderedCategories
       )
 
+      // Prepare updates for server
+      const updates = reorderedCategories.map((category) => ({
+        categoryId: category.id,
+        order: category.order
+      }))
+
       // Perform the actual mutation
       updateOrdersMutation.mutate(updates, {
         onError: () => {
-          // Revert on error
+          // Revert on error by refetching from server
           utils.serviceProviders.listCategories.invalidate({ organizationId: currentOrg.id })
         }
       })
