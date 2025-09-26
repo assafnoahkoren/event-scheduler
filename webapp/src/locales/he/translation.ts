@@ -30,7 +30,8 @@ export const heTranslation: TranslationType = {
     today: "היום",
     tomorrow: "מחר",
     yesterday: "אתמול",
-    clear: "נקה"
+    clear: "נקה",
+    selectAction: "בחר פעולה לביצוע"
   },
   calendar: {
     months: {
@@ -423,6 +424,7 @@ export const heTranslation: TranslationType = {
     confirmDelete: "האם אתה בטוח שאתה רוצה למחוק את {{name}}?",
     newCategoryPlaceholder: "הכנס שם קטגוריה...",
     getStarted: "הוסף קטגוריה באמצעות השדה למעלה",
-    cannotDeleteWithProviders: "לא ניתן למחוק את '{{name}}' כי יש לו {{count}} ספק(ים) המוקצה(ים) אליו."
+    cannotDeleteWithProviders: "לא ניתן למחוק את '{{name}}' כי יש לו {{count}} ספק(ים) המוקצה(ים) אליו.",
+    categoryActions: "פעולות {{name}}"
   }
 } as const

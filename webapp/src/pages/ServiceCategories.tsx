@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
-import { Plus, Trash2, ArrowLeft, GripVertical } from 'lucide-react'
+import { Plus, Trash2, GripVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { More, type ActionItem } from '@/components/ui/More'
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import type { DropResult } from '@hello-pangea/dnd'
-import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
+import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
@@ -108,14 +109,18 @@ function DraggableCategoryItem({
           <span className="text-sm text-gray-500 min-w-fit">
             {category._count.providers} {t('serviceProviders.providers')}
           </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onDelete(category)}
-            className="text-red-600 hover:text-red-700"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          <More
+            title={t('serviceCategories.categoryActions', { name: category.name })}
+            actions={[
+              {
+                id: 'delete',
+                label: t('common.delete'),
+                icon: Trash2,
+                onClick: () => onDelete(category),
+                variant: 'destructive'
+              }
+            ]}
+          />
         </div>
       )}
     </Draggable>
@@ -124,7 +129,6 @@ function DraggableCategoryItem({
 
 export function ServiceCategories() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const { currentOrg } = useCurrentOrg()
   const [newCategoryName, setNewCategoryName] = useState('')
 

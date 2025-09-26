@@ -30,7 +30,8 @@ export const arTranslation: TranslationType = {
     today: "اليوم",
     tomorrow: "غداً",
     yesterday: "أمس",
-    clear: "مسح"
+    clear: "مسح",
+    selectAction: "اختر إجراءً لتنفيذه"
   },
   calendar: {
     months: {
@@ -423,6 +424,7 @@ export const arTranslation: TranslationType = {
     confirmDelete: "هل أنت متأكد أنك تريد حذف {{name}}؟",
     newCategoryPlaceholder: "أدخل اسم الفئة...",
     getStarted: "أضف فئة باستخدام الحقل أعلاه",
-    cannotDeleteWithProviders: "لا يمكن حذف '{{name}}' لأنه يحتوي على {{count}} مزود(ين) مرتبط(ين) به."
+    cannotDeleteWithProviders: "لا يمكن حذف '{{name}}' لأنه يحتوي على {{count}} مزود(ين) مرتبط(ين) به.",
+    categoryActions: "إجراءات {{name}}"
   }
 } as const
