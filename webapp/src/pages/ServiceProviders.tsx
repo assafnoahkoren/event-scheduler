@@ -1,10 +1,10 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
-import { Plus, Search, Settings } from 'lucide-react'
+import { Plus, Search, Settings, Trash2, Minus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -38,6 +38,15 @@ type ServiceProviderService = ServiceProvider['services'][0]
 type ServiceProviderFormData = Omit<RouterInput['serviceProviders']['create'], 'organizationId'>
 type ServiceFormData = Omit<RouterInput['serviceProviders']['addService'], 'serviceProviderId'>
 
+// Extended form data to include services
+type ExtendedServiceProviderFormData = ServiceProviderFormData & {
+  services: Array<{
+    name: string
+    providerPrice?: number
+    currency?: string
+  }>
+}
+
 function ServiceProviderForm({
   provider,
   prefilledCategoryId,
@@ -47,17 +56,19 @@ function ServiceProviderForm({
 }: {
   provider?: ServiceProvider | null
   prefilledCategoryId?: string
-  onSubmit: (data: ServiceProviderFormData) => void
+  onSubmit: (data: ExtendedServiceProviderFormData) => void
   onCancel: () => void
   isSubmitting: boolean
 }) {
   const { t } = useTranslation()
-  const [formData, setFormData] = useState<ServiceProviderFormData>({
+  const { currentOrg } = useCurrentOrg()
+  const [formData, setFormData] = useState<ExtendedServiceProviderFormData>({
     name: provider?.name || '',
     phone: provider?.phone || '',
     email: provider?.email || '',
     notes: provider?.notes || '',
     categoryId: provider?.categoryId || prefilledCategoryId || undefined,
+    services: [{ name: '', providerPrice: undefined, currency: currentOrg?.defaultCurrency || 'USD' }],
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -70,6 +81,27 @@ function ServiceProviderForm({
       categoryId: formData.categoryId || undefined,
     }
     onSubmit(submitData)
+  }
+
+  const addService = () => {
+    setFormData({
+      ...formData,
+      services: [...formData.services, { name: '', providerPrice: undefined, currency: currentOrg?.defaultCurrency || 'USD' }]
+    })
+  }
+
+  const removeService = (index: number) => {
+    setFormData({
+      ...formData,
+      services: formData.services.filter((_, i) => i !== index)
+    })
+  }
+
+  const updateService = (index: number, field: keyof typeof formData.services[0], value: string | number | undefined) => {
+    const updatedServices = formData.services.map((service, i) =>
+      i === index ? { ...service, [field]: value } : service
+    )
+    setFormData({ ...formData, services: updatedServices })
   }
 
   return (
@@ -123,6 +155,76 @@ function ServiceProviderForm({
         />
       </div>
 
+      {/* Services Section */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium">{t('serviceProviders.servicesOffered')} ({t('common.optional')})</label>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={addService}
+            disabled={isSubmitting}
+          >
+            <Plus className="w-4 h-4 me-2" />
+            {t('serviceProviders.addService')}
+          </Button>
+        </div>
+
+        {formData.services.map((service, index) => (
+          <div key={index} className="p-3 border rounded-lg bg-gray-50 space-y-3">
+            <div className="flex items-start gap-2">
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-600">{t('serviceProviders.serviceName')}</label>
+                <Input
+                  value={service.name}
+                  onChange={(e) => updateService(index, 'name', e.target.value)}
+                  placeholder={t('serviceProviders.serviceNamePlaceholder')}
+                  disabled={isSubmitting}
+                  className="mt-1"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => removeService(index)}
+                disabled={isSubmitting}
+                className="text-red-500 hover:text-red-700 mt-5"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-600">{t('serviceProviders.providerPrice')}</label>
+                <Input
+                  type="number"
+                  value={service.providerPrice || ''}
+                  onChange={(e) => updateService(index, 'providerPrice', e.target.value ? parseFloat(e.target.value) : undefined)}
+                  placeholder="0.00"
+                  disabled={isSubmitting}
+                  className="mt-1"
+                />
+              </div>
+              <div className="w-24">
+                <label className="text-xs font-medium text-gray-600">{t('serviceProviders.currency')}</label>
+                <select
+                  value={service.currency || currentOrg?.defaultCurrency || 'USD'}
+                  onChange={(e) => updateService(index, 'currency', e.target.value)}
+                  disabled={isSubmitting}
+                  className="mt-1 w-full px-3 py-2 border rounded-md text-sm"
+                >
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="ILS">ILS</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <div className="flex gap-2">
         <Button type="submit" disabled={isSubmitting}>
           {provider ? t('common.update') : t('common.create')}
@@ -149,6 +251,7 @@ export function ServiceProviders() {
   const [isServicesManagerOpen, setIsServicesManagerOpen] = useState(false)
   const [managingProvider, setManagingProvider] = useState<ServiceProvider | null>(null)
   const [prefilledCategoryId, setPrefilledCategoryId] = useState<string | undefined>(undefined)
+  const pendingServicesRef = useRef<ExtendedServiceProviderFormData['services'] | null>(null)
 
   const utils = trpc.useUtils()
 
@@ -236,11 +339,19 @@ export function ServiceProviders() {
 
   // Create provider mutation
   const createMutation = trpc.serviceProviders.create.useMutation({
-    onSuccess: () => {
+    onSuccess: async (newProvider, variables) => {
       utils.serviceProviders.list.invalidate()
+
+      // Create services if any were added
+      const pendingServices = pendingServicesRef.current
+      if (pendingServices && pendingServices.length > 0) {
+        await createProviderWithServices(newProvider.id, pendingServices, variables.categoryId)
+      }
+
       setIsDrawerOpen(false)
       setSelectedProvider(null)
       setPrefilledCategoryId(undefined)
+      pendingServicesRef.current = null
     },
   })
 
@@ -288,17 +399,46 @@ export function ServiceProviders() {
     },
   })
 
-  const handleSubmit = (data: ServiceProviderFormData) => {
+  const handleSubmit = (data: ExtendedServiceProviderFormData) => {
+    const { services, ...providerData } = data
+
     if (selectedProvider) {
+      // For updates, just update provider data (services are managed separately)
       updateMutation.mutate({
         serviceProviderId: selectedProvider.id,
-        ...data,
+        ...providerData,
       })
     } else {
+      // Store services for creation after provider is created
+      pendingServicesRef.current = services
+
+      // For new providers, create provider first, then add services
       createMutation.mutate({
         organizationId: currentOrg?.id || '',
-        ...data,
+        ...providerData,
       })
+    }
+  }
+
+  const createProviderWithServices = async (providerId: string, services: ExtendedServiceProviderFormData['services'], categoryId?: string) => {
+    // Filter out empty services (services without names)
+    const validServices = services.filter(service => service.name.trim())
+
+    if (validServices.length === 0) return
+
+    // Create all valid services for the new provider
+    for (const service of validServices) {
+      try {
+        await addServiceMutation.mutateAsync({
+          serviceProviderId: providerId,
+          categoryId: categoryId!,
+          name: service.name,
+          providerPrice: service.providerPrice,
+          currency: service.currency,
+        })
+      } catch (error) {
+        console.error('Failed to create service:', error)
+      }
     }
   }
 

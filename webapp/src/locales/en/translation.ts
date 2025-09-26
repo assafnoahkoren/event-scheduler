@@ -391,7 +391,9 @@ export const enTranslation = {
     providerCount_many: "{{count}} providers",
     providerCount_other: "{{count}} providers",
     addProviderToCategory: "Add {{category}} Provider",
-    editCategories: "Edit Categories"
+    editCategories: "Edit Categories",
+    serviceName: "Service Name",
+    serviceNamePlaceholder: "Enter service name"
   },
   files: {
     title: "Files",

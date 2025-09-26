@@ -393,7 +393,9 @@ export const heTranslation: TranslationType = {
     providerCount_many: "{{count}} ספקים",
     providerCount_other: "{{count}} ספקים",
     addProviderToCategory: "הוסף ספק {{category}}",
-    editCategories: "ערוך קטגוריות"
+    editCategories: "ערוך קטגוריות",
+    serviceName: "שם השירות",
+    serviceNamePlaceholder: "הכנס שם שירות"
   },
   files: {
     title: "קבצים",

@@ -393,7 +393,9 @@ export const arTranslation: TranslationType = {
     providerCount_many: "{{count}} مزود",
     providerCount_other: "{{count}} مزود",
     addProviderToCategory: "إضافة مزود {{category}}",
-    editCategories: "تحرير الفئات"
+    editCategories: "تحرير الفئات",
+    serviceName: "اسم الخدمة",
+    serviceNamePlaceholder: "أدخل اسم الخدمة"
   },
   files: {
     title: "الملفات",
