@@ -503,9 +503,11 @@ export function ServiceProviders() {
 
   return (
     <div className="container mx-auto">
-      <div className="flex justify-between items-center mb-6 pt-4 px-4">
-        <h1 className="text-2xl font-bold">{t('serviceProviders.title')}</h1>
-        <div className="flex gap-2">
+      <div className="flex flex-col items-start mb-6 pt-4 px-4 gap-2">
+        <h1 className="text-xl font-bold">
+          {t('serviceProviders.title')}
+        </h1>
+        <div className="flex gap-2 self-end">
           <Button variant="outline" onClick={() => navigate('/service-categories')}>
             <Settings className="w-4 h-4 me-2" />
             {t('serviceProviders.editCategories')}
