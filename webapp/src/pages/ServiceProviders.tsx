@@ -590,15 +590,15 @@ export function ServiceProviders() {
           }
         }}
       >
-        <DrawerContent>
-          <DrawerHeader>
+        <DrawerContent className="flex flex-col">
+          <DrawerHeader className="flex-shrink-0">
             <DrawerTitle>
               {selectedProvider
                 ? t('serviceProviders.editProvider')
                 : t('serviceProviders.createProvider')}
             </DrawerTitle>
           </DrawerHeader>
-          <div className="px-4 pb-4">
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
             <ServiceProviderForm
               provider={selectedProvider}
               prefilledCategoryId={prefilledCategoryId}
@@ -612,15 +612,15 @@ export function ServiceProviders() {
 
       {/* Service Management Drawer */}
       <Drawer open={isServiceDrawerOpen} onOpenChange={setIsServiceDrawerOpen}>
-        <DrawerContent>
-          <DrawerHeader>
+        <DrawerContent className="flex flex-col">
+          <DrawerHeader className="flex-shrink-0">
             <DrawerTitle>
               {editingService
                 ? t('serviceProviders.editService')
                 : t('serviceProviders.addServiceFor', { provider: providerForService?.name })}
             </DrawerTitle>
           </DrawerHeader>
-          <div className="px-4 pb-4">
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
             {providerForService && (
               <ServiceProviderServiceForm
                 provider={providerForService}
@@ -636,13 +636,13 @@ export function ServiceProviders() {
 
       {/* Services Manager Drawer */}
       <Drawer open={isServicesManagerOpen} onOpenChange={setIsServicesManagerOpen}>
-        <DrawerContent>
-          <DrawerHeader>
+        <DrawerContent className="flex flex-col">
+          <DrawerHeader className="flex-shrink-0">
             <DrawerTitle>
               {managingProvider?.name} - {t('serviceProviders.manageServices')}
             </DrawerTitle>
           </DrawerHeader>
-          <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
             {managingProvider && (
               <ServiceProviderServicesManager
                 provider={managingProvider}
