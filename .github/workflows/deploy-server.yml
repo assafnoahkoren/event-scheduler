@@ -1,0 +1,52 @@
+name: Deploy Server to Render
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'server/**'
+      - '.github/workflows/deploy-server.yml'
+
+jobs:
+  check-server-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      server-changed: ${{ steps.changes.outputs.server }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            server:
+              - 'server/**'
+              - '.github/workflows/deploy-server.yml'
+
+  deploy:
+    needs: check-server-changes
+    if: needs.check-server-changes.outputs.server-changed == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+          wait-for-success: true
+
+      - name: Deployment Success Notification
+        if: success()
+        run: |
+          echo "✅ Server successfully deployed to Render!"
+          echo "Service ID: ${{ secrets.RENDER_SERVICE_ID }}"
+
+      - name: Deployment Failure Notification
+        if: failure()
+        run: |
+          echo "❌ Server deployment to Render failed!"
+          echo "Check the logs above for details."
