@@ -535,10 +535,6 @@ export function ServiceProviders() {
       {/* Providers Accordion */}
       {isLoading ? (
         <div className="text-center py-8">{t('common.loading')}</div>
-      ) : providers.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          {t('serviceProviders.noProviders')}
-        </div>
       ) : (
         <Accordion type="multiple" className="w-full">
           {groupedProviders.map((group, index) => (
