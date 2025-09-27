@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
@@ -9,6 +9,12 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
+import {
   Card,
   CardContent,
   CardDescription,
@@ -17,17 +23,20 @@ import {
 } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Search, Plus, Check, Coins } from 'lucide-react'
+import { toast } from 'sonner'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@/../../server/src/routers/appRouter'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
 type ServiceProvider = RouterOutput['serviceProviders']['list'][0]
 type ServiceProviderService = ServiceProvider['services'][0]
+type ServiceCategory = RouterOutput['serviceProviders']['listCategories'][0]
 
 interface ServiceSelectionDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   providers: ServiceProvider[]
+  categories: ServiceCategory[]
   onSelectService: (providerId: string, serviceId: string, price?: number, providerPrice?: number) => void
   existingServices?: any[] // Optional prop to prevent type errors
 }
@@ -36,6 +45,7 @@ export function ServiceSelectionDrawer({
   open,
   onOpenChange,
   providers,
+  categories,
   onSelectService,
   existingServices,
 }: ServiceSelectionDrawerProps) {
@@ -46,35 +56,71 @@ export function ServiceSelectionDrawer({
     serviceId: string
     price?: number
   } | null>(null)
-  const [customPrice, setCustomPrice] = useState<number | undefined>()
-  const [providerPrice, setProviderPrice] = useState<number>(0)
 
   // Reset state when drawer closes
   useEffect(() => {
     if (!open) {
       setSelectedService(null)
-      setCustomPrice(undefined)
-      setProviderPrice(0)
       setSearchQuery('')
     }
   }, [open])
 
-  const filteredProviders = providers.filter(provider => {
-    const matchesSearch = searchQuery === '' ||
-      provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      provider.services.some(service =>
-        (service.category?.name || service.name || '').toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    const hasServices = provider.services.length > 0
-    return matchesSearch && hasServices
-  })
+  // Group services by category with search filtering
+  const groupedServices = useMemo(() => {
+    const grouped = new Map<string | null, {
+      category: ServiceCategory | null,
+      services: Array<ServiceProviderService & { provider: ServiceProvider }>
+    }>()
+
+    // Collect all services from all providers
+    const allServices: Array<ServiceProviderService & { provider: ServiceProvider }> = []
+    providers.forEach(provider => {
+      provider.services.forEach(service => {
+        allServices.push({ ...service, provider })
+      })
+    })
+
+    // Filter services based on search query
+    const filteredServices = allServices.filter(service => {
+      if (!searchQuery) return true
+      const query = searchQuery.toLowerCase()
+
+      const serviceMatch = service.name?.toLowerCase().includes(query) ||
+                          service.category?.name?.toLowerCase().includes(query) ||
+                          service.provider.name.toLowerCase().includes(query)
+
+      return serviceMatch
+    })
+
+    // Initialize with all categories
+    if (!searchQuery) {
+      categories.forEach(category => {
+        grouped.set(category.id, { category, services: [] })
+      })
+      // Add uncategorized group
+      grouped.set(null, { category: null, services: [] })
+    }
+
+    // Group services by their category
+    filteredServices.forEach(service => {
+      const categoryId = service.categoryId
+      if (!grouped.has(categoryId)) {
+        const category = categories.find(cat => cat.id === categoryId) || null
+        grouped.set(categoryId, { category, services: [] })
+      }
+      grouped.get(categoryId)!.services.push(service)
+    })
+
+    // Convert map to array and filter out empty groups (unless no search)
+    return Array.from(grouped.values()).filter(group =>
+      !searchQuery || group.services.length > 0
+    )
+  }, [providers, categories, searchQuery])
 
   const handleSelectService = (provider: ServiceProvider, service: ServiceProviderService) => {
     // If clicking on the already selected service, deselect it
     if (selectedService?.serviceId === service.id) {
       setSelectedService(null)
-      setCustomPrice(undefined)
-      setProviderPrice(0)
     } else {
       // Select the new service
       setSelectedService({
@@ -82,24 +128,6 @@ export function ServiceSelectionDrawer({
         serviceId: service.id,
         price: service.price || undefined,
       })
-      setCustomPrice(service.price || undefined)
-      // Automatically populate provider price from service data
-      setProviderPrice(service.providerPrice || 0)
-    }
-  }
-
-  const handleAddService = () => {
-    if (selectedService) {
-      onSelectService(
-        selectedService.providerId,
-        selectedService.serviceId,
-        customPrice,
-        providerPrice || 0
-      )
-      setSelectedService(null)
-      setCustomPrice(undefined)
-      setProviderPrice(0)
-      setSearchQuery('')
     }
   }
 
@@ -123,12 +151,12 @@ export function ServiceSelectionDrawer({
       noBodyStyles
       disablePreventScroll
     >
-      <DrawerContent className="max-h-[90vh]">
-        <DrawerHeader>
+      <DrawerContent className="max-h-[90vh] flex flex-col">
+        <DrawerHeader className="flex-shrink-0">
           <DrawerTitle>{t('events.selectService')}</DrawerTitle>
         </DrawerHeader>
-        <div className="px-4 pb-4">
-          <div className="space-y-4">
+        <div className="flex flex-col flex-1 overflow-hidden">
+          <div className="px-4 pb-2 flex-shrink-0">
             <div className="relative">
               <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -138,112 +166,94 @@ export function ServiceSelectionDrawer({
                 className="ps-9"
               />
             </div>
+          </div>
 
-            <div className="max-h-[400px] overflow-y-auto space-y-3">
-              {filteredProviders.length > 0 ? (
-                filteredProviders.map((provider) => (
-                  <div key={provider.id}>
-                    <h4 className="font-medium mb-2">{provider.name}</h4>
-                    <div className="grid gap-2">
-                      {provider.services.map((service) => {
-                        const isSelected = selectedService?.serviceId === service.id
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
+              {groupedServices.length > 0 ? (
+                <Accordion type="multiple" className="w-full">
+                  {groupedServices.map((group, index) => (
+                    <AccordionItem
+                      key={group.category?.id || 'uncategorized'}
+                      value={group.category?.id || 'uncategorized'}
+                      className="border-0"
+                    >
+                      <AccordionTrigger className={`px-4 py-5 hover:no-underline ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                        <div className="flex items-center justify-between w-full me-4">
+                          <h3 className="text-lg font-semibold">
+                            {group.category?.name || t('serviceProviders.uncategorized')}
+                          </h3>
+                          <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                            {group.services.length} {group.services.length === 1 ? t('products.service') : t('events.services')}
+                          </span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-4">
+                        <div className="grid gap-3 mt-2">
+                          {group.services.map((service) => {
+                            const isSelected = selectedService?.serviceId === service.id
 
-                        return (
-                          <Card
-                            key={service.id}
-                            className={`cursor-pointer transition-colors ${
-                              isSelected ? 'ring-2 ring-primary' : ''
-                            }`}
-                            onClick={() => handleSelectService(provider, service)}
-                          >
-                            <CardHeader className="pb-3">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <CardTitle className="text-sm">
-                                    {service.category?.name || service.name}
-                                  </CardTitle>
-                                  {service.category?.description && (
-                                    <CardDescription className="text-xs mt-1">
-                                      {service.category.description}
-                                    </CardDescription>
-                                  )}
-                                </div>
-                                {isSelected && (
-                                  <Check className="h-5 w-5 text-primary" />
-                                )}
-                              </div>
-                            </CardHeader>
-                            <CardContent className="pt-0">
-                              <div className="flex items-center gap-2 text-sm">
-                                <Coins className="w-4 h-4 text-gray-400" />
-                                <span>{formatPrice(service.price, service.currency)}</span>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        )
-                      })}
-                    </div>
-                  </div>
-                ))
+                            return (
+                              <Card
+                                key={service.id}
+                                className={`cursor-pointer transition-colors ${
+                                  isSelected ? 'ring-2 ring-primary' : ''
+                                }`}
+                                onClick={() => handleSelectService(service.provider, service)}
+                              >
+                                <CardHeader className="pb-3">
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <CardTitle className="text-sm">
+                                        {service.name || service.category?.name}
+                                      </CardTitle>
+                                      <CardDescription className="text-xs mt-1">
+                                        {service.provider.name}
+                                      </CardDescription>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Button
+                                        size="sm"
+                                        variant={isSelected ? "default" : "outline"}
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          if (!isSelected) {
+                                            handleSelectService(service.provider, service)
+                                          }
+                                          // Add service directly without the pricing form
+                                          onSelectService(
+                                            service.provider.id,
+                                            service.id,
+                                            service.price || undefined,
+                                            service.providerPrice || 0
+                                          )
+                                          toast.success(t('events.serviceAdded'))
+                                        }}
+                                      >
+                                        <Plus className="h-4 w-4 me-1" />
+                                        {t('common.add')}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </CardHeader>
+                                <CardContent className="pt-0">
+                                  <div className="flex items-center gap-2 text-sm">
+                                    <Coins className="w-4 h-4 text-gray-400" />
+                                    <span>{formatPrice(service.price, service.currency)}</span>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            )
+                          })}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
                   {searchQuery ? t('events.noServicesFound') : t('events.noServicesAvailable')}
                 </div>
               )}
-            </div>
-
-            {selectedService && (
-              <div className="border-t pt-4 space-y-3">
-                <div>
-                  <label className="text-sm font-medium mb-1 block">
-                    {t('events.customPrice')} ({t('common.optional')})
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      value={customPrice || ''}
-                      onChange={(e) => setCustomPrice(parseFloat(e.target.value) || undefined)}
-                      placeholder={t('events.useDefaultPrice')}
-                      step="0.01"
-                      min="0"
-                    />
-                    <span className="text-sm text-muted-foreground">ILS</span>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">
-                    {t('events.providerPrice')} ({t('common.optional')})
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      value={providerPrice || ''}
-                      onChange={(e) => setProviderPrice(parseFloat(e.target.value) || 0)}
-                      placeholder="0"
-                      step="0.01"
-                      min="0"
-                    />
-                    <span className="text-sm text-muted-foreground">ILS</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button onClick={handleAddService} className="flex-1">
-                    <Plus className="h-4 w-4 me-2" />
-                    {t('events.addService')}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSelectedService(null)
-                      setCustomPrice(undefined)
-                      setProviderPrice(0)
-                    }}
-                  >
-                    {t('common.cancel')}
-                  </Button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </DrawerContent>

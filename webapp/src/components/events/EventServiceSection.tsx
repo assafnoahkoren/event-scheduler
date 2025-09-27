@@ -43,6 +43,12 @@ export function EventServiceSection({ event }: EventServiceSectionProps) {
     { enabled: !!currentOrg?.id && !!event.siteId }
   )
 
+  // Get service categories
+  const { data: categories } = trpc.serviceProviders.listCategories.useQuery(
+    { organizationId: currentOrg?.id || '' },
+    { enabled: !!currentOrg?.id }
+  )
+
   // Get existing event providers (services)
   const { data: existingEventProviders } = trpc.eventProviders.list.useQuery(
     { eventId: event.id },
@@ -150,6 +156,7 @@ export function EventServiceSection({ event }: EventServiceSectionProps) {
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         providers={providers || []}
+        categories={categories || []}
         onSelectService={handleAddService}
         existingServices={existingEventProviders || []}
       />
