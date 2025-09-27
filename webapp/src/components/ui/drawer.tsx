@@ -80,8 +80,8 @@ const DrawerContent = React.forwardRef<
       {...props}
     >
       <div className="mx-auto mt-4 h-1.5 w-12 flex-shrink-0 rounded-full bg-slate-300" />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="max-w-2xl mx-auto w-full flex flex-col flex-1 overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-y-auto">
+        <div className="max-w-2xl mx-auto w-full flex flex-col flex-1">
           {children}
         </div>
       </div>
