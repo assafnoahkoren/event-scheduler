@@ -151,7 +151,7 @@ export function ServiceSelectionDrawer({
       noBodyStyles
       disablePreventScroll
     >
-      <DrawerContent className="max-h-[90vh] flex flex-col">
+      <DrawerContent className="flex flex-col">
         <DrawerHeader className="flex-shrink-0">
           <DrawerTitle>{t('events.selectService')}</DrawerTitle>
         </DrawerHeader>
