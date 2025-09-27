@@ -45,7 +45,7 @@ export function EventCostsSection({ eventId }: EventCostsSectionProps) {
     : '0'
 
   return (
-    <div className="flex items-center gap-4 px-3 py-2 bg-muted/50 rounded-md text-sm">
+    <div className="flex items-center gap-4 px-3 py-2 bg-muted/50 rounded-md text-sm overflow-x-auto">
       <div className="flex items-center gap-1.5">
         <span className="text-muted-foreground">{t('events.clientCost')}:</span>
         <span className="font-medium">{formatCurrency(costs.clientCost)}</span>
