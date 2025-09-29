@@ -247,12 +247,12 @@ export function EventCalendar() {
       <div className="flex justify-center items-flex-start min-h-[500px] bg-slate-50">
         <div className="max-w-2xl w-full" {...swipeHandlers}>
           {/* Profit Chart */}
-          <div className="mb-4 bg-background p-2">
+          {/* <div className="mb-4 bg-background p-2">
             <ProfitChart
               startDate={format(startOfMonth(viewMonth), 'yyyy-MM-dd')}
               endDate={format(endOfMonth(viewMonth), 'yyyy-MM-dd')}
             />
-          </div>
+          </div> */}
 
           {/* Calendar */}
           <SimpleCalendar
