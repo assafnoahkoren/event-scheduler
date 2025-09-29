@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils'
 import { navigateToEvent } from '@/utils/navigation'
 import { useLongPress } from 'use-long-press'
 import { useSwipeable } from 'react-swipeable'
+import { useUrlMonth } from '@/hooks/useUrlMonth'
+import { useIsRtl } from '@/hooks/useIsRtl'
 import {
   Drawer,
   DrawerContent,
@@ -25,8 +27,10 @@ export function EventCalendar() {
   const { currentSite } = useCurrentSite()
   const navigate = useNavigate()
   const { formatFullDate } = useDateFormatter()
+  const isRTL = useIsRtl()
+  const [viewMonth, setViewMonth] = useUrlMonth()
+
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
-  const [viewMonth, setViewMonth] = useState(new Date())
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [eventDate, setEventDate] = useState<Date>(new Date())
   const [isEventsListOpen, setIsEventsListOpen] = useState(false)
@@ -38,7 +42,6 @@ export function EventCalendar() {
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
       // Next month (right direction in LTR, left in RTL)
-      const isRTL = i18n.language === 'ar' || i18n.language === 'he'
       if (isRTL) {
         setViewMonth(prev => subMonths(prev, 1))
       } else {
@@ -47,7 +50,6 @@ export function EventCalendar() {
     },
     onSwipedRight: () => {
       // Previous month (left direction in LTR, right in RTL)
-      const isRTL = i18n.language === 'ar' || i18n.language === 'he'
       if (isRTL) {
         setViewMonth(prev => addMonths(prev, 1))
       } else {
@@ -258,7 +260,7 @@ export function EventCalendar() {
             onSelect={handleDateSelect}
             month={viewMonth}
             onMonthChange={setViewMonth}
-            dir={i18n.language === 'ar' || i18n.language === 'he' ? 'rtl' : 'ltr'}
+            dir={isRTL ? 'rtl' : 'ltr'}
             disabled={isLoading}
             modifiers={{
               hasEvents: daysWithEvents,
