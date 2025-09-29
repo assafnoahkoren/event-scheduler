@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -60,6 +60,11 @@ export function SimpleCalendar({
   const isRtl = useIsRtl()
   const { isWeekendDay, isWeekendDate } = useIsWeekend()
   const actualDir = dir || (isRtl ? 'rtl' : 'ltr')
+
+  // Sync internal state with month prop changes
+  useEffect(() => {
+    setCurrentMonth(month)
+  }, [month])
 
   const days = useMemo(() => {
     const start = startOfWeek(startOfMonth(currentMonth))

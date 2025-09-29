@@ -5,10 +5,11 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
-import { format, startOfMonth, endOfMonth } from 'date-fns'
+import { format, startOfMonth, endOfMonth, addMonths, subMonths } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { navigateToEvent } from '@/utils/navigation'
 import { useLongPress } from 'use-long-press'
+import { useSwipeable } from 'react-swipeable'
 import {
   Drawer,
   DrawerContent,
@@ -32,6 +33,31 @@ export function EventCalendar() {
   const [selectedDateEvents, setSelectedDateEvents] = useState<any[]>([])
 
   const utils = trpc.useUtils()
+
+  // Handle swipe gestures for month navigation
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => {
+      // Next month (right direction in LTR, left in RTL)
+      const isRTL = i18n.language === 'ar' || i18n.language === 'he'
+      if (isRTL) {
+        setViewMonth(prev => subMonths(prev, 1))
+      } else {
+        setViewMonth(prev => addMonths(prev, 1))
+      }
+    },
+    onSwipedRight: () => {
+      // Previous month (left direction in LTR, right in RTL)
+      const isRTL = i18n.language === 'ar' || i18n.language === 'he'
+      if (isRTL) {
+        setViewMonth(prev => addMonths(prev, 1))
+      } else {
+        setViewMonth(prev => subMonths(prev, 1))
+      }
+    },
+    trackMouse: false, // Only track touch events, not mouse
+    preventScrollOnSwipe: true, // Prevent scrolling during swipe
+    delta: 50, // Minimum distance for a swipe to be registered
+  })
 
   // Fetch events for the current month
   const { data: eventsData, isLoading } = trpc.events.list.useQuery(
@@ -217,7 +243,7 @@ export function EventCalendar() {
   return (
     <>
       <div className="flex justify-center items-flex-start min-h-[500px] bg-slate-50">
-        <div className="max-w-2xl w-full">
+        <div className="max-w-2xl w-full" {...swipeHandlers}>
           {/* Profit Chart */}
           <div className="mb-4 bg-background p-2">
             <ProfitChart
