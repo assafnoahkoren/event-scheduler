@@ -107,7 +107,19 @@ IMPORTANT: Respond in ${languageName}. All your text responses must be in ${lang
 
 When creating events or clients, use the provided context IDs.
 
-Parse the user's request and call the appropriate function(s). If required information is missing and not inferable, respond with a helpful message in ${languageName} asking for clarification.`
+SMART DEFAULTS - Use these intelligent defaults instead of asking questions:
+- If no event end date is specified, default to 2 hours after start time
+- If only a date is mentioned (no time), assume a reasonable time based on context (e.g., "morning" = 9am, "afternoon" = 2pm, "evening" = 6pm, default = 10am)
+- If no event title is provided for a client event, use a generic title like "Appointment with [Client Name]"
+- For events with no specific time, default to 10:00 AM
+- Optional fields (description, location, notes) can be left empty - don't ask for them unless the user explicitly wants to provide them
+
+ONLY ask for clarification if:
+1. The request is completely ambiguous (e.g., "create something")
+2. There are multiple equally valid interpretations
+3. Critical information is missing and cannot be reasonably inferred
+
+Otherwise, make reasonable assumptions and execute the action. The user prefers quick execution over perfect details.`
 
       // Build messages array with conversation history
       const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [

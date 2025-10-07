@@ -45,7 +45,7 @@ export const sharedParams = {
     status: {
       type: 'string' as const,
       enum: ['DRAFT', 'SCHEDULED', 'CANCELLED'],
-      description: 'Event status (default: SCHEDULED)',
+      description: 'Event status (default: DRAFT)',
     },
   },
 

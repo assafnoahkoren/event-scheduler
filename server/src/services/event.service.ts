@@ -13,7 +13,7 @@ export const createEventSchema = z.object({
   endDate: z.string().datetime().optional(),
   timezone: z.string().default('UTC'),
   isAllDay: z.boolean().default(false),
-  status: z.nativeEnum(EventStatus).default('SCHEDULED'),
+  status: z.nativeEnum(EventStatus).default('DRAFT'),
 })
 
 export const updateEventSchema = createEventSchema.partial().extend({
