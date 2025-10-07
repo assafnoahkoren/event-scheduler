@@ -428,5 +428,11 @@ export const heTranslation: TranslationType = {
     getStarted: "הוסף קטגוריה באמצעות השדה למעלה",
     cannotDeleteWithProviders: "לא ניתן למחוק את '{{name}}' כי יש לו {{count}} ספק(ים) המוקצה(ים) אליו.",
     categoryActions: "פעולות {{name}}"
+  },
+  voiceAssistant: {
+    recording: "מקליט... שחרר לשליחה",
+    unsupportedBrowser: "הקלטה קולית אינה נתמכת בדפדפן שלך",
+    holdToSpeak: "החזק כדי לדבר",
+    processing: "מעבד..."
   }
 } as const

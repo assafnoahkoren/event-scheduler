@@ -428,5 +428,11 @@ export const arTranslation: TranslationType = {
     getStarted: "أضف فئة باستخدام الحقل أعلاه",
     cannotDeleteWithProviders: "لا يمكن حذف '{{name}}' لأنه يحتوي على {{count}} مزود(ين) مرتبط(ين) به.",
     categoryActions: "إجراءات {{name}}"
+  },
+  voiceAssistant: {
+    recording: "جارٍ التسجيل... اترك للإرسال",
+    unsupportedBrowser: "التسجيل الصوتي غير مدعوم في متصفحك",
+    holdToSpeak: "اضغط للتحدث",
+    processing: "جارٍ المعالجة..."
   }
 } as const

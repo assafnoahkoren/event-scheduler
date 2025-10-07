@@ -426,5 +426,11 @@ export const enTranslation = {
     getStarted: "Add a category using the field above",
     cannotDeleteWithProviders: "Cannot delete '{{name}}' because it has {{count}} provider(s) assigned to it.",
     categoryActions: "{{name}} Actions"
+  },
+  voiceAssistant: {
+    recording: "Recording... Release to send",
+    unsupportedBrowser: "Voice recording is not supported in your browser",
+    holdToSpeak: "Hold to speak",
+    processing: "Processing..."
   }
 } as const

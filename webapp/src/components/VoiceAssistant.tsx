@@ -12,7 +12,7 @@ type ConversationMessage = {
 }
 
 export function VoiceAssistant() {
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const queryClient = useQueryClient()
   const [state, setState] = useState<RecordingState>('idle')
   const [recorder] = useState(() => new AudioRecorder())
@@ -70,7 +70,7 @@ export function VoiceAssistant() {
   const handlePushStart = async () => {
     // Check browser support
     if (!AudioRecorder.isSupported()) {
-      toast.error('Voice recording is not supported in your browser')
+      toast.error(t('voiceAssistant.unsupportedBrowser'))
       return
     }
 
@@ -79,7 +79,7 @@ export function VoiceAssistant() {
       try {
         await recorder.startRecording()
         setState('recording')
-        toast.info('Recording... Release to send')
+        toast.info(t('voiceAssistant.recording'))
       } catch (error: any) {
         toast.error(error.message || 'Failed to start recording')
       }
@@ -121,10 +121,10 @@ export function VoiceAssistant() {
       className="fixed bottom-6 end-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg transition-all hover:scale-110 hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed select-none"
       aria-label={
         state === 'idle'
-          ? 'Hold to speak'
+          ? t('voiceAssistant.holdToSpeak')
           : state === 'recording'
-            ? 'Recording... Release to send'
-            : 'Processing...'
+            ? t('voiceAssistant.recording')
+            : t('voiceAssistant.processing')
       }
     >
       {state === 'processing' ? (
