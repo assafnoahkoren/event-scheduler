@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '../utils/trpc'
 import { AudioRecorder, type RecordingState } from '../lib/audio'
+import { useQueryClient } from '@tanstack/react-query'
 
 type ConversationMessage = {
   role: 'user' | 'assistant'
@@ -12,6 +13,7 @@ type ConversationMessage = {
 
 export function VoiceAssistant() {
   const { i18n } = useTranslation()
+  const queryClient = useQueryClient()
   const [state, setState] = useState<RecordingState>('idle')
   const [recorder] = useState(() => new AudioRecorder())
 
@@ -48,6 +50,12 @@ export function VoiceAssistant() {
         } else {
           toast.info(data.message)
         }
+      }
+
+      // Invalidate all queries to refresh data if any actions were performed
+      if (data.actions && data.actions.length > 0) {
+        // Invalidate all tRPC queries to refetch data
+        queryClient.invalidateQueries()
       }
 
       setState('idle')
