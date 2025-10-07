@@ -138,9 +138,9 @@ Parse the user's request and call the appropriate function(s). If required infor
       for (let iteration = 0; iteration < maxIterations; iteration++) {
         console.log(`\n🔄 Iteration ${iteration + 1}/${maxIterations}`)
 
-        // Call GPT-4 with function calling
+        // Call GPT-4o with function calling
         const completion = await openai.chat.completions.create({
-          model: 'gpt-4',
+          model: 'gpt-4o',
           messages: currentMessages,
           tools: tools,
           tool_choice: 'auto',
