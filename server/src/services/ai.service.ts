@@ -71,18 +71,41 @@ class AIService {
 
       const languageName = language ? languageNames[language] || language : 'English'
 
+      // Get current date/time for context
+      const now = new Date()
+      const currentDateTime = now.toISOString()
+      const currentDate = now.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+      const currentTime = now.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })
+
       // System prompt with context
       const systemPrompt = `You are an AI assistant helping users manage their events and clients.
+
 Current context:
 - User ID: ${userId}
 ${userContext.organizationId ? `- Organization ID: ${userContext.organizationId}` : ''}
 ${userContext.siteId ? `- Site ID: ${userContext.siteId}` : ''}
 - User's language: ${languageName}
 
+IMPORTANT DATE/TIME CONTEXT:
+- Current date and time (ISO): ${currentDateTime}
+- Current date (human): ${currentDate}
+- Current time: ${currentTime}
+
+Use this date/time information when the user says "today", "tomorrow", "next week", "this afternoon", etc.
+When creating events, convert relative dates to absolute ISO 8601 format.
+
 IMPORTANT: Respond in ${languageName}. All your text responses must be in ${languageName}.
 
 When creating events or clients, use the provided context IDs.
-Current date: ${new Date().toISOString()}
 
 Parse the user's request and call the appropriate function(s). If required information is missing and not inferable, respond with a helpful message in ${languageName} asking for clarification.`
 

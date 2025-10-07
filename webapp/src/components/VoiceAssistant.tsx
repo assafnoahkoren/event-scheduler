@@ -36,18 +36,18 @@ export function VoiceAssistant() {
         })
       }
 
-      // Show success toast for each action
-      if (data.actions && data.actions.length > 0) {
-        data.actions.forEach((action) => {
-          if (action.success) {
-            toast.success(action.message)
-          } else {
-            toast.error(action.message)
-          }
-        })
-      } else if (data.message) {
-        // If no actions but there's a message, show it
-        toast.info(data.message)
+      // Show AI's response message
+      if (data.message) {
+        // Check if any actions failed
+        const hasFailures = data.actions?.some((action) => !action.success)
+
+        if (hasFailures) {
+          toast.error(data.message)
+        } else if (data.actions && data.actions.length > 0) {
+          toast.success(data.message)
+        } else {
+          toast.info(data.message)
+        }
       }
 
       setState('idle')
