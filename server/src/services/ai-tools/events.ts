@@ -1,5 +1,6 @@
-import { eventService, createEventSchema } from '../event.service'
+import { eventService, createEventSchema, updateEventSchema } from '../event.service'
 import type { ToolRegistry } from './types'
+import { sharedParams } from './shared-params'
 
 /**
  * Event-related AI tools
@@ -16,52 +17,7 @@ export const eventTools: ToolRegistry = {
           'Create a new event/appointment for the user. Use this when the user wants to schedule, create, or add an event.',
         parameters: {
           type: 'object',
-          properties: {
-            siteId: {
-              type: 'string',
-              description: 'Site ID where the event will be created',
-            },
-            title: {
-              type: 'string',
-              description: 'Event title or name (optional)',
-            },
-            description: {
-              type: 'string',
-              description: 'Event description (optional)',
-            },
-            location: {
-              type: 'string',
-              description: 'Event location/venue (optional)',
-            },
-            clientId: {
-              type: 'string',
-              description:
-                'Client ID if the event is for a specific client (optional)',
-            },
-            startDate: {
-              type: 'string',
-              description:
-                'Event start date and time in ISO 8601 format (e.g., 2025-12-25T10:00:00Z)',
-            },
-            endDate: {
-              type: 'string',
-              description:
-                'Event end date and time in ISO 8601 format (optional)',
-            },
-            timezone: {
-              type: 'string',
-              description: 'Event timezone (default: UTC)',
-            },
-            isAllDay: {
-              type: 'boolean',
-              description: 'Whether this is an all-day event (default: false)',
-            },
-            status: {
-              type: 'string',
-              enum: ['DRAFT', 'SCHEDULED', 'CANCELLED'],
-              description: 'Event status (default: SCHEDULED)',
-            },
-          },
+          properties: sharedParams.event,
           required: ['siteId', 'startDate'],
         },
       },
@@ -69,6 +25,53 @@ export const eventTools: ToolRegistry = {
     execute: async (userId: string, args: any) => {
       const validatedInput = createEventSchema.parse(args)
       return eventService.createEvent(userId, validatedInput)
+    },
+  },
+
+  updateEvent: {
+    successMessage: 'Event updated successfully',
+    errorMessage: 'Failed to update event',
+    tool: {
+      type: 'function',
+      function: {
+        name: 'updateEvent',
+        description:
+          'Update an existing event. Use this when the user wants to modify, change, or update event details.',
+        parameters: {
+          type: 'object',
+          properties: {
+            ...sharedParams.common,
+            ...sharedParams.event,
+          },
+          required: ['id'],
+        },
+      },
+    },
+    execute: async (userId: string, args: any) => {
+      const validatedInput = updateEventSchema.parse(args)
+      return eventService.updateEvent(userId, validatedInput)
+    },
+  },
+
+  deleteEvent: {
+    successMessage: 'Event deleted successfully',
+    errorMessage: 'Failed to delete event',
+    tool: {
+      type: 'function',
+      function: {
+        name: 'deleteEvent',
+        description:
+          'Delete an event. Use this when the user wants to remove, cancel, or delete an event permanently.',
+        parameters: {
+          type: 'object',
+          properties: sharedParams.common,
+          required: ['id'],
+        },
+      },
+    },
+    execute: async (userId: string, args: any) => {
+      const { id } = args
+      return eventService.deleteEvent(userId, id)
     },
   },
 }
