@@ -17,7 +17,8 @@ app.use(cors({
 }));
 
 app.use(cookieParser());
-app.use(express.json());
+// Increase body size limit for voice assistant audio uploads (max 25MB)
+app.use(express.json({ limit: '25mb' }));
 
 app.use('/trpc', createExpressMiddleware({
   router: appRouter,
