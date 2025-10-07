@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { Mic, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { trpc } from '../utils/trpc'
 import { AudioRecorder, type RecordingState } from '../lib/audio'
 
@@ -10,6 +11,7 @@ type ConversationMessage = {
 }
 
 export function VoiceAssistant() {
+  const { i18n } = useTranslation()
   const [state, setState] = useState<RecordingState>('idle')
   const [recorder] = useState(() => new AudioRecorder())
 
@@ -56,24 +58,30 @@ export function VoiceAssistant() {
     },
   })
 
-  const handleClick = async () => {
+  // Push-to-talk: Start recording on mouse/touch down
+  const handlePushStart = async () => {
     // Check browser support
     if (!AudioRecorder.isSupported()) {
       toast.error('Voice recording is not supported in your browser')
       return
     }
 
+    // Only start if idle
     if (state === 'idle') {
-      // Start recording
       try {
         await recorder.startRecording()
         setState('recording')
-        toast.info('Listening... Click again to send')
+        toast.info('Recording... Release to send')
       } catch (error: any) {
         toast.error(error.message || 'Failed to start recording')
       }
-    } else if (state === 'recording') {
-      // Stop recording and process
+    }
+  }
+
+  // Push-to-talk: Stop recording and send on mouse/touch up
+  const handlePushEnd = async () => {
+    // Only process if currently recording
+    if (state === 'recording') {
       try {
         setState('processing')
         const audioBlob = await recorder.stopRecording()
@@ -81,10 +89,11 @@ export function VoiceAssistant() {
         // Convert to base64
         const base64Audio = await recorder.blobToBase64(audioBlob)
 
-        // Send to backend with conversation history
+        // Send to backend with conversation history and user's language
         processVoiceMutation.mutate({
           audioData: base64Audio,
           conversationHistory: conversationHistory.current,
+          language: i18n.language,
         })
       } catch (error: any) {
         toast.error(error.message || 'Failed to process recording')
@@ -95,14 +104,18 @@ export function VoiceAssistant() {
 
   return (
     <button
-      onClick={handleClick}
+      onMouseDown={handlePushStart}
+      onMouseUp={handlePushEnd}
+      onMouseLeave={handlePushEnd}
+      onTouchStart={handlePushStart}
+      onTouchEnd={handlePushEnd}
       disabled={state === 'processing'}
-      className="fixed bottom-6 end-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg transition-all hover:scale-110 hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+      className="fixed bottom-6 end-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg transition-all hover:scale-110 hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed select-none"
       aria-label={
         state === 'idle'
-          ? 'Start voice command'
+          ? 'Hold to speak'
           : state === 'recording'
-            ? 'Stop recording and send'
+            ? 'Recording... Release to send'
             : 'Processing...'
       }
     >

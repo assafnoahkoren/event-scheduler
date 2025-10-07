@@ -65,7 +65,8 @@ class AIService {
       organizationId?: string
       siteId?: string
     },
-    conversationHistory?: Array<{ role: 'user' | 'assistant'; content: string }>
+    conversationHistory?: Array<{ role: 'user' | 'assistant'; content: string }>,
+    language?: string
   ): Promise<{
     message: string
     actions: ToolExecutionResult[]
@@ -153,17 +154,29 @@ class AIService {
         },
       ]
 
+      // Language names for system prompt
+      const languageNames: Record<string, string> = {
+        en: 'English',
+        ar: 'Arabic',
+        he: 'Hebrew',
+      }
+
+      const languageName = language ? languageNames[language] || language : 'English'
+
       // System prompt with context
       const systemPrompt = `You are an AI assistant helping users manage their events and clients.
 Current context:
 - User ID: ${userId}
 ${userContext.organizationId ? `- Organization ID: ${userContext.organizationId}` : ''}
 ${userContext.siteId ? `- Site ID: ${userContext.siteId}` : ''}
+- User's language: ${languageName}
+
+IMPORTANT: Respond in ${languageName}. All your text responses must be in ${languageName}.
 
 When creating events or clients, use the provided context IDs.
 Current date: ${new Date().toISOString()}
 
-Parse the user's request and call the appropriate function(s). If required information is missing and not inferable, respond with a helpful message asking for clarification.`
+Parse the user's request and call the appropriate function(s). If required information is missing and not inferable, respond with a helpful message in ${languageName} asking for clarification.`
 
       // Build messages array with conversation history
       const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [

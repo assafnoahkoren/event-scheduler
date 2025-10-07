@@ -15,6 +15,7 @@ const processVoiceSchema = z.object({
   siteId: z.string().uuid().optional(), // Optional site context
   organizationId: z.string().uuid().optional(), // Optional organization context
   conversationHistory: z.array(conversationMessageSchema).optional(), // Conversation context
+  language: z.string().optional(), // User's language preference (e.g., 'en', 'ar', 'he')
 })
 
 export const aiRouter = router({
@@ -30,7 +31,7 @@ export const aiRouter = router({
     .input(processVoiceSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        const { audioData, siteId, organizationId, conversationHistory } = input
+        const { audioData, siteId, organizationId, conversationHistory, language } = input
 
         // Decode base64 audio to buffer
         const audioBuffer = Buffer.from(audioData, 'base64')
@@ -100,7 +101,7 @@ export const aiRouter = router({
           }
         }
 
-        // Step 3: Process command with GPT-4 (including conversation history)
+        // Step 3: Process command with GPT-4 (including conversation history and language)
         const result = await aiService.processCommand(
           ctx.user.id,
           transcribedText,
@@ -108,7 +109,8 @@ export const aiRouter = router({
             organizationId: contextOrgId,
             siteId: contextSiteId,
           },
-          conversationHistory
+          conversationHistory,
+          language
         )
 
         // Return results
