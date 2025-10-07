@@ -1,24 +1,11 @@
 import OpenAI from 'openai'
-import { eventService, createEventSchema } from './event.service'
-import { clientService, createClientSchema } from './client.service'
 import { TRPCError } from '@trpc/server'
+import { getAllTools, executeTool, getToolMetadata } from './ai-tools'
 
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
-
-// Action metadata for toast messages
-export const actionMetadata = {
-  createEvent: {
-    successMessage: 'Event created successfully',
-    errorMessage: 'Failed to create event',
-  },
-  createClient: {
-    successMessage: 'Client added successfully',
-    errorMessage: 'Failed to add client',
-  },
-} as const
 
 // Tool execution result type
 export type ToolExecutionResult = {
@@ -72,87 +59,8 @@ class AIService {
     actions: ToolExecutionResult[]
   }> {
     try {
-      // Define tools for GPT-4 function calling
-      const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
-        {
-          type: 'function',
-          function: {
-            name: 'createEvent',
-            description: 'Create a new event/appointment for the user. Use this when the user wants to schedule, create, or add an event.',
-            parameters: {
-              type: 'object',
-              properties: {
-                siteId: {
-                  type: 'string',
-                  description: 'Site ID where the event will be created',
-                },
-                title: {
-                  type: 'string',
-                  description: 'Event title or name',
-                },
-                description: {
-                  type: 'string',
-                  description: 'Event description (optional)',
-                },
-                clientId: {
-                  type: 'string',
-                  description: 'Client ID if the event is for a specific client (optional)',
-                },
-                startDate: {
-                  type: 'string',
-                  description: 'Event start date and time in ISO 8601 format (e.g., 2025-12-25T10:00:00Z)',
-                },
-                endDate: {
-                  type: 'string',
-                  description: 'Event end date and time in ISO 8601 format (optional)',
-                },
-                isAllDay: {
-                  type: 'boolean',
-                  description: 'Whether this is an all-day event',
-                },
-              },
-              required: ['siteId', 'title', 'startDate'],
-            },
-          },
-        },
-        {
-          type: 'function',
-          function: {
-            name: 'createClient',
-            description: 'Create a new client/customer for the organization. Use this when the user wants to add a new client.',
-            parameters: {
-              type: 'object',
-              properties: {
-                organizationId: {
-                  type: 'string',
-                  description: 'Organization ID where the client will be created',
-                },
-                name: {
-                  type: 'string',
-                  description: 'Client full name',
-                },
-                email: {
-                  type: 'string',
-                  description: 'Client email address (optional)',
-                },
-                phone: {
-                  type: 'string',
-                  description: 'Client phone number (optional)',
-                },
-                address: {
-                  type: 'string',
-                  description: 'Client address (optional)',
-                },
-                notes: {
-                  type: 'string',
-                  description: 'Additional notes about the client (optional)',
-                },
-              },
-              required: ['organizationId', 'name'],
-            },
-          },
-        },
-      ]
+      // Get all available tools from the tools configuration
+      const tools = getAllTools()
 
       // Language names for system prompt
       const languageNames: Record<string, string> = {
@@ -258,48 +166,30 @@ Parse the user's request and call the appropriate function(s). If required infor
     const args = JSON.parse(toolCall.function.arguments)
 
     try {
-      switch (toolName) {
-        case 'createEvent': {
-          // Validate input against schema
-          const validatedInput = createEventSchema.parse(args)
+      // Get tool metadata
+      const metadata = getToolMetadata(toolName)
 
-          // Execute event creation
-          const event = await eventService.createEvent(userId, validatedInput)
-
-          return {
-            toolName,
-            success: true,
-            message: actionMetadata.createEvent.successMessage,
-            data: event,
-          }
+      if (!metadata) {
+        return {
+          toolName,
+          success: false,
+          message: `Unknown tool: ${toolName}`,
         }
+      }
 
-        case 'createClient': {
-          // Validate input against schema
-          const validatedInput = createClientSchema.parse(args)
+      // Execute tool
+      const result = await executeTool(toolName, userId, args)
 
-          // Execute client creation
-          const client = await clientService.createClient(userId, validatedInput)
-
-          return {
-            toolName,
-            success: true,
-            message: actionMetadata.createClient.successMessage,
-            data: client,
-          }
-        }
-
-        default:
-          return {
-            toolName,
-            success: false,
-            message: `Unknown tool: ${toolName}`,
-          }
+      return {
+        toolName,
+        success: true,
+        message: metadata.successMessage,
+        data: result,
       }
     } catch (error: any) {
       console.error(`Tool execution error (${toolName}):`, error)
 
-      const metadata = actionMetadata[toolName as keyof typeof actionMetadata]
+      const metadata = getToolMetadata(toolName)
 
       return {
         toolName,
