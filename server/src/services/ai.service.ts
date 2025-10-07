@@ -20,18 +20,15 @@ class AIService {
   /**
    * Transcribe audio using OpenAI Whisper API
    */
-  async transcribeAudio(audioBuffer: Buffer, language?: string): Promise<string> {
+  async transcribeAudio(audioBuffer: Buffer): Promise<string> {
     try {
       // Create a File object from buffer for Whisper API
       const file = new File([audioBuffer], 'audio.webm', { type: 'audio/webm' })
 
-      // Extract ISO 639-1 language code (e.g., 'en' from 'en-US')
-      const whisperLanguage = language?.split('-')[0]
-
       const transcription = await openai.audio.transcriptions.create({
         file: file,
         model: 'whisper-1',
-        language: whisperLanguage, // Whisper auto-detects if not provided
+        // No language parameter - let Whisper auto-detect for maximum flexibility
       })
 
       return transcription.text
