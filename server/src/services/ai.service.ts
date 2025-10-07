@@ -20,15 +20,18 @@ class AIService {
   /**
    * Transcribe audio using OpenAI Whisper API
    */
-  async transcribeAudio(audioBuffer: Buffer): Promise<string> {
+  async transcribeAudio(audioBuffer: Buffer, language?: string): Promise<string> {
     try {
       // Create a File object from buffer for Whisper API
       const file = new File([audioBuffer], 'audio.webm', { type: 'audio/webm' })
 
+      // Extract ISO 639-1 language code (e.g., 'en' from 'en-US')
+      const whisperLanguage = language?.split('-')[0]
+
       const transcription = await openai.audio.transcriptions.create({
         file: file,
         model: 'whisper-1',
-        language: 'en', // Can be made dynamic if needed
+        language: whisperLanguage, // Whisper auto-detects if not provided
       })
 
       return transcription.text
@@ -106,10 +109,15 @@ Parse the user's request and call the appropriate function(s). If required infor
 
       // Agentic loop: Allow GPT-4 to make multiple tool calls in sequence
       const actions: ToolExecutionResult[] = []
-      const maxIterations = 5 // Prevent infinite loops
+      const maxIterations = 10 // Prevent infinite loops
       let currentMessages = [...messages]
 
+      console.log('\n🤖 AI Assistant - Starting agentic workflow')
+      console.log(`📝 User command: "${transcribedText}"`)
+
       for (let iteration = 0; iteration < maxIterations; iteration++) {
+        console.log(`\n🔄 Iteration ${iteration + 1}/${maxIterations}`)
+
         // Call GPT-4 with function calling
         const completion = await openai.chat.completions.create({
           model: 'gpt-4',
@@ -126,9 +134,15 @@ Parse the user's request and call the appropriate function(s). If required infor
 
         // If no tool calls, we're done
         if (!responseMessage.tool_calls || responseMessage.tool_calls.length === 0) {
+          console.log('✅ GPT-4 finished - no more tools to call')
+          if (responseMessage.content) {
+            console.log(`💬 Final message: "${responseMessage.content}"`)
+          }
+
           const message = responseMessage.content ||
             (actions.length > 0 ? 'Actions completed successfully' : 'No actions taken')
 
+          console.log(`\n📊 Summary: Executed ${actions.length} action(s) across ${iteration + 1} iteration(s)`)
           return {
             message,
             actions,
@@ -136,11 +150,25 @@ Parse the user's request and call the appropriate function(s). If required infor
         }
 
         // Execute tool calls
+        console.log(`🔧 GPT-4 wants to call ${responseMessage.tool_calls.length} tool(s):`)
+        responseMessage.tool_calls.forEach((tc, idx) => {
+          if (tc.type === 'function') {
+            console.log(`   ${idx + 1}. ${tc.function.name}(${tc.function.arguments})`)
+          }
+        })
+
         currentMessages.push(responseMessage)
 
         for (const toolCall of responseMessage.tool_calls) {
+          const toolName = toolCall.type === 'function' ? toolCall.function.name : 'unknown'
+          console.log(`\n⚙️  Executing: ${toolName}`)
           const result = await this.executeToolCall(userId, toolCall)
           actions.push(result)
+
+          console.log(`   ${result.success ? '✅' : '❌'} ${result.message}`)
+          if (result.data) {
+            console.log(`   📦 Data:`, JSON.stringify(result.data, null, 2).substring(0, 200))
+          }
 
           // Add tool result to conversation for next iteration
           currentMessages.push({
@@ -156,6 +184,7 @@ Parse the user's request and call the appropriate function(s). If required infor
 
         // If any action failed, stop the loop
         if (actions.some((action) => !action.success)) {
+          console.log('\n❌ Stopping workflow - an action failed')
           break
         }
       }
@@ -165,6 +194,7 @@ Parse the user's request and call the appropriate function(s). If required infor
         ? 'Actions completed successfully'
         : 'No actions taken'
 
+      console.log(`\n📊 Summary: Executed ${actions.length} action(s) - reached max iterations`)
       return {
         message,
         actions,

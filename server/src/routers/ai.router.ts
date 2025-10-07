@@ -45,8 +45,8 @@ export const aiRouter = router({
           })
         }
 
-        // Step 1: Transcribe audio
-        const transcribedText = await aiService.transcribeAudio(audioBuffer)
+        // Step 1: Transcribe audio (with language hint for better accuracy)
+        const transcribedText = await aiService.transcribeAudio(audioBuffer, language)
 
         if (!transcribedText || transcribedText.trim().length === 0) {
           throw new TRPCError({
