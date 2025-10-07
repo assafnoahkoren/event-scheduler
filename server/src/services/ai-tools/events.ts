@@ -23,11 +23,15 @@ export const eventTools: ToolRegistry = {
             },
             title: {
               type: 'string',
-              description: 'Event title or name',
+              description: 'Event title or name (optional)',
             },
             description: {
               type: 'string',
               description: 'Event description (optional)',
+            },
+            location: {
+              type: 'string',
+              description: 'Event location/venue (optional)',
             },
             clientId: {
               type: 'string',
@@ -44,12 +48,21 @@ export const eventTools: ToolRegistry = {
               description:
                 'Event end date and time in ISO 8601 format (optional)',
             },
+            timezone: {
+              type: 'string',
+              description: 'Event timezone (default: UTC)',
+            },
             isAllDay: {
               type: 'boolean',
-              description: 'Whether this is an all-day event',
+              description: 'Whether this is an all-day event (default: false)',
+            },
+            status: {
+              type: 'string',
+              enum: ['DRAFT', 'SCHEDULED', 'CANCELLED'],
+              description: 'Event status (default: SCHEDULED)',
             },
           },
-          required: ['siteId', 'title', 'startDate'],
+          required: ['siteId', 'startDate'],
         },
       },
     },
