@@ -64,7 +64,8 @@ class AIService {
     userContext: {
       organizationId?: string
       siteId?: string
-    }
+    },
+    conversationHistory?: Array<{ role: 'user' | 'assistant'; content: string }>
   ): Promise<{
     message: string
     actions: ToolExecutionResult[]
@@ -164,13 +165,28 @@ Current date: ${new Date().toISOString()}
 
 Parse the user's request and call the appropriate function(s). If required information is missing and not inferable, respond with a helpful message asking for clarification.`
 
+      // Build messages array with conversation history
+      const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+        { role: 'system', content: systemPrompt },
+      ]
+
+      // Add conversation history if provided
+      if (conversationHistory && conversationHistory.length > 0) {
+        conversationHistory.forEach((msg) => {
+          messages.push({
+            role: msg.role,
+            content: msg.content,
+          })
+        })
+      }
+
+      // Add current user message
+      messages.push({ role: 'user', content: transcribedText })
+
       // Call GPT-4 with function calling
       const completion = await openai.chat.completions.create({
         model: 'gpt-4',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: transcribedText },
-        ],
+        messages,
         tools: tools,
         tool_choice: 'auto',
       })

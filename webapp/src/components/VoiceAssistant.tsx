@@ -1,15 +1,39 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Mic, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { trpc } from '../utils/trpc'
 import { AudioRecorder, type RecordingState } from '../lib/audio'
 
+type ConversationMessage = {
+  role: 'user' | 'assistant'
+  content: string
+}
+
 export function VoiceAssistant() {
   const [state, setState] = useState<RecordingState>('idle')
   const [recorder] = useState(() => new AudioRecorder())
 
+  // Conversation history (resets on page refresh)
+  const conversationHistory = useRef<ConversationMessage[]>([])
+
   const processVoiceMutation = trpc.ai.processVoice.useMutation({
     onSuccess: (data) => {
+      // Add user's transcribed text to conversation history
+      if (data.transcribedText) {
+        conversationHistory.current.push({
+          role: 'user',
+          content: data.transcribedText,
+        })
+      }
+
+      // Add assistant response to conversation history
+      if (data.message) {
+        conversationHistory.current.push({
+          role: 'assistant',
+          content: data.message,
+        })
+      }
+
       // Show success toast for each action
       if (data.actions && data.actions.length > 0) {
         data.actions.forEach((action) => {
@@ -57,9 +81,10 @@ export function VoiceAssistant() {
         // Convert to base64
         const base64Audio = await recorder.blobToBase64(audioBlob)
 
-        // Send to backend
+        // Send to backend with conversation history
         processVoiceMutation.mutate({
           audioData: base64Audio,
+          conversationHistory: conversationHistory.current,
         })
       } catch (error: any) {
         toast.error(error.message || 'Failed to process recording')
