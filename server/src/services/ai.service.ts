@@ -170,8 +170,8 @@ Parse the user's request and call the appropriate function(s). If required infor
         }
 
         // Execute tool calls
-        console.log(`🔧 GPT-4 wants to call ${responseMessage.tool_calls.length} tool(s):`)
-        responseMessage.tool_calls.forEach((tc, idx) => {
+        console.log(`🔧 GPT-4o wants to call ${responseMessage.tool_calls.length} tool(s):`)
+        responseMessage.tool_calls.forEach((tc: OpenAI.Chat.Completions.ChatCompletionMessageToolCall, idx: number) => {
           if (tc.type === 'function') {
             console.log(`   ${idx + 1}. ${tc.function.name}(${tc.function.arguments})`)
           }
