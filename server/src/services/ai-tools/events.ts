@@ -1,4 +1,4 @@
-import { eventService, createEventSchema, updateEventSchema } from '../event.service'
+import { eventService, createEventSchema, updateEventSchema, getEventsSchema } from '../event.service'
 import type { ToolRegistry } from './types'
 import { sharedParams } from './shared-params'
 
@@ -6,6 +6,51 @@ import { sharedParams } from './shared-params'
  * Event-related AI tools
  */
 export const eventTools: ToolRegistry = {
+  searchEvents: {
+    successMessage: 'Events found',
+    errorMessage: 'Failed to search events',
+    tool: {
+      type: 'function',
+      function: {
+        name: 'searchEvents',
+        description:
+          'Search and list events. Use this to find events by date range, client, status, or to get all events for a site. Always use this before updating or deleting an event if you only have the event name/description.',
+        parameters: {
+          type: 'object',
+          properties: {
+            siteId: {
+              type: 'string',
+              description: 'Site ID to search events in (required)',
+            },
+            startDate: {
+              type: 'string',
+              description: 'Filter events starting from this date (ISO 8601 format, optional)',
+            },
+            endDate: {
+              type: 'string',
+              description: 'Filter events up to this date (ISO 8601 format, optional)',
+            },
+            clientId: {
+              type: 'string',
+              description: 'Filter events for a specific client (optional)',
+            },
+            status: {
+              type: 'string',
+              enum: ['DRAFT', 'SCHEDULED', 'CANCELLED'],
+              description: 'Filter events by status (optional)',
+            },
+          },
+          required: ['siteId'],
+        },
+      },
+    },
+    execute: async (userId: string, args: any) => {
+      const validatedInput = getEventsSchema.parse(args)
+      return eventService.getEvents(userId, validatedInput)
+    },
+  },
+
+
   createEvent: {
     successMessage: 'Event created successfully',
     errorMessage: 'Failed to create event',

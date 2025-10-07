@@ -1,4 +1,4 @@
-import { clientService, createClientSchema, updateClientSchema } from '../client.service'
+import { clientService, createClientSchema, updateClientSchema, searchClientsSchema } from '../client.service'
 import type { ToolRegistry } from './types'
 import { sharedParams } from './shared-params'
 
@@ -6,6 +6,42 @@ import { sharedParams } from './shared-params'
  * Client-related AI tools
  */
 export const clientTools: ToolRegistry = {
+  searchClients: {
+    successMessage: 'Clients found',
+    errorMessage: 'Failed to search clients',
+    tool: {
+      type: 'function',
+      function: {
+        name: 'searchClients',
+        description:
+          'Search and list clients by name. Use this to find clients before updating or deleting them, or to look up client information.',
+        parameters: {
+          type: 'object',
+          properties: {
+            organizationId: {
+              type: 'string',
+              description: 'Organization ID to search clients in (required)',
+            },
+            query: {
+              type: 'string',
+              description: 'Search query to filter clients by name (optional)',
+            },
+            limit: {
+              type: 'number',
+              description: 'Maximum number of results to return (default: 10, max: 50)',
+            },
+          },
+          required: ['organizationId'],
+        },
+      },
+    },
+    execute: async (userId: string, args: any) => {
+      const validatedInput = searchClientsSchema.parse(args)
+      return clientService.searchClients(userId, validatedInput)
+    },
+  },
+
+
   createClient: {
     successMessage: 'Client added successfully',
     errorMessage: 'Failed to add client',

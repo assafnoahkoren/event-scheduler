@@ -104,33 +104,66 @@ Parse the user's request and call the appropriate function(s). If required infor
       // Add current user message
       messages.push({ role: 'user', content: transcribedText })
 
-      // Call GPT-4 with function calling
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-4',
-        messages,
-        tools: tools,
-        tool_choice: 'auto',
-      })
-
-      const responseMessage = completion.choices[0]?.message
-
-      if (!responseMessage) {
-        throw new Error('No response from GPT-4')
-      }
-
-      // Execute tool calls if any
+      // Agentic loop: Allow GPT-4 to make multiple tool calls in sequence
       const actions: ToolExecutionResult[] = []
+      const maxIterations = 5 // Prevent infinite loops
+      let currentMessages = [...messages]
 
-      if (responseMessage.tool_calls && responseMessage.tool_calls.length > 0) {
+      for (let iteration = 0; iteration < maxIterations; iteration++) {
+        // Call GPT-4 with function calling
+        const completion = await openai.chat.completions.create({
+          model: 'gpt-4',
+          messages: currentMessages,
+          tools: tools,
+          tool_choice: 'auto',
+        })
+
+        const responseMessage = completion.choices[0]?.message
+
+        if (!responseMessage) {
+          throw new Error('No response from GPT-4')
+        }
+
+        // If no tool calls, we're done
+        if (!responseMessage.tool_calls || responseMessage.tool_calls.length === 0) {
+          const message = responseMessage.content ||
+            (actions.length > 0 ? 'Actions completed successfully' : 'No actions taken')
+
+          return {
+            message,
+            actions,
+          }
+        }
+
+        // Execute tool calls
+        currentMessages.push(responseMessage)
+
         for (const toolCall of responseMessage.tool_calls) {
           const result = await this.executeToolCall(userId, toolCall)
           actions.push(result)
+
+          // Add tool result to conversation for next iteration
+          currentMessages.push({
+            role: 'tool',
+            tool_call_id: toolCall.id,
+            content: JSON.stringify({
+              success: result.success,
+              data: result.data,
+              message: result.message,
+            }),
+          })
+        }
+
+        // If any action failed, stop the loop
+        if (actions.some((action) => !action.success)) {
+          break
         }
       }
 
-      // Return message and actions
-      const message = responseMessage.content ||
-        (actions.length > 0 ? 'Actions completed successfully' : 'No actions taken')
+      // Return final message and all actions
+      const message = actions.length > 0
+        ? 'Actions completed successfully'
+        : 'No actions taken'
 
       return {
         message,
