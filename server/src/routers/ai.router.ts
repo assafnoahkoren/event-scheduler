@@ -18,6 +18,12 @@ const processVoiceSchema = z.object({
   language: z.string().optional(), // User's language preference (e.g., 'en', 'ar', 'he')
 })
 
+const confirmActionSchema = z.object({
+  toolCall: z.any(), // The tool call data that needs to be confirmed
+  siteId: z.string().uuid().optional(),
+  organizationId: z.string().uuid().optional(),
+})
+
 export const aiRouter = router({
   /**
    * Process voice command
@@ -130,6 +136,47 @@ export const aiRouter = router({
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: error.message || 'Failed to process voice command',
+          cause: error,
+        })
+      }
+    }),
+
+  /**
+   * Confirm and execute a delete/remove action
+   */
+  confirmAction: protectedProcedure
+    .input(confirmActionSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { toolCall } = input
+
+        // Import executeTool directly
+        const { executeTool, getToolMetadata } = await import('../services/ai-tools')
+
+        if (!toolCall || toolCall.type !== 'function') {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Invalid tool call data',
+          })
+        }
+
+        const toolName = toolCall.function.name
+        const args = JSON.parse(toolCall.function.arguments)
+
+        // Execute the confirmed tool
+        const result = await executeTool(toolName, ctx.user.id, args)
+        const metadata = getToolMetadata(toolName)
+
+        return {
+          success: true,
+          message: metadata?.successMessage || 'Action completed successfully',
+          data: result,
+        }
+      } catch (error: any) {
+        console.error('AI confirmAction error:', error)
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message || 'Failed to execute confirmed action',
           cause: error,
         })
       }

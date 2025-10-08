@@ -433,6 +433,10 @@ export const arTranslation: TranslationType = {
     recording: "جارٍ التسجيل... اترك للإرسال",
     unsupportedBrowser: "التسجيل الصوتي غير مدعوم في متصفحك",
     holdToSpeak: "اضغط للتحدث",
-    processing: "جارٍ المعالجة..."
+    processing: "جارٍ المعالجة...",
+    confirmAction: "تأكيد الإجراء",
+    cancel: "إلغاء",
+    confirm: "تأكيد",
+    actionCancelled: "تم إلغاء الإجراء"
   }
 } as const

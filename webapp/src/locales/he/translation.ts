@@ -433,6 +433,10 @@ export const heTranslation: TranslationType = {
     recording: "מקליט... שחרר לשליחה",
     unsupportedBrowser: "הקלטה קולית אינה נתמכת בדפדפן שלך",
     holdToSpeak: "החזק כדי לדבר",
-    processing: "מעבד..."
+    processing: "מעבד...",
+    confirmAction: "אישור פעולה",
+    cancel: "ביטול",
+    confirm: "אישור",
+    actionCancelled: "הפעולה בוטלה"
   }
 } as const

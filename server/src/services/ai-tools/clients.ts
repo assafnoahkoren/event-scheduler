@@ -92,6 +92,7 @@ export const clientTools: ToolRegistry = {
   deleteClient: {
     successMessage: 'Client deleted successfully',
     errorMessage: 'Failed to delete client',
+    dangerous: true,
     tool: {
       type: 'function',
       function: {

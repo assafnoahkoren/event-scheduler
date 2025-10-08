@@ -272,6 +272,36 @@ Otherwise, make reasonable assumptions and execute the action. The user prefers 
         }
       }
 
+      // Check if this is a dangerous operation - require confirmation
+      if (metadata.dangerous) {
+        // Generate a user-friendly confirmation message
+        let confirmationMessage = 'Are you sure you want to perform this action?'
+
+        if (toolName.includes('delete') || toolName.includes('remove')) {
+          const actionType = toolName.includes('delete') ? 'delete' : 'remove'
+          const resourceType = toolName
+            .replace('delete', '')
+            .replace('remove', '')
+            .replace('From', ' from ')
+            .replace(/([A-Z])/g, ' $1')
+            .toLowerCase()
+            .trim()
+
+          confirmationMessage = `Are you sure you want to ${actionType} this ${resourceType}?`
+        }
+
+        return {
+          toolName,
+          success: false,
+          message: confirmationMessage,
+          data: {
+            requiresConfirmation: true,
+            toolCall: toolCall,
+            confirmationMessage: confirmationMessage,
+          },
+        }
+      }
+
       // Execute tool
       const result = await executeTool(toolName, userId, args)
 

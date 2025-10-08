@@ -431,6 +431,10 @@ export const enTranslation = {
     recording: "Recording... Release to send",
     unsupportedBrowser: "Voice recording is not supported in your browser",
     holdToSpeak: "Hold to speak",
-    processing: "Processing..."
+    processing: "Processing...",
+    confirmAction: "Confirm Action",
+    cancel: "Cancel",
+    confirm: "Confirm",
+    actionCancelled: "Action cancelled"
   }
 } as const

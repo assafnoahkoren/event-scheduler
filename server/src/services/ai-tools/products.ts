@@ -198,6 +198,7 @@ export const productTools: ToolRegistry = {
   deleteProduct: {
     successMessage: 'Product deleted successfully',
     errorMessage: 'Failed to delete product',
+    dangerous: true,
     tool: {
       type: 'function',
       function: {

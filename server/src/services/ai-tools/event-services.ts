@@ -54,6 +54,7 @@ export const eventServiceTools: ToolRegistry = {
   removeServiceFromEvent: {
     successMessage: 'Service provider removed from event successfully',
     errorMessage: 'Failed to remove service provider from event',
+    dangerous: true,
     tool: {
       type: 'function',
       function: {

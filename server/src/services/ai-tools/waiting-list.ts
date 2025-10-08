@@ -97,6 +97,7 @@ export const waitingListTools: ToolRegistry = {
   deleteWaitingListEntry: {
     successMessage: 'Waiting list entry deleted successfully',
     errorMessage: 'Failed to delete waiting list entry',
+    dangerous: true,
     tool: {
       type: 'function',
       function: {

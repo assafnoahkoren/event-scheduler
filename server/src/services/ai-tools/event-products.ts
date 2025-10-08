@@ -149,6 +149,7 @@ export const eventProductTools: ToolRegistry = {
   removeProductFromEvent: {
     successMessage: 'Product removed from event successfully',
     errorMessage: 'Failed to remove product from event',
+    dangerous: true,
     tool: {
       type: 'function',
       function: {

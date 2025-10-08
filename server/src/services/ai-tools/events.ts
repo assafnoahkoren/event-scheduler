@@ -101,6 +101,7 @@ export const eventTools: ToolRegistry = {
   deleteEvent: {
     successMessage: 'Event deleted successfully',
     errorMessage: 'Failed to delete event',
+    dangerous: true,
     tool: {
       type: 'function',
       function: {

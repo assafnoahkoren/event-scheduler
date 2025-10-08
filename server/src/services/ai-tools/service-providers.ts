@@ -86,6 +86,7 @@ export const serviceProviderTools: ToolRegistry = {
   deleteServiceProvider: {
     successMessage: 'Service provider deleted successfully',
     errorMessage: 'Failed to delete service provider',
+    dangerous: true,
     tool: {
       type: 'function',
       function: {
