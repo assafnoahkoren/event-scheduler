@@ -2,6 +2,11 @@ import OpenAI from 'openai'
 import type { ToolMetadata, ToolRegistry } from './types'
 import { eventTools } from './events'
 import { clientTools } from './clients'
+import { productTools } from './products'
+import { eventProductTools } from './event-products'
+import { serviceProviderTools } from './service-providers'
+import { eventServiceTools } from './event-services'
+import { waitingListTools } from './waiting-list'
 
 /**
  * Combined AI Tools Registry
@@ -10,6 +15,11 @@ import { clientTools } from './clients'
 export const aiTools: ToolRegistry = {
   ...eventTools,
   ...clientTools,
+  ...productTools,
+  ...eventProductTools,
+  ...serviceProviderTools,
+  ...eventServiceTools,
+  ...waitingListTools,
 }
 
 /**
