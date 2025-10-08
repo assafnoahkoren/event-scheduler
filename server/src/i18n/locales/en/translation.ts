@@ -1,4 +1,14 @@
 export const enTranslation = {
+  ai: {
+    actionsCompleted: 'Actions completed successfully',
+    noActionsTaken: 'No actions taken',
+    confirmAction: 'Are you sure you want to perform this action?',
+    confirmDelete: 'Are you sure you want to delete this {{resource}}?',
+    confirmRemove: 'Are you sure you want to remove this {{resource}}?',
+    unsupportedToolType: 'Unsupported tool call type',
+    unknownTool: 'Unknown tool: {{toolName}}',
+    failedToExecute: 'Failed to execute {{toolName}}',
+  },
   serviceCategories: {
     photography: {
       name: "Photography",

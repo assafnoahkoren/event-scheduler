@@ -1,6 +1,7 @@
 import OpenAI from 'openai'
 import { TRPCError } from '@trpc/server'
 import { getAllTools, executeTool, getToolMetadata } from './ai-tools'
+import { createI18n, type SupportedLanguage } from '../i18n'
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -171,8 +172,9 @@ Otherwise, make reasonable assumptions and execute the action. The user prefers 
             console.log(`💬 Final message: "${responseMessage.content}"`)
           }
 
+          const i18n = createI18n(language as SupportedLanguage)
           const message = responseMessage.content ||
-            (actions.length > 0 ? 'Actions completed successfully' : 'No actions taken')
+            (actions.length > 0 ? i18n.t('ai.actionsCompleted') : i18n.t('ai.noActionsTaken'))
 
           console.log(`\n📊 Summary: Executed ${actions.length} action(s) across ${iteration + 1} iteration(s)`)
           return {
@@ -194,7 +196,7 @@ Otherwise, make reasonable assumptions and execute the action. The user prefers 
         for (const toolCall of responseMessage.tool_calls) {
           const toolName = toolCall.type === 'function' ? toolCall.function.name : 'unknown'
           console.log(`\n⚙️  Executing: ${toolName}`)
-          const result = await this.executeToolCall(userId, toolCall)
+          const result = await this.executeToolCall(userId, toolCall, language as SupportedLanguage)
           actions.push(result)
 
           console.log(`   ${result.success ? '✅' : '❌'} ${result.message}`)
@@ -222,9 +224,10 @@ Otherwise, make reasonable assumptions and execute the action. The user prefers 
       }
 
       // Return final message and all actions
+      const i18n = createI18n(language as SupportedLanguage)
       const message = actions.length > 0
-        ? 'Actions completed successfully'
-        : 'No actions taken'
+        ? i18n.t('ai.actionsCompleted')
+        : i18n.t('ai.noActionsTaken')
 
       console.log(`\n📊 Summary: Executed ${actions.length} action(s) - reached max iterations`)
       return {
@@ -246,14 +249,17 @@ Otherwise, make reasonable assumptions and execute the action. The user prefers 
    */
   private async executeToolCall(
     userId: string,
-    toolCall: OpenAI.Chat.Completions.ChatCompletionMessageToolCall
+    toolCall: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,
+    language: SupportedLanguage = 'en'
   ): Promise<ToolExecutionResult> {
+    const i18n = createI18n(language)
+
     // Type guard for function tool calls
     if (toolCall.type !== 'function') {
       return {
         toolName: 'unknown',
         success: false,
-        message: 'Unsupported tool call type',
+        message: i18n.t('ai.unsupportedToolType'),
       }
     }
 
@@ -268,14 +274,14 @@ Otherwise, make reasonable assumptions and execute the action. The user prefers 
         return {
           toolName,
           success: false,
-          message: `Unknown tool: ${toolName}`,
+          message: i18n.t('ai.unknownTool', { toolName }),
         }
       }
 
       // Check if this is a dangerous operation - require confirmation
       if (metadata.dangerous) {
         // Generate a user-friendly confirmation message
-        let confirmationMessage = 'Are you sure you want to perform this action?'
+        let confirmationMessage = i18n.t('ai.confirmAction')
 
         if (toolName.includes('delete') || toolName.includes('remove')) {
           const actionType = toolName.includes('delete') ? 'delete' : 'remove'
@@ -287,7 +293,8 @@ Otherwise, make reasonable assumptions and execute the action. The user prefers 
             .toLowerCase()
             .trim()
 
-          confirmationMessage = `Are you sure you want to ${actionType} this ${resourceType}?`
+          const translationKey = actionType === 'delete' ? 'ai.confirmDelete' : 'ai.confirmRemove'
+          confirmationMessage = i18n.t(translationKey, { resource: resourceType })
         }
 
         return {
@@ -319,7 +326,7 @@ Otherwise, make reasonable assumptions and execute the action. The user prefers 
       return {
         toolName,
         success: false,
-        message: metadata?.errorMessage || `Failed to execute ${toolName}`,
+        message: metadata?.errorMessage || i18n.t('ai.failedToExecute', { toolName }),
         data: { error: error.message },
       }
     }

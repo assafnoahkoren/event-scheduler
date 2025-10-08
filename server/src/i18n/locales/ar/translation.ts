@@ -1,4 +1,14 @@
 export const arTranslation = {
+  ai: {
+    actionsCompleted: 'تم إكمال الإجراءات بنجاح',
+    noActionsTaken: 'لم يتم اتخاذ أي إجراءات',
+    confirmAction: 'هل أنت متأكد أنك تريد تنفيذ هذا الإجراء؟',
+    confirmDelete: 'هل أنت متأكد أنك تريد حذف {{resource}}؟',
+    confirmRemove: 'هل أنت متأكد أنك تريد إزالة {{resource}}؟',
+    unsupportedToolType: 'نوع استدعاء الأداة غير مدعوم',
+    unknownTool: 'أداة غير معروفة: {{toolName}}',
+    failedToExecute: 'فشل في تنفيذ {{toolName}}',
+  },
   serviceCategories: {
     photography: {
       name: "التصوير",

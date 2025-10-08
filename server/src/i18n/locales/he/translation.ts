@@ -1,4 +1,14 @@
 export const heTranslation = {
+  ai: {
+    actionsCompleted: 'הפעולות הושלמו בהצלחה',
+    noActionsTaken: 'לא בוצעו פעולות',
+    confirmAction: 'האם אתה בטוח שברצונך לבצע פעולה זו?',
+    confirmDelete: 'האם אתה בטוח שברצונך למחוק {{resource}}?',
+    confirmRemove: 'האם אתה בטוח שברצונך להסיר {{resource}}?',
+    unsupportedToolType: 'סוג קריאת כלי לא נתמך',
+    unknownTool: 'כלי לא ידוע: {{toolName}}',
+    failedToExecute: 'נכשל בביצוע {{toolName}}',
+  },
   serviceCategories: {
     photography: {
       name: "צילום",

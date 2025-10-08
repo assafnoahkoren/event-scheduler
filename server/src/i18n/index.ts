@@ -48,7 +48,7 @@ export class I18n {
     this.translation = translations[this.language]
   }
 
-  t(key: string): string {
+  t(key: string, replacements?: Record<string, string>): string {
     const keys = key.split('.')
     let value: any = this.translation
 
@@ -62,7 +62,16 @@ export class I18n {
       }
     }
 
-    return typeof value === 'string' ? value : key
+    let result = typeof value === 'string' ? value : key
+
+    // Replace {{variable}} placeholders
+    if (replacements) {
+      Object.entries(replacements).forEach(([key, val]) => {
+        result = result.replace(`{{${key}}}`, val)
+      })
+    }
+
+    return result
   }
 
   private getFromLanguage(lang: SupportedLanguage, keys: string[]): string {
