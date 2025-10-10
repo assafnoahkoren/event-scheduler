@@ -297,6 +297,48 @@ class OrganizationService {
     return !!organization
   }
 
+  /**
+   * Ensure a user is a member of an organization
+   * Adds them if not already a member, or reactivates if inactive
+   */
+  async ensureOrganizationMembership(
+    organizationId: string,
+    userId: string,
+    invitedById: string
+  ) {
+    // Check if user is part of the organization
+    const orgMember = await prisma.organizationMember.findFirst({
+      where: {
+        organizationId,
+        userId,
+        isDeleted: false,
+      },
+    })
+
+    // If user is not part of the organization, add them
+    if (!orgMember) {
+      await prisma.organizationMember.create({
+        data: {
+          organizationId,
+          userId,
+          invitedById,
+          invitedAt: new Date(),
+          isActive: true,
+        },
+      })
+    } else if (!orgMember.isActive) {
+      // Reactivate if inactive
+      await prisma.organizationMember.update({
+        where: { id: orgMember.id },
+        data: {
+          isActive: true,
+          invitedById,
+          invitedAt: new Date(),
+        },
+      })
+    }
+  }
+
   async getOrCreateDefaultOrganization(userId: string) {
     // Check if user already has an organization
     const existingOrg = await prisma.organization.findFirst({

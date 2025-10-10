@@ -5,6 +5,7 @@
 import { SiteRole } from '@prisma/client'
 import { z } from 'zod'
 import { prisma } from '../db'
+import { organizationService } from './organization.service'
 
 // Schema definitions
 export const createSiteSchema = z.object({
@@ -393,6 +394,19 @@ class SiteService {
       throw new Error('Only the site owner can add members')
     }
 
+    // Get the site to check its organization
+    const site = await prisma.site.findUnique({
+      where: { id: siteId },
+      select: {
+        id: true,
+        organizationId: true,
+      },
+    })
+
+    if (!site) {
+      throw new Error('Site not found')
+    }
+
     // Find the user by email
     const targetUser = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
@@ -406,7 +420,14 @@ class SiteService {
       throw new Error('No user found with this email address')
     }
 
-    // Check if user already has access
+    // Ensure user is a member of the organization
+    await organizationService.ensureOrganizationMembership(
+      site.organizationId,
+      targetUser.id,
+      requesterId
+    )
+
+    // Check if user already has access to the site
     const existingAccess = await prisma.siteUser.findUnique({
       where: {
         userId_siteId: {
