@@ -16,7 +16,7 @@ interface UseAutoMarkViewedOptions {
 export function useAutoMarkViewed({
   activityId,
   isUnread,
-  delayMs = 3000
+  delayMs = 1000
 }: UseAutoMarkViewedOptions) {
   const markViewedMutation = trpc.userActivity.markViewed.useMutation()
 

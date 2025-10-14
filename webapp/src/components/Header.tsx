@@ -19,6 +19,10 @@ export function Header() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const { data: sites } = trpc.sites.list.useQuery()
+  const { data: unviewedCount } = trpc.userActivity.getUnviewedCount.useQuery(
+    { organizationId: currentOrg?.id || '' },
+    { enabled: !!currentOrg?.id }
+  )
 
   // Always show back button
   const showBackButton = true
@@ -75,8 +79,14 @@ export function Header() {
               size="icon"
               onClick={() => setIsNotificationsOpen(true)}
               title="Notifications"
+              className="relative top-[1px]"
             >
               <Bell className="h-4 w-4" />
+              {unviewedCount && unviewedCount.count > 0 && (
+                <span className="absolute top-1 end-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                  {unviewedCount.count > 99 ? '99+' : unviewedCount.count}
+                </span>
+              )}
             </Button>
           </div>
 

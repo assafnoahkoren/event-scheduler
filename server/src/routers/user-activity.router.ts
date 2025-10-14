@@ -5,6 +5,7 @@ import {
   getUserActivitySchema,
   getEventActivitySchema,
   getOrganizationActivitySchema,
+  getUnviewedCountSchema,
 } from '../services/user-activity.service'
 import { z } from 'zod'
 
@@ -42,5 +43,12 @@ export const userActivityRouter = router({
     .input(z.object({ activityId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       return userActivityService.markActivityViewed(ctx.user.id, input.activityId)
+    }),
+
+  // Get count of unviewed notifications
+  getUnviewedCount: protectedProcedure
+    .input(getUnviewedCountSchema)
+    .query(async ({ ctx, input }) => {
+      return userActivityService.getUnviewedCount(ctx.user.id, input)
     }),
 })

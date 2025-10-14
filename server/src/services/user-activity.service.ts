@@ -74,12 +74,17 @@ export const getOrganizationActivitySchema = z.object({
   offset: z.number().int().min(0).default(0),
 })
 
+export const getUnviewedCountSchema = z.object({
+  organizationId: z.string().uuid(),
+})
+
 // Types
 export type NewActivityInput = z.infer<typeof newActivitySchema>
 export type GetObjectActivityInput = z.infer<typeof getObjectActivitySchema>
 export type GetUserActivityInput = z.infer<typeof getUserActivitySchema>
 export type GetEventActivityInput = z.infer<typeof getEventActivitySchema>
 export type GetOrganizationActivityInput = z.infer<typeof getOrganizationActivitySchema>
+export type GetUnviewedCountInput = z.infer<typeof getUnviewedCountSchema>
 
 // Service class
 export class UserActivityService {
@@ -534,6 +539,55 @@ export class UserActivityService {
     })
 
     return view
+  }
+
+  /**
+   * Get count of unviewed notifications for a user in an organization
+   * Checks the last 100 notifications
+   */
+  async getUnviewedCount(userId: string, input: GetUnviewedCountInput) {
+    // Verify user has access to the organization
+    const orgMember = await prisma.organizationMember.findFirst({
+      where: {
+        userId,
+        organizationId: input.organizationId,
+      },
+    })
+
+    const isOwner = await prisma.organization.findFirst({
+      where: {
+        id: input.organizationId,
+        ownerId: userId,
+      },
+    })
+
+    if (!orgMember && !isOwner) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You do not have permission to view activities in this organization',
+      })
+    }
+
+    // Count unviewed activities in the last 100 notifications
+    const unviewedActivities = await prisma.userActivity.findMany({
+      where: {
+        organizationId: input.organizationId,
+        views: {
+          none: {
+            userId,
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 100,
+    })
+
+    return { count: unviewedActivities.length }
   }
 }
 
