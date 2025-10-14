@@ -71,6 +71,12 @@ export function FileItem({
     setIsPreviewOpen(true)
   }
 
+  const handleOpenInNewTab = () => {
+    if (previewUrl) {
+      window.open(previewUrl, '_blank', 'noopener,noreferrer')
+    }
+  }
+
   const handleClosePreview = () => {
     setIsPreviewOpen(false)
   }
@@ -117,8 +123,8 @@ export function FileItem({
             type="button"
             variant="outline"
             size="sm"
-            onClick={handlePreview}
-            disabled={isLoadingPreview}
+            onClick={handleOpenInNewTab}
+            disabled={isLoadingPreview || !previewUrl}
             className="flex-1"
           >
             <Eye className="h-4 w-4" />
