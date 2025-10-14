@@ -12,6 +12,7 @@ import { serviceProviderRouter } from './service-provider.router';
 import { eventProviderRouter } from './event-provider.router';
 import { filesRouter } from './files.router';
 import { aiRouter } from './ai.router';
+import { userActivityRouter } from './user-activity.router';
 
 export const appRouter = router({
   // Auth routes
@@ -49,6 +50,9 @@ export const appRouter = router({
 
   // AI assistant routes
   ai: aiRouter,
+
+  // User activity tracking routes
+  userActivity: userActivityRouter,
 
   // Public routes
   ping: publicProcedure

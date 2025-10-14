@@ -32,6 +32,7 @@ model Organization {
   clients            Client[]
   serviceProviders   ServiceProvider[]
   serviceCategories  ServiceCategory[]
+  userActivities     UserActivity[]
 
   @@index([ownerId])
   @@index([isDeleted])

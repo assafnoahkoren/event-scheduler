@@ -1,0 +1,27 @@
+// User Activity View - Tracks when users view activities
+
+model UserActivityView {
+  id          String   @id @default(uuid())
+
+  // Which activity was viewed
+  activityId  String   @map("activity_id")
+  activity    UserActivity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  // Who viewed it
+  userId      String   @map("user_id")
+  user        User     @relation(fields: [userId], references: [id])
+
+  // Soft delete
+  deletedAt   DateTime? @map("deleted_at")
+  isDeleted   Boolean   @default(false) @map("is_deleted")
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@unique([activityId, userId]) // One view record per user per activity
+  @@index([activityId])
+  @@index([userId])
+  @@index([isDeleted])
+  @@map("user_activity_views")
+}

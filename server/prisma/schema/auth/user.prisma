@@ -53,6 +53,10 @@ model User {
   waitingListEntries WaitingListEntry[] @relation("WaitingListCreator")
   uploadedFiles UploadedFile[]
 
+  // User activity relations
+  userActivities UserActivity[]
+  activityViews  UserActivityView[]
+
   @@index([email])
   @@index([isDeleted])
   @@map("users")

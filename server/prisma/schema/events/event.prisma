@@ -38,6 +38,9 @@ model Event {
   // Waiting list entries that were fulfilled by this event
   waitingListEntries WaitingListEntry[]
 
+  // User activities related to this event
+  userActivities UserActivity[]
+
   // Soft delete
   deletedAt   DateTime? @map("deleted_at")
   isDeleted   Boolean   @default(false) @map("is_deleted")
