@@ -18,7 +18,13 @@ export function useAutoMarkViewed({
   isUnread,
   delayMs = 1000
 }: UseAutoMarkViewedOptions) {
-  const markViewedMutation = trpc.userActivity.markViewed.useMutation()
+  const utils = trpc.useUtils()
+  const markViewedMutation = trpc.userActivity.markViewed.useMutation({
+    onSuccess: () => {
+      // Invalidate the unviewed count query to update the badge
+      utils.userActivity.getUnviewedCount.invalidate()
+    }
+  })
 
   useEffect(() => {
     if (!isUnread) return

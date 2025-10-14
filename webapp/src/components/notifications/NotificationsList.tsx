@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { trpc } from '@/utils/trpc'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import { renderActivityNotification } from '@/utils/activity-messages'
@@ -19,6 +20,7 @@ interface NotificationsListProps {
 
 export function NotificationsList({ onClose }: NotificationsListProps) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { currentOrg } = useCurrentOrg()
 
   const { data: rawData, isLoading, error } = trpc.userActivity.getOrganizationActivity.useQuery(
@@ -77,6 +79,7 @@ export function NotificationsList({ onClose }: NotificationsListProps) {
             isUnread,
             createdAt: new Date(activity.createdAt),
             onClose,
+            onNavigate: navigate,
             t,
           }
         )
