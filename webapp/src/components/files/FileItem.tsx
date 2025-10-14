@@ -95,7 +95,7 @@ export function FileItem({
             <div className="text-sm text-muted-foreground">{t('common.loading')}</div>
           </div>
         ) : previewUrl ? (
-          <div className="w-full rounded-lg overflow-hidden cursor-pointer" style={{ height: '200px' }} onClick={handlePreview}>
+          <div className="w-full rounded-lg overflow-hidden cursor-pointer h-20 mt-2" onClick={handlePreview}>
             <FilePreview
               url={previewUrl}
               fileName={file.originalName}
