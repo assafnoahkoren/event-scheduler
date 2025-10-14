@@ -452,5 +452,11 @@ export const heTranslation: TranslationType = {
   },
   notifications: {
     title: "התראות"
+  },
+  tasks: {
+    title: "משימות"
+  },
+  finances: {
+    title: "כספים"
   }
 } as const

@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { Header } from '@/components/Header'
-import { VoiceAssistant } from '@/components/VoiceAssistant'
+// import { VoiceAssistant } from '@/components/VoiceAssistant'
 
 export function Shell() {
   return (
@@ -9,7 +9,7 @@ export function Shell() {
       <main className="flex-1 flex flex-col">
         <Outlet />
       </main>
-      <VoiceAssistant />
+      {/* <VoiceAssistant /> */}
     </div>
   )
 }

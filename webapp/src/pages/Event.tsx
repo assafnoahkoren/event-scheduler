@@ -4,7 +4,7 @@ import { trpc } from '@/utils/trpc'
 import { useTranslation } from 'react-i18next'
 import { useIsRtl } from '@/hooks/useIsRtl'
 import { Button } from '@/components/ui/button'
-import { Trash2, Plus, Clock } from 'lucide-react'
+import { Trash2, Plus, Clock, FileText, Package, Briefcase, CheckSquare, DollarSign, FolderOpen } from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,6 +51,7 @@ export function Event() {
   const [isWaitingListFormOpen, setIsWaitingListFormOpen] = useState(false)
   const [selectedWaitingListEntry, setSelectedWaitingListEntry] = useState<WaitingListEntry | null>(null)
   const [entryToDelete, setEntryToDelete] = useState<WaitingListEntry | null>(null)
+  const [activeTab, setActiveTab] = useState('details')
 
   const { data: event, isLoading, error } = trpc.events.get.useQuery(
     { id: eventId || '' },
@@ -226,21 +227,14 @@ export function Event() {
   }
 
   return (
-    <div>
+    <div className="pb-20">
       <div className="max-w-2xl mx-auto">
         <div className="rounded-lg p-6">
           <h1 className="text-2xl font-bold mb-6">
             {event.title || t('events.untitledEvent')}
           </h1>
 
-          <Tabs defaultValue="details" className="w-full" dir={isRtl ? 'rtl' : 'ltr'}>
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="details">{t('events.details')}</TabsTrigger>
-              <TabsTrigger value="products">{t('events.products')}</TabsTrigger>
-              <TabsTrigger value="services">{t('events.services')}</TabsTrigger>
-              <TabsTrigger value="waiting">{t('waitingList.title')}</TabsTrigger>
-            </TabsList>
-
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir={isRtl ? 'rtl' : 'ltr'}>
             <TabsContent value="details" className="mt-6">
               <div className="space-y-4">
                 {/* Event Costs Section */}
@@ -251,16 +245,6 @@ export function Event() {
                   onSubmit={handleUpdate}
                   isSubmitting={updateMutation.isPending}
                 />
-
-                {/* File Management */}
-                {eventId && (
-                  <FileManager
-                    objectId={eventId}
-                    objectType="event"
-                    relation="attachment"
-                    title={t('files.title')}
-                  />
-                )}
 
                 <div className="pt-4 border-t">
                   <Button
@@ -355,7 +339,111 @@ export function Event() {
                 )}
               </div>
             </TabsContent>
+
+            <TabsContent value="tasks" className="mt-6">
+              <div className="space-y-4">
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-8">
+                    <CheckSquare className="h-8 w-8 text-muted-foreground mb-2" />
+                    <p className="text-muted-foreground text-center">
+                      Tasks feature coming soon
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="finances" className="mt-6">
+              <div className="space-y-4">
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-8">
+                    <DollarSign className="h-8 w-8 text-muted-foreground mb-2" />
+                    <p className="text-muted-foreground text-center">
+                      Finances feature coming soon
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="files" className="mt-6">
+              <div className="space-y-4">
+                {/* File Management */}
+                {eventId && (
+                  <FileManager
+                    objectId={eventId}
+                    objectType="event"
+                    relation="attachment"
+                    title={t('files.title')}
+                  />
+                )}
+              </div>
+            </TabsContent>
           </Tabs>
+        </div>
+      </div>
+
+      {/* Footer Tab Navigation */}
+      <div className="fixed bottom-0 start-0 end-0 bg-background border-t z-40">
+        <div className="max-w-2xl mx-auto">
+          <div className="grid grid-cols-7 gap-1">
+            <Button
+              variant={activeTab === 'details' ? 'default' : 'ghost'}
+              className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
+              onClick={() => setActiveTab('details')}
+            >
+              <FileText className="h-5 w-5" />
+              {activeTab === 'details' && <span className="text-xs">{t('events.details')}</span>}
+            </Button>
+            <Button
+              variant={activeTab === 'products' ? 'default' : 'ghost'}
+              className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
+              onClick={() => setActiveTab('products')}
+            >
+              <Package className="h-5 w-5" />
+              {activeTab === 'products' && <span className="text-xs">{t('events.products')}</span>}
+            </Button>
+            <Button
+              variant={activeTab === 'services' ? 'default' : 'ghost'}
+              className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
+              onClick={() => setActiveTab('services')}
+            >
+              <Briefcase className="h-5 w-5" />
+              {activeTab === 'services' && <span className="text-xs">{t('events.services')}</span>}
+            </Button>
+            <Button
+              variant={activeTab === 'tasks' ? 'default' : 'ghost'}
+              className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
+              onClick={() => setActiveTab('tasks')}
+            >
+              <CheckSquare className="h-5 w-5" />
+              {activeTab === 'tasks' && <span className="text-xs">{t('tasks.title')}</span>}
+            </Button>
+            <Button
+              variant={activeTab === 'finances' ? 'default' : 'ghost'}
+              className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
+              onClick={() => setActiveTab('finances')}
+            >
+              <DollarSign className="h-5 w-5" />
+              {activeTab === 'finances' && <span className="text-xs">{t('finances.title')}</span>}
+            </Button>
+            <Button
+              variant={activeTab === 'files' ? 'default' : 'ghost'}
+              className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
+              onClick={() => setActiveTab('files')}
+            >
+              <FolderOpen className="h-5 w-5" />
+              {activeTab === 'files' && <span className="text-xs">{t('files.title')}</span>}
+            </Button>
+            <Button
+              variant={activeTab === 'waiting' ? 'default' : 'ghost'}
+              className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
+              onClick={() => setActiveTab('waiting')}
+            >
+              <Clock className="h-5 w-5" />
+              {activeTab === 'waiting' && <span className="text-xs">{t('waitingList.title')}</span>}
+            </Button>
+          </div>
         </div>
       </div>
 

@@ -450,5 +450,11 @@ export const enTranslation = {
   },
   notifications: {
     title: "Notifications"
+  },
+  tasks: {
+    title: "Tasks"
+  },
+  finances: {
+    title: "Finances"
   }
 } as const

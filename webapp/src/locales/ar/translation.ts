@@ -452,5 +452,11 @@ export const arTranslation: TranslationType = {
   },
   notifications: {
     title: "الإشعارات"
+  },
+  tasks: {
+    title: "المهام"
+  },
+  finances: {
+    title: "المالية"
   }
 } as const
