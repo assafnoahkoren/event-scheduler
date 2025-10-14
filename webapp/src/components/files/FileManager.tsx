@@ -6,13 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
   Upload,
-  Download,
-  Trash2,
   File,
   Image,
   FileText,
   AlertCircle,
-  X
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -25,7 +22,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
+import { FileItem } from './FileItem'
 
 interface FileManagerProps {
   objectId: string
@@ -71,15 +68,39 @@ export function FileManager({
   })
 
   const getSignedUrlMutation = trpc.files.getSignedUrl.useMutation({
-    onSuccess: (data) => {
-      // Create a temporary link and trigger download
-      const link = document.createElement('a')
-      link.href = data.url
-      link.download = '' // This will use the filename from the URL
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+    onSuccess: async (data, variables) => {
+      // Find the file to get the original name
+      const file = files.find((f: any) => f.id === variables.fileId)
+      const fileName = file?.originalName || 'download'
+
+      try {
+        // Fetch the file as a blob
+        const response = await fetch(data.url)
+        const blob = await response.blob()
+
+        // Create a blob URL and trigger download
+        const blobUrl = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = blobUrl
+        link.download = fileName
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+        // Clean up the blob URL
+        window.URL.revokeObjectURL(blobUrl)
+      } catch (error) {
+        console.error('Download failed:', error)
+        toast.error('Failed to download file')
+      }
     },
+    onError: (error) => {
+      toast.error(error.message)
+    }
+  })
+
+  // Separate mutation for preview (no automatic download)
+  const getPreviewUrlMutation = trpc.files.getSignedUrl.useMutation({
     onError: (error) => {
       toast.error(error.message)
     }
@@ -166,6 +187,14 @@ export function FileManager({
     setFileToDelete(file)
   }
 
+  const handleGetPreviewUrl = async (fileId: string): Promise<string> => {
+    const result = await getPreviewUrlMutation.mutateAsync({
+      fileId,
+      expiresIn: 3600, // 1 hour
+    })
+    return result.url
+  }
+
   const confirmDelete = () => {
     if (fileToDelete) {
       deleteMutation.mutate({ fileId: fileToDelete.id })
@@ -247,36 +276,15 @@ export function FileManager({
           <div className="space-y-2">
             <h4 className="text-sm font-medium">{t('files.uploadedFiles')}</h4>
             {files.map((file: any) => (
-              <div key={file.id} className="flex items-center gap-2 p-3 border rounded-lg">
-                {getFileIcon(file.contentType || '')}
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium truncate">{file.originalName}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {formatFileSize(file.size || 0)} • {new Date(file.createdAt).toLocaleDateString()}
-                  </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDownload(file)}
-                    disabled={getSignedUrlMutation.isPending}
-                  >
-                    <Download className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDelete(file)}
-                    disabled={deleteMutation.isPending}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
+              <FileItem
+                key={file.id}
+                file={file}
+                onDownload={handleDownload}
+                onDelete={handleDelete}
+                onGetPreviewUrl={handleGetPreviewUrl}
+                isDownloading={getSignedUrlMutation.isPending}
+                isDeleting={deleteMutation.isPending}
+              />
             ))}
           </div>
         ) : (
