@@ -36,7 +36,7 @@ export function TaskCard({
 
   return (
     <div className="space-y-2">
-      <Card className={level > 0 ? 'ms-6' : ''}>
+      <Card className={level > 0 ? 'ms-6 relative' : 'relative'}>
         <CardContent className="p-4 cursor-pointer" onClick={() => onEdit(task)}>
           <div className="flex items-start gap-3">
             {/* Checkbox for quick complete/pending toggle */}
@@ -44,8 +44,8 @@ export function TaskCard({
               <Checkbox
                 checked={isCompleted}
                 onCheckedChange={handleCheckboxChange}
-                className="mt-1"
-                style={{zoom: 1.4}}
+                className="mt-1 absolute -start-2 bg-white"
+                style={{zoom: 1.6}}
               />
             </div>
 
