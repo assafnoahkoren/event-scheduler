@@ -20,27 +20,30 @@ export const activityTypeSchema = z.enum(activityTypeArray)
 
 export const activityMessageArray = [
   'EVENT_CREATED',
-  'EVENT_CREATED_WITH_CLIENT',
-  'EVENT_UPDATED',
-  'EVENT_UPDATED_WITH_CLIENT',
-  'EVENT_DELETED',
-  'EVENT_DELETED_WITH_CLIENT',
-  'CLIENT_CREATED',
-  'CLIENT_UPDATED',
-  'CLIENT_DELETED',
-  'SERVICE_PROVIDER_CREATED',
-  'SERVICE_PROVIDER_UPDATED',
-  'SERVICE_PROVIDER_DELETED',
 ] as const
 export type ActivityMessage = typeof activityMessageArray[number]
 export const activityMessageSchema = z.enum(activityMessageArray)
+
+export const activityDomainArray = [
+  'EVENTS',
+  'PRODUCTS',
+  'CLIENTS',
+  'SERVICE_PROVIDERS',
+  'ORGANIZATIONS',
+  'SITES',
+  'FILES',
+  'AUTH',
+] as const
+export type ActivityDomain = typeof activityDomainArray[number]
+export const activityDomainSchema = z.enum(activityDomainArray)
 
 export const newActivitySchema = z.object({
   organizationId: z.string().uuid(),
   eventId: z.string().uuid().optional(),
   activityType: activityTypeSchema,
+  activityDomain: activityDomainSchema.optional(),
   messageType: activityMessageSchema,
-  messageData: z.string().optional(), // JSON string with message parameters
+  data: z.any().optional(), // JSON data with message parameters
   objectType: z.string().min(1).max(100),
   objectId: z.string().uuid(),
 })
@@ -138,9 +141,9 @@ export class UserActivityService {
           organizationId: input.organizationId,
           eventId: input.eventId,
           activityType: input.activityType,
-          message: '', // Legacy field, unused
+          activityDomain: input.activityDomain as any,
           messageType: input.messageType as any, // ActivityMessage enum
-          messageData: input.messageData,
+          data: input.data,
           objectType: input.objectType,
           objectId: input.objectId,
         },

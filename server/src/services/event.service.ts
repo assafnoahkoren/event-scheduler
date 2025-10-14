@@ -44,14 +44,7 @@ export class EventService {
     eventTitle?: string,
     clientName?: string
   ) {
-    // Determine message type based on action and client presence
-    const messageTypeMap = {
-      CREATE: clientName ? 'EVENT_CREATED_WITH_CLIENT' : 'EVENT_CREATED',
-      EDIT: clientName ? 'EVENT_UPDATED_WITH_CLIENT' : 'EVENT_UPDATED',
-      DELETE: clientName ? 'EVENT_DELETED_WITH_CLIENT' : 'EVENT_DELETED',
-    }
-
-    const messageData = {
+    const data = {
       title: eventTitle || 'Untitled Event',
       ...(clientName && { client: clientName }),
     }
@@ -60,8 +53,9 @@ export class EventService {
       organizationId,
       eventId,
       activityType,
-      messageType: messageTypeMap[activityType] as any,
-      messageData: JSON.stringify(messageData),
+      activityDomain: 'EVENTS',
+      messageType: 'EVENT_CREATED',
+      data,
       objectType: 'Event',
       objectId: eventId,
     })

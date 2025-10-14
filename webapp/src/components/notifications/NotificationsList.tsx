@@ -1,13 +1,17 @@
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
-import { formatDistanceToNow } from 'date-fns'
-import { renderActivityMessage } from '@/utils/activity-messages'
+import { renderActivityNotification } from '@/utils/activity-messages'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '../../../../server/src/routers/appRouter'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
-type Activity = RouterOutput['userActivity']['getOrganizationActivity']['activities'][0]
+type ActivityBase = RouterOutput['userActivity']['getOrganizationActivity']['activities'][0]
+
+// Override the data type to avoid deep type instantiation issues with Prisma JSON
+type Activity = Omit<ActivityBase, 'data'> & {
+  data: any
+}
 
 interface NotificationsListProps {
   onActivityClick?: (activity: Activity) => void
@@ -17,7 +21,7 @@ export function NotificationsList({ onActivityClick }: NotificationsListProps) {
   const { t } = useTranslation()
   const { currentOrg } = useCurrentOrg()
 
-  const { data, isLoading, error } = trpc.userActivity.getOrganizationActivity.useQuery(
+  const { data: rawData, isLoading, error } = trpc.userActivity.getOrganizationActivity.useQuery(
     {
       organizationId: currentOrg?.id || '',
       limit: 50,
@@ -27,6 +31,9 @@ export function NotificationsList({ onActivityClick }: NotificationsListProps) {
       enabled: !!currentOrg?.id,
     }
   )
+
+  // Cast to avoid Prisma JSON type instantiation issues
+  const data = rawData as any as { activities: Activity[], total: number, hasMore: boolean } | undefined
 
   const markViewedMutation = trpc.userActivity.markViewed.useMutation()
 
@@ -105,59 +112,23 @@ export function NotificationsList({ onActivityClick }: NotificationsListProps) {
           : activity.user.email
 
         return (
-          <button
-            key={activity.id}
-            onClick={() => handleActivityClick(activity)}
-            className={`w-full text-start p-4 hover:bg-muted/50 transition-colors ${
-              isUnread ? 'bg-blue-50 dark:bg-blue-950/20' : ''
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              {/* User Avatar */}
-              <div className="flex-shrink-0">
-                {activity.user.avatarUrl ? (
-                  <img
-                    src={activity.user.avatarUrl}
-                    alt={userName}
-                    className="w-8 h-8 rounded-full"
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-xs font-medium text-primary">
-                      {userName.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Activity Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2 flex-wrap">
-                  <span className="font-medium text-sm">{userName}</span>
-                  <span className={`text-xs font-medium ${getActivityTypeColor(activity.activityType)}`}>
-                    {getActivityTypeLabel(activity.activityType)}
-                  </span>
-                  {isUnread && (
-                    <span className="w-2 h-2 rounded-full bg-blue-600 flex-shrink-0" />
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                  {renderActivityMessage(activity.messageType, activity.messageData, t)}
-                </p>
-                <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                  <time>
-                    {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}
-                  </time>
-                  {activity.event && (
-                    <>
-                      <span>•</span>
-                      <span className="truncate">{activity.event.title}</span>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </button>
+          <div key={activity.id}>
+            {renderActivityNotification(
+              activity.messageType,
+              activity.data,
+              {
+                userName,
+                userAvatarUrl: activity.user.avatarUrl,
+                activityType: getActivityTypeLabel(activity.activityType),
+                activityTypeColor: getActivityTypeColor(activity.activityType),
+                isUnread,
+                eventTitle: activity.event?.title,
+                createdAt: new Date(activity.createdAt),
+                onClick: () => handleActivityClick(activity),
+                t,
+              }
+            )}
+          </div>
         )
       })}
     </div>
