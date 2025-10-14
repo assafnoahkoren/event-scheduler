@@ -1,5 +1,6 @@
 import { NotificationItem } from '@/components/notifications/NotificationItem'
 import { format } from 'date-fns'
+import { CalendarPlus } from 'lucide-react'
 
 export interface EventCreatedData {
   title: string
@@ -35,6 +36,11 @@ export function EventCreatedNotification(
       createdAt={context.createdAt}
       onClick={data?.eventId && context.onNavigate ? () => context.onNavigate!(`/event/${data.eventId}`) : undefined}
       onClose={context.onClose}
+      icon={
+        <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center ring-2 ring-background">
+          <CalendarPlus className="h-4 w-4 text-green-600" />
+        </div>
+      }
     >
       {data?.client
         ? context.t('events.activity.createWithClient', { title: eventTitle, client: data.client, eventDate })

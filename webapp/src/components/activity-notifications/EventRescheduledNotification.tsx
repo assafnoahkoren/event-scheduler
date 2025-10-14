@@ -1,6 +1,7 @@
 import { NotificationItem } from '@/components/notifications/NotificationItem'
 import { format } from 'date-fns'
 import type { NotificationRenderContext } from './EventCreatedNotification'
+import { CalendarClock } from 'lucide-react'
 
 export interface EventRescheduledData {
   title: string
@@ -27,6 +28,11 @@ export function EventRescheduledNotification(
       createdAt={context.createdAt}
       onClick={data?.eventId && context.onNavigate ? () => context.onNavigate!(`/event/${data.eventId}`) : undefined}
       onClose={context.onClose}
+      icon={
+        <div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center ring-2 ring-background">
+          <CalendarClock className="h-4 w-4 text-orange-600" />
+        </div>
+      }
     >
       {data?.client
         ? context.t('events.activity.rescheduleWithClient', { title: eventTitle, client: data.client, oldDate, newDate })

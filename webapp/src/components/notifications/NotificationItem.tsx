@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { useAutoMarkViewed } from '@/hooks/useAutoMarkViewed'
 import { useRelativeTimeAgo } from '@/hooks/useRelativeTimeAgo'
 import { trpc } from '@/utils/trpc'
+import { Bell } from 'lucide-react'
 
 interface NotificationItemProps {
   activityId: string
@@ -12,6 +13,7 @@ interface NotificationItemProps {
   onClick?: () => void
   onClose?: () => void
   children: ReactNode
+  icon?: ReactNode
 }
 
 export function NotificationItem({
@@ -23,6 +25,7 @@ export function NotificationItem({
   onClick,
   onClose,
   children,
+  icon,
 }: NotificationItemProps) {
   const utils = trpc.useUtils()
   const relativeTime = useRelativeTimeAgo(createdAt)
@@ -47,20 +50,12 @@ export function NotificationItem({
         <div className="absolute start-0 top-0 bottom-0 w-1 bg-primary" />
       )}
 
-      <div className="flex items-start gap-3">
-        {/* User Avatar */}
+      <div className="flex items-center gap-3">
+        {/* Notification Icon */}
         <div className="flex-shrink-0">
-          {userAvatarUrl ? (
-            <img
-              src={userAvatarUrl}
-              alt={userName}
-              className="w-9 h-9 rounded-full ring-2 ring-background"
-            />
-          ) : (
+          {icon || (
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center ring-2 ring-background">
-              <span className="text-xs font-semibold text-primary">
-                {userName.charAt(0).toUpperCase()}
-              </span>
+              <Bell className="h-4 w-4 text-primary" />
             </div>
           )}
         </div>
