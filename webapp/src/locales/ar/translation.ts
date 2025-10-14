@@ -15,6 +15,7 @@ export const arTranslation: TranslationType = {
     success: "نجح",
     cancel: "إلغاء",
     save: "حفظ",
+    saving: "جاري الحفظ...",
     delete: "حذف",
     deleting: "جاري الحذف...",
     edit: "تعديل",
@@ -458,7 +459,32 @@ export const arTranslation: TranslationType = {
     title: "الإشعارات"
   },
   tasks: {
-    title: "المهام"
+    title: "المهام",
+    addTask: "إضافة مهمة",
+    addSubtask: "إضافة مهمة فرعية",
+    editTask: "تعديل المهمة",
+    noTasks: "لا توجد مهام بعد",
+    titleLabel: "العنوان",
+    titlePlaceholder: "أدخل عنوان المهمة",
+    descriptionLabel: "الوصف",
+    descriptionPlaceholder: "أدخل وصف المهمة",
+    statusLabel: "الحالة",
+    selectStatus: "اختر الحالة",
+    status: {
+      pending: "معلقة",
+      inprogress: "قيد التنفيذ",
+      completed: "مكتملة",
+      cancelled: "ملغاة"
+    },
+    assignedTo: "مُسندة إلى",
+    createSuccess: "تم إنشاء المهمة بنجاح",
+    createError: "فشل إنشاء المهمة",
+    updateSuccess: "تم تحديث المهمة بنجاح",
+    updateError: "فشل تحديث المهمة",
+    deleteSuccess: "تم حذف المهمة بنجاح",
+    deleteError: "فشل حذف المهمة",
+    confirmDeleteTitle: "حذف المهمة",
+    confirmDeleteDescription: "هل أنت متأكد من حذف هذه المهمة؟ سيتم أيضاً حذف جميع المهام الفرعية."
   },
   finances: {
     title: "المالية"

@@ -15,6 +15,7 @@ export const heTranslation: TranslationType = {
     success: "הצלחה",
     cancel: "ביטול",
     save: "שמור",
+    saving: "שומר...",
     delete: "מחק",
     deleting: "מוחק...",
     edit: "ערוך",
@@ -458,7 +459,32 @@ export const heTranslation: TranslationType = {
     title: "התראות"
   },
   tasks: {
-    title: "משימות"
+    title: "משימות",
+    addTask: "הוסף משימה",
+    addSubtask: "הוסף תת-משימה",
+    editTask: "ערוך משימה",
+    noTasks: "אין משימות עדיין",
+    titleLabel: "כותרת",
+    titlePlaceholder: "הזן כותרת משימה",
+    descriptionLabel: "תיאור",
+    descriptionPlaceholder: "הזן תיאור משימה",
+    statusLabel: "סטטוס",
+    selectStatus: "בחר סטטוס",
+    status: {
+      pending: "ממתין",
+      inprogress: "בתהליך",
+      completed: "הושלם",
+      cancelled: "בוטל"
+    },
+    assignedTo: "משוייך ל",
+    createSuccess: "המשימה נוצרה בהצלחה",
+    createError: "יצירת המשימה נכשלה",
+    updateSuccess: "המשימה עודכנה בהצלחה",
+    updateError: "עדכון המשימה נכשל",
+    deleteSuccess: "המשימה נמחקה בהצלחה",
+    deleteError: "מחיקת המשימה נכשלה",
+    confirmDeleteTitle: "מחיקת משימה",
+    confirmDeleteDescription: "האם אתה בטוח שברצונך למחוק משימה זו? כל תתי-המשימות יימחקו גם כן."
   },
   finances: {
     title: "כספים"

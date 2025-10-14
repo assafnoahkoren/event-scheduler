@@ -13,6 +13,7 @@ export const enTranslation = {
     success: "Success",
     cancel: "Cancel",
     save: "Save",
+    saving: "Saving...",
     delete: "Delete",
     deleting: "Deleting...",
     edit: "Edit",
@@ -456,7 +457,32 @@ export const enTranslation = {
     title: "Notifications"
   },
   tasks: {
-    title: "Tasks"
+    title: "Tasks",
+    addTask: "Add Task",
+    addSubtask: "Add Subtask",
+    editTask: "Edit Task",
+    noTasks: "No tasks yet",
+    titleLabel: "Title",
+    titlePlaceholder: "Enter task title",
+    descriptionLabel: "Description",
+    descriptionPlaceholder: "Enter task description",
+    statusLabel: "Status",
+    selectStatus: "Select status",
+    status: {
+      pending: "Pending",
+      inprogress: "In Progress",
+      completed: "Completed",
+      cancelled: "Cancelled"
+    },
+    assignedTo: "Assigned to",
+    createSuccess: "Task created successfully",
+    createError: "Failed to create task",
+    updateSuccess: "Task updated successfully",
+    updateError: "Failed to update task",
+    deleteSuccess: "Task deleted successfully",
+    deleteError: "Failed to delete task",
+    confirmDeleteTitle: "Delete Task",
+    confirmDeleteDescription: "Are you sure you want to delete this task? All subtasks will also be deleted."
   },
   finances: {
     title: "Finances"

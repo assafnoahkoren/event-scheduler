@@ -110,8 +110,8 @@ export function Event() {
   return (
     <div className="pb-20">
       <div className="max-w-2xl mx-auto">
-        <div className="rounded-lg p-6">
-          <h1 className="text-md font-bold mb-6">
+        <div className="rounded-lg">
+          <h1 className="text-md font-bold mb-6 bg-muted px-4 py-2">
             {event.title || t('events.untitledEvent')}
           </h1>
 
@@ -142,7 +142,7 @@ export function Event() {
             </TabsContent>
 
             <TabsContent value="tasks" className="mt-6">
-              <EventTasksTab />
+              {eventId && <EventTasksTab eventId={eventId} />}
             </TabsContent>
 
             <TabsContent value="finances" className="mt-6">
