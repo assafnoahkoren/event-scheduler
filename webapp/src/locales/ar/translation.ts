@@ -194,7 +194,15 @@ export const arTranslation: TranslationType = {
     profitMargin: "هامش الربح",
     costCalculationError: "غير قادر على حساب التكاليف",
     monthlyProfit: "الربح الشهري",
-    noData: "لا توجد بيانات"
+    noData: "لا توجد بيانات",
+    activity: {
+      create: "أنشأ حدث \"{{title}}\"",
+      createWithClient: "أنشأ حدث \"{{title}}\" لـ {{client}}",
+      edit: "حدّث حدث \"{{title}}\"",
+      editWithClient: "حدّث حدث \"{{title}}\" لـ {{client}}",
+      delete: "حذف حدث \"{{title}}\"",
+      deleteWithClient: "حذف حدث \"{{title}}\" لـ {{client}}"
+    }
   },
   navigation: {
     home: "الرئيسية",

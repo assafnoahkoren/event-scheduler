@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { prisma } from '../db'
 import { EventStatus } from '@prisma/client'
 import { TRPCError } from '@trpc/server'
+import { userActivityService } from './user-activity.service'
 
 // Schemas
 export const createEventSchema = z.object({
@@ -35,6 +36,37 @@ export type GetEventsInput = z.infer<typeof getEventsSchema>
 
 // Service class
 export class EventService {
+  private async logEventActivity(
+    userId: string,
+    organizationId: string,
+    eventId: string,
+    activityType: 'CREATE' | 'EDIT' | 'DELETE',
+    eventTitle?: string,
+    clientName?: string
+  ) {
+    // Determine message type based on action and client presence
+    const messageTypeMap = {
+      CREATE: clientName ? 'EVENT_CREATED_WITH_CLIENT' : 'EVENT_CREATED',
+      EDIT: clientName ? 'EVENT_UPDATED_WITH_CLIENT' : 'EVENT_UPDATED',
+      DELETE: clientName ? 'EVENT_DELETED_WITH_CLIENT' : 'EVENT_DELETED',
+    }
+
+    const messageData = {
+      title: eventTitle || 'Untitled Event',
+      ...(clientName && { client: clientName }),
+    }
+
+    await userActivityService.newActivity(userId, {
+      organizationId,
+      eventId,
+      activityType,
+      messageType: messageTypeMap[activityType] as any,
+      messageData: JSON.stringify(messageData),
+      objectType: 'Event',
+      objectId: eventId,
+    })
+  }
+
   async createEvent(userId: string, input: CreateEventInput) {
     // Check if user has permission to create events in this site
     const siteUser = await prisma.siteUser.findFirst({
@@ -54,21 +86,21 @@ export class EventService {
       })
     }
 
+    // Get the site's organizationId for activity logging
+    const site = await prisma.site.findUnique({
+      where: { id: input.siteId },
+      select: { organizationId: true }
+    })
+
+    if (!site) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Site not found'
+      })
+    }
+
     // Validate client belongs to the same organization as the site if provided
     if (input.clientId) {
-      // Get the site's organizationId
-      const site = await prisma.site.findUnique({
-        where: { id: input.siteId },
-        select: { organizationId: true }
-      })
-
-      if (!site) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Site not found'
-        })
-      }
-
       const client = await prisma.client.findFirst({
         where: {
           id: input.clientId,
@@ -84,7 +116,7 @@ export class EventService {
       }
     }
 
-    return prisma.event.create({
+    const event = await prisma.event.create({
       data: {
         ...input,
         startDate: new Date(input.startDate),
@@ -102,6 +134,18 @@ export class EventService {
         }
       }
     })
+
+    // Log the activity
+    await this.logEventActivity(
+      userId,
+      site.organizationId,
+      event.id,
+      'CREATE',
+      input.title,
+      event.client?.name
+    )
+
+    return event
   }
 
   async getEvents(userId: string, input: GetEventsInput) {

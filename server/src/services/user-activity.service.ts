@@ -3,7 +3,7 @@ import { prisma } from '../db'
 import { TRPCError } from '@trpc/server'
 
 // Schemas
-export const activityTypeSchema = z.enum([
+export const activityTypeArray = [
   'CREATE',
   'EDIT',
   'DELETE',
@@ -14,13 +14,33 @@ export const activityTypeSchema = z.enum([
   'UPLOAD',
   'DOWNLOAD',
   'SHARE',
-] as const)
+] as const
+export type ActivityType = typeof activityTypeArray[number]
+export const activityTypeSchema = z.enum(activityTypeArray)
+
+export const activityMessageArray = [
+  'EVENT_CREATED',
+  'EVENT_CREATED_WITH_CLIENT',
+  'EVENT_UPDATED',
+  'EVENT_UPDATED_WITH_CLIENT',
+  'EVENT_DELETED',
+  'EVENT_DELETED_WITH_CLIENT',
+  'CLIENT_CREATED',
+  'CLIENT_UPDATED',
+  'CLIENT_DELETED',
+  'SERVICE_PROVIDER_CREATED',
+  'SERVICE_PROVIDER_UPDATED',
+  'SERVICE_PROVIDER_DELETED',
+] as const
+export type ActivityMessage = typeof activityMessageArray[number]
+export const activityMessageSchema = z.enum(activityMessageArray)
 
 export const newActivitySchema = z.object({
   organizationId: z.string().uuid(),
   eventId: z.string().uuid().optional(),
   activityType: activityTypeSchema,
-  message: z.string().min(1).max(500),
+  messageType: activityMessageSchema,
+  messageData: z.string().optional(), // JSON string with message parameters
   objectType: z.string().min(1).max(100),
   objectId: z.string().uuid(),
 })
@@ -118,7 +138,9 @@ export class UserActivityService {
           organizationId: input.organizationId,
           eventId: input.eventId,
           activityType: input.activityType,
-          message: input.message,
+          message: '', // Legacy field, unused
+          messageType: input.messageType as any, // ActivityMessage enum
+          messageData: input.messageData,
           objectType: input.objectType,
           objectId: input.objectId,
         },

@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Sidebar } from '@/components/Sidebar'
 import { SiteSwitcher } from '@/components/sites/SiteSwitcher'
-import { ArrowLeft, ArrowRight, Menu, Home } from 'lucide-react'
+import { NotificationsDrawer } from '@/components/notifications/NotificationsDrawer'
+import { ArrowLeft, ArrowRight, Menu, Home, Bell } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useIsRtl } from '@/hooks/useIsRtl'
 import { trpc } from '@/utils/trpc'
@@ -16,6 +17,7 @@ export function Header() {
   const isRtl = useIsRtl()
   const { currentOrg } = useCurrentOrg()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const { data: sites } = trpc.sites.list.useQuery()
 
   // Always show back button
@@ -34,6 +36,10 @@ export function Header() {
   return (
     <>
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <NotificationsDrawer
+        open={isNotificationsOpen}
+        onOpenChange={setIsNotificationsOpen}
+      />
       <header className="sticky top-0 z-40 bg-background border-b">
         <div className="container mx-auto px-2 py-2 flex items-center justify-between">
           <div className="flex items-center">
@@ -63,6 +69,14 @@ export function Header() {
               title={t('navigation.home')}
             >
               <Home className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsNotificationsOpen(true)}
+              title="Notifications"
+            >
+              <Bell className="h-4 w-4" />
             </Button>
           </div>
 

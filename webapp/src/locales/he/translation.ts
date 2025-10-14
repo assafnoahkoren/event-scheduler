@@ -194,7 +194,15 @@ export const heTranslation: TranslationType = {
     profitMargin: "אחוז רווח",
     costCalculationError: "לא ניתן לחשב עלויות",
     monthlyProfit: "הכנסות חודשיות",
-    noData: "אין נתונים"
+    noData: "אין נתונים",
+    activity: {
+      create: "יצר אירוע \"{{title}}\"",
+      createWithClient: "יצר אירוע \"{{title}}\" עבור {{client}}",
+      edit: "עדכן אירוע \"{{title}}\"",
+      editWithClient: "עדכן אירוע \"{{title}}\" עבור {{client}}",
+      delete: "מחק אירוע \"{{title}}\"",
+      deleteWithClient: "מחק אירוע \"{{title}}\" עבור {{client}}"
+    }
   },
   navigation: {
     home: "בית",

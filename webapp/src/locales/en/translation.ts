@@ -192,7 +192,15 @@ export const enTranslation = {
     profitMargin: "Profit Margin",
     costCalculationError: "Unable to calculate costs",
     monthlyProfit: "Monthly Profit",
-    noData: "No data"
+    noData: "No data",
+    activity: {
+      create: "created event \"{{title}}\"",
+      createWithClient: "created event \"{{title}}\" for {{client}}",
+      edit: "updated event \"{{title}}\"",
+      editWithClient: "updated event \"{{title}}\" for {{client}}",
+      delete: "deleted event \"{{title}}\"",
+      deleteWithClient: "deleted event \"{{title}}\" for {{client}}"
+    }
   },
   navigation: {
     home: "Home",
