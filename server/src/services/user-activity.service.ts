@@ -141,13 +141,15 @@ export class UserActivityService {
         },
       })
 
-      // Create a view record for the user who created the activity
-      await tx.userActivityView.create({
-        data: {
-          activityId: newActivity.id,
-          userId,
-        },
-      })
+      // Create a view record for the user who created the activity (skip in development)
+      if (process.env.NODE_ENV !== 'development') {
+        await tx.userActivityView.create({
+          data: {
+            activityId: newActivity.id,
+            userId,
+          },
+        })
+      }
 
       return newActivity
     })
