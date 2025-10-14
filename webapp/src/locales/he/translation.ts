@@ -201,7 +201,11 @@ export const heTranslation: TranslationType = {
       edit: "עדכן אירוע \"{{title}}\"",
       editWithClient: "עדכן אירוע \"{{title}}\" עבור {{client}}",
       delete: "מחק אירוע \"{{title}}\"",
-      deleteWithClient: "מחק אירוע \"{{title}}\" עבור {{client}}"
+      deleteWithClient: "מחק אירוע \"{{title}}\" עבור {{client}}",
+      reschedule: "שינה תאריך אירוע \"{{title}}\" מ-{{oldDate}} ל-{{newDate}}",
+      rescheduleWithClient: "שינה תאריך אירוע \"{{title}}\" עבור {{client}} מ-{{oldDate}} ל-{{newDate}}",
+      statusChange: "שינה סטטוס אירוע \"{{title}}\" מ-{{oldStatus}} ל-{{newStatus}}",
+      statusChangeWithClient: "שינה סטטוס אירוע \"{{title}}\" עבור {{client}} מ-{{oldStatus}} ל-{{newStatus}}"
     }
   },
   navigation: {

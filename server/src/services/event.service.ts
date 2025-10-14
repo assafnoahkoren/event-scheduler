@@ -41,23 +41,15 @@ export class EventService {
     organizationId: string,
     eventId: string,
     activityType: 'CREATE' | 'EDIT' | 'DELETE',
-    eventTitle?: string,
-    clientName?: string,
-    startDate?: Date
+    messageType: 'EVENT_CREATED' | 'EVENT_DELETED' | 'EVENT_RESCHEDULED' | 'EVENT_STATUS_CHANGED',
+    data: Record<string, any>
   ) {
-    const data = {
-      title: eventTitle || 'Untitled Event',
-      eventId,
-      ...(startDate && { startDate: startDate.toISOString() }),
-      ...(clientName && { client: clientName }),
-    }
-
     await userActivityService.newActivity(userId, {
       organizationId,
       eventId,
       activityType,
       activityDomain: 'EVENTS',
-      messageType: 'EVENT_CREATED',
+      messageType,
       data,
       objectType: 'Event',
       objectId: eventId,
@@ -138,9 +130,13 @@ export class EventService {
       site.organizationId,
       event.id,
       'CREATE',
-      input.title,
-      event.client?.name,
-      new Date(input.startDate)
+      'EVENT_CREATED',
+      {
+        title: input.title || 'Untitled Event',
+        eventId: event.id,
+        startDate: new Date(input.startDate).toISOString(),
+        ...(event.client?.name && { client: event.client.name }),
+      }
     )
 
     return event
@@ -255,7 +251,19 @@ export class EventService {
 
     // Check event exists and user has permission
     const event = await prisma.event.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        site: {
+          select: {
+            organizationId: true
+          }
+        },
+        client: {
+          select: {
+            name: true
+          }
+        }
+      }
     })
 
     if (!event) {
@@ -284,23 +292,10 @@ export class EventService {
 
     // Validate client if changed
     if (data.clientId && data.clientId !== event.clientId) {
-      // Get the site's organizationId
-      const site = await prisma.site.findUnique({
-        where: { id: event.siteId },
-        select: { organizationId: true }
-      })
-
-      if (!site) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Site not found'
-        })
-      }
-
       const client = await prisma.client.findFirst({
         where: {
           id: data.clientId,
-          organizationId: site.organizationId
+          organizationId: event.site.organizationId
         }
       })
 
@@ -312,6 +307,13 @@ export class EventService {
       }
     }
 
+    // Detect date changes (reschedule)
+    const isRescheduled = (data.startDate && new Date(data.startDate).getTime() !== event.startDate.getTime()) ||
+                          (data.endDate && (!event.endDate || new Date(data.endDate).getTime() !== event.endDate.getTime()))
+
+    // Detect status changes
+    const statusChanged = data.status && data.status !== event.status
+
     const updateData: any = { ...data }
     if (data.startDate) {
       updateData.startDate = new Date(data.startDate)
@@ -320,7 +322,7 @@ export class EventService {
       updateData.endDate = new Date(data.endDate)
     }
 
-    return prisma.event.update({
+    const updatedEvent = await prisma.event.update({
       where: { id },
       data: updateData,
       include: {
@@ -334,12 +336,62 @@ export class EventService {
         }
       }
     })
+
+    // Log reschedule activity
+    if (isRescheduled) {
+      await this.logEventActivity(
+        userId,
+        event.site.organizationId,
+        id,
+        'EDIT',
+        'EVENT_RESCHEDULED',
+        {
+          title: updatedEvent.title || 'Untitled Event',
+          eventId: id,
+          oldDate: event.startDate.toISOString(),
+          newDate: updatedEvent.startDate.toISOString(),
+          ...(updatedEvent.client?.name && { client: updatedEvent.client.name }),
+        }
+      )
+    }
+
+    // Log status change activity
+    if (statusChanged) {
+      await this.logEventActivity(
+        userId,
+        event.site.organizationId,
+        id,
+        'EDIT',
+        'EVENT_STATUS_CHANGED',
+        {
+          title: updatedEvent.title || 'Untitled Event',
+          eventId: id,
+          oldStatus: event.status,
+          newStatus: updatedEvent.status,
+          ...(updatedEvent.client?.name && { client: updatedEvent.client.name }),
+        }
+      )
+    }
+
+    return updatedEvent
   }
 
   async deleteEvent(userId: string, eventId: string) {
     // Check event exists and user has permission
     const event = await prisma.event.findUnique({
-      where: { id: eventId }
+      where: { id: eventId },
+      include: {
+        site: {
+          select: {
+            organizationId: true
+          }
+        },
+        client: {
+          select: {
+            name: true
+          }
+        }
+      }
     })
 
     if (!event) {
@@ -365,6 +417,20 @@ export class EventService {
         message: 'You do not have permission to delete this event'
       })
     }
+
+    // Log the activity before deleting
+    await this.logEventActivity(
+      userId,
+      event.site.organizationId,
+      eventId,
+      'DELETE',
+      'EVENT_DELETED',
+      {
+        title: event.title || 'Untitled Event',
+        eventId,
+        ...(event.client?.name && { client: event.client.name }),
+      }
+    )
 
     await prisma.event.delete({
       where: { id: eventId }

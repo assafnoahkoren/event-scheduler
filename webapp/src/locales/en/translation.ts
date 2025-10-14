@@ -199,7 +199,11 @@ export const enTranslation = {
       edit: "updated event \"{{title}}\"",
       editWithClient: "updated event \"{{title}}\" for {{client}}",
       delete: "deleted event \"{{title}}\"",
-      deleteWithClient: "deleted event \"{{title}}\" for {{client}}"
+      deleteWithClient: "deleted event \"{{title}}\" for {{client}}",
+      reschedule: "rescheduled event \"{{title}}\" from {{oldDate}} to {{newDate}}",
+      rescheduleWithClient: "rescheduled event \"{{title}}\" for {{client}} from {{oldDate}} to {{newDate}}",
+      statusChange: "changed status of event \"{{title}}\" from {{oldStatus}} to {{newStatus}}",
+      statusChangeWithClient: "changed status of event \"{{title}}\" for {{client}} from {{oldStatus}} to {{newStatus}}"
     }
   },
   navigation: {

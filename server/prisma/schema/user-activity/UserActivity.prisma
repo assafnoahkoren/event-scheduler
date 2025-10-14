@@ -62,6 +62,9 @@ enum ActivityType {
 
 enum ActivityMessage {
   EVENT_CREATED
+  EVENT_DELETED
+  EVENT_RESCHEDULED
+  EVENT_STATUS_CHANGED
 }
 
 enum ActivityDomain {

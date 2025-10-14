@@ -201,7 +201,11 @@ export const arTranslation: TranslationType = {
       edit: "حدّث حدث \"{{title}}\"",
       editWithClient: "حدّث حدث \"{{title}}\" لـ {{client}}",
       delete: "حذف حدث \"{{title}}\"",
-      deleteWithClient: "حذف حدث \"{{title}}\" لـ {{client}}"
+      deleteWithClient: "حذف حدث \"{{title}}\" لـ {{client}}",
+      reschedule: "أعاد جدولة حدث \"{{title}}\" من {{oldDate}} إلى {{newDate}}",
+      rescheduleWithClient: "أعاد جدولة حدث \"{{title}}\" لـ {{client}} من {{oldDate}} إلى {{newDate}}",
+      statusChange: "غيّر حالة حدث \"{{title}}\" من {{oldStatus}} إلى {{newStatus}}",
+      statusChangeWithClient: "غيّر حالة حدث \"{{title}}\" لـ {{client}} من {{oldStatus}} إلى {{newStatus}}"
     }
   },
   navigation: {

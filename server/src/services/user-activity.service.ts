@@ -20,6 +20,9 @@ export const activityTypeSchema = z.enum(activityTypeArray)
 
 export const activityMessageArray = [
   'EVENT_CREATED',
+  'EVENT_DELETED',
+  'EVENT_RESCHEDULED',
+  'EVENT_STATUS_CHANGED',
 ] as const
 export type ActivityMessage = typeof activityMessageArray[number]
 export const activityMessageSchema = z.enum(activityMessageArray)
