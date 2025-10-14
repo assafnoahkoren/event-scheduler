@@ -18,6 +18,7 @@ export interface ServiceProviderMessageData {
 
 // Render context passed to render functions
 export interface RenderContext {
+  activityId: string
   userName: string
   userAvatarUrl?: string | null
   activityType: string
@@ -25,7 +26,6 @@ export interface RenderContext {
   isUnread: boolean
   eventTitle?: string | null
   createdAt: Date
-  onClick: () => void
   t: any
 }
 
@@ -39,6 +39,7 @@ export const messageTypeMap: Record<string, MessageTypeConfig> = {
   EVENT_CREATED: {
     render: (data: EventMessageData, context: RenderContext) => (
       <NotificationItem
+        activityId={context.activityId}
         userName={context.userName}
         userAvatarUrl={context.userAvatarUrl}
         activityType={context.activityType}
@@ -46,7 +47,6 @@ export const messageTypeMap: Record<string, MessageTypeConfig> = {
         isUnread={context.isUnread}
         eventTitle={context.eventTitle}
         createdAt={context.createdAt}
-        onClick={context.onClick}
       >
         {context.t('events.activity.create', { title: data?.title || 'Untitled Event' })}
       </NotificationItem>
@@ -69,6 +69,7 @@ export const renderActivityNotification = (
   if (!messageType) {
     return (
       <NotificationItem
+        activityId={context.activityId}
         userName={context.userName}
         userAvatarUrl={context.userAvatarUrl}
         activityType={context.activityType}
@@ -76,7 +77,6 @@ export const renderActivityNotification = (
         isUnread={context.isUnread}
         eventTitle={context.eventTitle}
         createdAt={context.createdAt}
-        onClick={context.onClick}
       >
         Unknown activity
       </NotificationItem>
@@ -87,6 +87,7 @@ export const renderActivityNotification = (
   if (!config) {
     return (
       <NotificationItem
+        activityId={context.activityId}
         userName={context.userName}
         userAvatarUrl={context.userAvatarUrl}
         activityType={context.activityType}
@@ -94,7 +95,6 @@ export const renderActivityNotification = (
         isUnread={context.isUnread}
         eventTitle={context.eventTitle}
         createdAt={context.createdAt}
-        onClick={context.onClick}
       >
         {messageType}
       </NotificationItem>
@@ -107,6 +107,7 @@ export const renderActivityNotification = (
     console.error('Error rendering activity notification:', error)
     return (
       <NotificationItem
+        activityId={context.activityId}
         userName={context.userName}
         userAvatarUrl={context.userAvatarUrl}
         activityType={context.activityType}
@@ -114,7 +115,6 @@ export const renderActivityNotification = (
         isUnread={context.isUnread}
         eventTitle={context.eventTitle}
         createdAt={context.createdAt}
-        onClick={context.onClick}
       >
         {messageType}
       </NotificationItem>

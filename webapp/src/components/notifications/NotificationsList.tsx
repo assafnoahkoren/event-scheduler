@@ -13,11 +13,7 @@ type Activity = Omit<ActivityBase, 'data'> & {
   data: any
 }
 
-interface NotificationsListProps {
-  onActivityClick?: (activity: Activity) => void
-}
-
-export function NotificationsList({ onActivityClick }: NotificationsListProps) {
+export function NotificationsList() {
   const { t } = useTranslation()
   const { currentOrg } = useCurrentOrg()
 
@@ -34,18 +30,6 @@ export function NotificationsList({ onActivityClick }: NotificationsListProps) {
 
   // Cast to avoid Prisma JSON type instantiation issues
   const data = rawData as any as { activities: Activity[], total: number, hasMore: boolean } | undefined
-
-  const markViewedMutation = trpc.userActivity.markViewed.useMutation()
-
-  const handleActivityClick = (activity: Activity) => {
-    // Mark as viewed
-    if (!activity.views || activity.views.length === 0) {
-      markViewedMutation.mutate({ activityId: activity.id })
-    }
-
-    // Call parent callback if provided
-    onActivityClick?.(activity)
-  }
 
   const getActivityTypeLabel = (type: Activity['activityType']) => {
     const typeLabels: Record<Activity['activityType'], string> = {
@@ -117,6 +101,7 @@ export function NotificationsList({ onActivityClick }: NotificationsListProps) {
               activity.messageType,
               activity.data,
               {
+                activityId: activity.id,
                 userName,
                 userAvatarUrl: activity.user.avatarUrl,
                 activityType: getActivityTypeLabel(activity.activityType),
@@ -124,7 +109,6 @@ export function NotificationsList({ onActivityClick }: NotificationsListProps) {
                 isUnread,
                 eventTitle: activity.event?.title,
                 createdAt: new Date(activity.createdAt),
-                onClick: () => handleActivityClick(activity),
                 t,
               }
             )}

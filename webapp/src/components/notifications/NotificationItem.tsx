@@ -1,7 +1,9 @@
 import { formatDistanceToNow } from 'date-fns'
 import type { ReactNode } from 'react'
+import { useAutoMarkViewed } from '@/hooks/useAutoMarkViewed'
 
 interface NotificationItemProps {
+  activityId: string
   userName: string
   userAvatarUrl?: string | null
   activityType: string
@@ -9,11 +11,11 @@ interface NotificationItemProps {
   isUnread: boolean
   eventTitle?: string | null
   createdAt: Date
-  onClick: () => void
   children: ReactNode
 }
 
 export function NotificationItem({
+  activityId,
   userName,
   userAvatarUrl,
   activityType,
@@ -21,13 +23,13 @@ export function NotificationItem({
   isUnread,
   eventTitle,
   createdAt,
-  onClick,
   children,
 }: NotificationItemProps) {
+  useAutoMarkViewed({ activityId, isUnread })
+
   return (
-    <button
-      onClick={onClick}
-      className={`w-full text-start p-4 hover:bg-muted/50 transition-colors ${
+    <div
+      className={`w-full text-start p-4 transition-colors ${
         isUnread ? 'bg-blue-50 dark:bg-blue-950/20' : ''
       }`}
     >
@@ -76,6 +78,6 @@ export function NotificationItem({
           </div>
         </div>
       </div>
-    </button>
+    </div>
   )
 }
