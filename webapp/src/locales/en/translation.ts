@@ -444,5 +444,8 @@ export const enTranslation = {
     cancel: "Cancel",
     confirm: "Confirm",
     actionCancelled: "Action cancelled"
+  },
+  notifications: {
+    title: "Notifications"
   }
 } as const

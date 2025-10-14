@@ -1,6 +1,7 @@
-import { formatDistanceToNow } from 'date-fns'
 import type { ReactNode } from 'react'
 import { useAutoMarkViewed } from '@/hooks/useAutoMarkViewed'
+import { useRelativeTimeAgo } from '@/hooks/useRelativeTimeAgo'
+import { trpc } from '@/utils/trpc'
 
 interface NotificationItemProps {
   activityId: string
@@ -23,11 +24,15 @@ export function NotificationItem({
   onClose,
   children,
 }: NotificationItemProps) {
+  const utils = trpc.useUtils()
+  const relativeTime = useRelativeTimeAgo(createdAt)
   useAutoMarkViewed({ activityId, isUnread })
 
   const handleClick = () => {
     onClick?.()
     onClose?.()
+    // Invalidate unviewed count when clicking a notification
+    utils.userActivity.getUnviewedCount.invalidate()
   }
 
   return (
@@ -67,7 +72,7 @@ export function NotificationItem({
             <span className="text-muted-foreground">{children}</span>
           </p>
           <time className="text-xs text-muted-foreground/80">
-            {formatDistanceToNow(createdAt, { addSuffix: true })}
+            {relativeTime}
           </time>
         </div>
       </div>

@@ -446,5 +446,8 @@ export const heTranslation: TranslationType = {
     cancel: "ביטול",
     confirm: "אישור",
     actionCancelled: "הפעולה בוטלה"
+  },
+  notifications: {
+    title: "התראות"
   }
 } as const

@@ -446,5 +446,8 @@ export const arTranslation: TranslationType = {
     cancel: "إلغاء",
     confirm: "تأكيد",
     actionCancelled: "تم إلغاء الإجراء"
+  },
+  notifications: {
+    title: "الإشعارات"
   }
 } as const
