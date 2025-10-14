@@ -216,7 +216,10 @@ export const enTranslation = {
     welcomeTitle: "Welcome to Event Scheduler",
     welcomeDescription: "Let's start by creating your organization",
     namePlaceholder: "Enter organization name",
-    createButton: "Create Organization"
+    createButton: "Create Organization",
+    selectOrganization: "Select organization",
+    searchOrganization: "Search organizations...",
+    noOrganizationFound: "No organization found"
   },
   clients: {
     clients: "Clients",

@@ -218,7 +218,10 @@ export const heTranslation: TranslationType = {
     welcomeTitle: "ברוכים הבאים למארגן אירועים",
     welcomeDescription: "בואו נתחיל ביצירת הארגון שלכם",
     namePlaceholder: "הזן את שם הארגון",
-    createButton: "צור ארגון"
+    createButton: "צור ארגון",
+    selectOrganization: "בחר ארגון",
+    searchOrganization: "חפש ארגונים...",
+    noOrganizationFound: "לא נמצא ארגון"
   },
   clients: {
     clients: "לקוחות",

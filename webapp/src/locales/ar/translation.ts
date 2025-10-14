@@ -218,7 +218,10 @@ export const arTranslation: TranslationType = {
     welcomeTitle: "مرحباً بك في منظم الأحداث",
     welcomeDescription: "لنبدأ بإنشاء منظمتك",
     namePlaceholder: "أدخل اسم المنظمة",
-    createButton: "إنشاء المنظمة"
+    createButton: "إنشاء المنظمة",
+    selectOrganization: "اختر منظمة",
+    searchOrganization: "البحث عن المنظمات...",
+    noOrganizationFound: "لم يتم العثور على منظمة"
   },
   clients: {
     clients: "العملاء",

@@ -90,14 +90,7 @@ export function Header() {
             </Button>
           </div>
 
-          {/* Organization name in the center */}
-          <div className="flex-1 text-center">
-            {currentOrg && (
-              <span className="text-sm text-gray-400">
-                {currentOrg.name}
-              </span>
-            )}
-          </div>
+          <div className="flex-1"></div>
 
           <div className="flex items-center">
             {sites && sites.length > 0 && (

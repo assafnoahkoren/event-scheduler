@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { useIsRtl } from '@/hooks/useIsRtl'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
+import { OrganizationSwitcher } from '@/components/organizations/OrganizationSwitcher'
 
 interface SidebarProps {
   isOpen: boolean
@@ -157,6 +158,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {/* Footer */}
           <div className="p-4 border-t space-y-2">
+            <OrganizationSwitcher />
             <Button
               variant="ghost"
               className="w-full justify-start"
