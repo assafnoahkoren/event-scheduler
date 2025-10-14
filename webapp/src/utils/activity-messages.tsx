@@ -21,10 +21,7 @@ export interface RenderContext {
   activityId: string
   userName: string
   userAvatarUrl?: string | null
-  activityType: string
-  activityTypeColor: string
   isUnread: boolean
-  eventTitle?: string | null
   createdAt: Date
   t: any
 }
@@ -42,10 +39,7 @@ export const messageTypeMap: Record<string, MessageTypeConfig> = {
         activityId={context.activityId}
         userName={context.userName}
         userAvatarUrl={context.userAvatarUrl}
-        activityType={context.activityType}
-        activityTypeColor={context.activityTypeColor}
         isUnread={context.isUnread}
-        eventTitle={context.eventTitle}
         createdAt={context.createdAt}
       >
         {context.t('events.activity.create', { title: data?.title || 'Untitled Event' })}
@@ -72,10 +66,7 @@ export const renderActivityNotification = (
         activityId={context.activityId}
         userName={context.userName}
         userAvatarUrl={context.userAvatarUrl}
-        activityType={context.activityType}
-        activityTypeColor={context.activityTypeColor}
         isUnread={context.isUnread}
-        eventTitle={context.eventTitle}
         createdAt={context.createdAt}
       >
         Unknown activity
@@ -90,10 +81,7 @@ export const renderActivityNotification = (
         activityId={context.activityId}
         userName={context.userName}
         userAvatarUrl={context.userAvatarUrl}
-        activityType={context.activityType}
-        activityTypeColor={context.activityTypeColor}
         isUnread={context.isUnread}
-        eventTitle={context.eventTitle}
         createdAt={context.createdAt}
       >
         {messageType}
@@ -110,10 +98,7 @@ export const renderActivityNotification = (
         activityId={context.activityId}
         userName={context.userName}
         userAvatarUrl={context.userAvatarUrl}
-        activityType={context.activityType}
-        activityTypeColor={context.activityTypeColor}
         isUnread={context.isUnread}
-        eventTitle={context.eventTitle}
         createdAt={context.createdAt}
       >
         {messageType}

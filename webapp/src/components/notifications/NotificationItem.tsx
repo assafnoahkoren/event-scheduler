@@ -6,10 +6,7 @@ interface NotificationItemProps {
   activityId: string
   userName: string
   userAvatarUrl?: string | null
-  activityType: string
-  activityTypeColor: string
   isUnread: boolean
-  eventTitle?: string | null
   createdAt: Date
   children: ReactNode
 }
@@ -18,21 +15,21 @@ export function NotificationItem({
   activityId,
   userName,
   userAvatarUrl,
-  activityType,
-  activityTypeColor,
   isUnread,
-  eventTitle,
   createdAt,
   children,
 }: NotificationItemProps) {
   useAutoMarkViewed({ activityId, isUnread })
 
   return (
-    <div
-      className={`w-full text-start p-4 transition-colors ${
-        isUnread ? 'bg-blue-50 dark:bg-blue-950/20' : ''
-      }`}
-    >
+    <div className={`relative px-4 py-3 transition-colors hover:bg-muted/30 ${
+      isUnread ? 'bg-blue-50 dark:bg-blue-950/20' : ''
+    }`}>
+      {/* Unread indicator */}
+      {isUnread && (
+        <div className="absolute start-0 top-0 bottom-0 w-1 bg-primary" />
+      )}
+
       <div className="flex items-start gap-3">
         {/* User Avatar */}
         <div className="flex-shrink-0">
@@ -40,42 +37,26 @@ export function NotificationItem({
             <img
               src={userAvatarUrl}
               alt={userName}
-              className="w-8 h-8 rounded-full"
+              className="w-9 h-9 rounded-full ring-2 ring-background"
             />
           ) : (
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <span className="text-xs font-medium text-primary">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center ring-2 ring-background">
+              <span className="text-xs font-semibold text-primary">
                 {userName.charAt(0).toUpperCase()}
               </span>
             </div>
           )}
         </div>
 
-        {/* Activity Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <span className="font-medium text-sm">{userName}</span>
-            <span className={`text-xs font-medium ${activityTypeColor}`}>
-              {activityType}
-            </span>
-            {isUnread && (
-              <span className="w-2 h-2 rounded-full bg-blue-600 flex-shrink-0" />
-            )}
-          </div>
-          <div className="text-sm text-muted-foreground mt-1 line-clamp-2">
-            {children}
-          </div>
-          <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-            <time>
-              {formatDistanceToNow(createdAt, { addSuffix: true })}
-            </time>
-            {eventTitle && (
-              <>
-                <span>•</span>
-                <span className="truncate">{eventTitle}</span>
-              </>
-            )}
-          </div>
+        {/* Content */}
+        <div className="flex-1 min-w-0 space-y-1">
+          <p className="text-sm leading-relaxed">
+            <span className="font-semibold text-foreground">{userName}</span>{' '}
+            <span className="text-muted-foreground">{children}</span>
+          </p>
+          <time className="text-xs text-muted-foreground/80">
+            {formatDistanceToNow(createdAt, { addSuffix: true })}
+          </time>
         </div>
       </div>
     </div>

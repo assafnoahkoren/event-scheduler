@@ -31,38 +31,6 @@ export function NotificationsList() {
   // Cast to avoid Prisma JSON type instantiation issues
   const data = rawData as any as { activities: Activity[], total: number, hasMore: boolean } | undefined
 
-  const getActivityTypeLabel = (type: Activity['activityType']) => {
-    const typeLabels: Record<Activity['activityType'], string> = {
-      CREATE: t('common.create'),
-      EDIT: t('common.edit'),
-      DELETE: t('common.delete'),
-      ACCESS: 'accessed',
-      INVITE: 'invited',
-      ACCEPT: 'accepted',
-      REJECT: 'rejected',
-      UPLOAD: 'uploaded',
-      DOWNLOAD: 'downloaded',
-      SHARE: 'shared',
-    }
-    return typeLabels[type] || type
-  }
-
-  const getActivityTypeColor = (type: Activity['activityType']) => {
-    const typeColors: Record<Activity['activityType'], string> = {
-      CREATE: 'text-green-600 dark:text-green-400',
-      EDIT: 'text-blue-600 dark:text-blue-400',
-      DELETE: 'text-red-600 dark:text-red-400',
-      ACCESS: 'text-gray-600 dark:text-gray-400',
-      INVITE: 'text-purple-600 dark:text-purple-400',
-      ACCEPT: 'text-green-600 dark:text-green-400',
-      REJECT: 'text-red-600 dark:text-red-400',
-      UPLOAD: 'text-blue-600 dark:text-blue-400',
-      DOWNLOAD: 'text-gray-600 dark:text-gray-400',
-      SHARE: 'text-purple-600 dark:text-purple-400',
-    }
-    return typeColors[type] || 'text-gray-600 dark:text-gray-400'
-  }
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -95,24 +63,17 @@ export function NotificationsList() {
           ? `${activity.user.firstName} ${activity.user.lastName}`
           : activity.user.email
 
-        return (
-          <div key={activity.id}>
-            {renderActivityNotification(
-              activity.messageType,
-              activity.data,
-              {
-                activityId: activity.id,
-                userName,
-                userAvatarUrl: activity.user.avatarUrl,
-                activityType: getActivityTypeLabel(activity.activityType),
-                activityTypeColor: getActivityTypeColor(activity.activityType),
-                isUnread,
-                eventTitle: activity.event?.title,
-                createdAt: new Date(activity.createdAt),
-                t,
-              }
-            )}
-          </div>
+        return renderActivityNotification(
+          activity.messageType,
+          activity.data,
+          {
+            activityId: activity.id,
+            userName,
+            userAvatarUrl: activity.user.avatarUrl,
+            isUnread,
+            createdAt: new Date(activity.createdAt),
+            t,
+          }
         )
       })}
     </div>
