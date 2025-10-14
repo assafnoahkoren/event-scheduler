@@ -41,6 +41,9 @@ model Event {
   // User activities related to this event
   userActivities UserActivity[]
 
+  // Tasks related to this event
+  tasks Task[]
+
   // Soft delete
   deletedAt   DateTime? @map("deleted_at")
   isDeleted   Boolean   @default(false) @map("is_deleted")

@@ -57,6 +57,10 @@ model User {
   userActivities UserActivity[]
   activityViews  UserActivityView[]
 
+  // Task relations
+  assignedTasks Task[]
+  createdTasks  Task[] @relation("TaskCreatedBy")
+
   @@index([email])
   @@index([isDeleted])
   @@map("users")

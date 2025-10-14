@@ -36,6 +36,44 @@ export type GetEventsInput = z.infer<typeof getEventsSchema>
 
 // Service class
 export class EventService {
+  /**
+   * Verifies that a user has access to an event through site membership.
+   * Throws TRPCError if event not found or user doesn't have access.
+   * @returns The event with site information
+   */
+  async verifyEventAccess(userId: string, eventId: string) {
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      include: {
+        site: true,
+      }
+    })
+
+    if (!event) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Event not found'
+      })
+    }
+
+    // Check if user has permission to access this event through site membership
+    const siteUser = await prisma.siteUser.findFirst({
+      where: {
+        userId,
+        siteId: event.siteId,
+      }
+    })
+
+    if (!siteUser) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You do not have permission to access this event'
+      })
+    }
+
+    return event
+  }
+
   private async logEventActivity(
     userId: string,
     organizationId: string,
