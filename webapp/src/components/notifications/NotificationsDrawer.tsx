@@ -20,7 +20,7 @@ export function NotificationsDrawer({ open, onOpenChange }: NotificationsDrawerP
         </DrawerHeader>
 
         <div className="flex-1 overflow-y-auto">
-          <NotificationsList />
+          <NotificationsList onClose={() => onOpenChange(false)} />
         </div>
       </DrawerContent>
     </Drawer>

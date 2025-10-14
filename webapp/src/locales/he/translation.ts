@@ -196,8 +196,8 @@ export const heTranslation: TranslationType = {
     monthlyProfit: "הכנסות חודשיות",
     noData: "אין נתונים",
     activity: {
-      create: "יצר אירוע \"{{title}}\"",
-      createWithClient: "יצר אירוע \"{{title}}\" עבור {{client}}",
+      create: "יצר אירוע \"{{title}}\" בתאריך {{eventDate}}",
+      createWithClient: "יצר אירוע \"{{title}}\" עבור {{client}} בתאריך {{eventDate}}",
       edit: "עדכן אירוע \"{{title}}\"",
       editWithClient: "עדכן אירוע \"{{title}}\" עבור {{client}}",
       delete: "מחק אירוע \"{{title}}\"",

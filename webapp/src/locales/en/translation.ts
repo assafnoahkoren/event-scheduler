@@ -194,8 +194,8 @@ export const enTranslation = {
     monthlyProfit: "Monthly Profit",
     noData: "No data",
     activity: {
-      create: "created event \"{{title}}\"",
-      createWithClient: "created event \"{{title}}\" for {{client}}",
+      create: "created event \"{{title}}\" on {{eventDate}}",
+      createWithClient: "created event \"{{title}}\" for {{client}} on {{eventDate}}",
       edit: "updated event \"{{title}}\"",
       editWithClient: "updated event \"{{title}}\" for {{client}}",
       delete: "deleted event \"{{title}}\"",

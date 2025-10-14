@@ -8,6 +8,8 @@ interface NotificationItemProps {
   userAvatarUrl?: string | null
   isUnread: boolean
   createdAt: Date
+  onClick?: () => void
+  onClose?: () => void
   children: ReactNode
 }
 
@@ -17,14 +19,24 @@ export function NotificationItem({
   userAvatarUrl,
   isUnread,
   createdAt,
+  onClick,
+  onClose,
   children,
 }: NotificationItemProps) {
   useAutoMarkViewed({ activityId, isUnread })
 
+  const handleClick = () => {
+    onClick?.()
+    onClose?.()
+  }
+
   return (
-    <div className={`relative px-4 py-3 transition-colors hover:bg-muted/30 ${
-      isUnread ? 'bg-blue-50 dark:bg-blue-950/20' : ''
-    }`}>
+    <div
+      onClick={handleClick}
+      className={`relative px-4 py-3 transition-colors ${
+        onClick ? 'cursor-pointer hover:bg-muted/50' : 'hover:bg-muted/30'
+      } ${isUnread ? 'bg-blue-50 dark:bg-blue-950/20' : ''}`}
+    >
       {/* Unread indicator */}
       {isUnread && (
         <div className="absolute start-0 top-0 bottom-0 w-1 bg-primary" />

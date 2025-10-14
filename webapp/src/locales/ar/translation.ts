@@ -196,8 +196,8 @@ export const arTranslation: TranslationType = {
     monthlyProfit: "الربح الشهري",
     noData: "لا توجد بيانات",
     activity: {
-      create: "أنشأ حدث \"{{title}}\"",
-      createWithClient: "أنشأ حدث \"{{title}}\" لـ {{client}}",
+      create: "أنشأ حدث \"{{title}}\" بتاريخ {{eventDate}}",
+      createWithClient: "أنشأ حدث \"{{title}}\" لـ {{client}} بتاريخ {{eventDate}}",
       edit: "حدّث حدث \"{{title}}\"",
       editWithClient: "حدّث حدث \"{{title}}\" لـ {{client}}",
       delete: "حذف حدث \"{{title}}\"",

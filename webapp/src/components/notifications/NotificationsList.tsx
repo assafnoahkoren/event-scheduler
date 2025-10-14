@@ -13,7 +13,11 @@ type Activity = Omit<ActivityBase, 'data'> & {
   data: any
 }
 
-export function NotificationsList() {
+interface NotificationsListProps {
+  onClose?: () => void
+}
+
+export function NotificationsList({ onClose }: NotificationsListProps) {
   const { t } = useTranslation()
   const { currentOrg } = useCurrentOrg()
 
@@ -72,6 +76,7 @@ export function NotificationsList() {
             userAvatarUrl: activity.user.avatarUrl,
             isUnread,
             createdAt: new Date(activity.createdAt),
+            onClose,
             t,
           }
         )

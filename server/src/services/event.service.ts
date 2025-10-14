@@ -42,10 +42,13 @@ export class EventService {
     eventId: string,
     activityType: 'CREATE' | 'EDIT' | 'DELETE',
     eventTitle?: string,
-    clientName?: string
+    clientName?: string,
+    startDate?: Date
   ) {
     const data = {
       title: eventTitle || 'Untitled Event',
+      eventId,
+      ...(startDate && { startDate: startDate.toISOString() }),
       ...(clientName && { client: clientName }),
     }
 
@@ -136,7 +139,8 @@ export class EventService {
       event.id,
       'CREATE',
       input.title,
-      event.client?.name
+      event.client?.name,
+      new Date(input.startDate)
     )
 
     return event
