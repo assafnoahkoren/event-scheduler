@@ -116,7 +116,7 @@ export function EventServiceSection({ event }: EventServiceSectionProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">{t('events.eventServices')}</h3>
         <Button onClick={() => setDrawerOpen(true)} size="sm">

@@ -24,7 +24,7 @@ export function EventDetailsTab({
   const { t } = useTranslation()
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-6">
       {/* Event Costs Section */}
       <EventCostsSection eventId={eventId} />
 

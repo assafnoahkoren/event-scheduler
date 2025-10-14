@@ -104,7 +104,7 @@ export function EventProductSection({ event }: EventProductSectionProps) {
   const availableProducts = activeProducts
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-6">
       {/* Check if there are no products in the site at all */}
       {products && products.length === 0 ? (
         <div className="text-center py-8 space-y-4">

@@ -9,7 +9,7 @@ export function EventFilesTab({ eventId }: EventFilesTabProps) {
   const { t } = useTranslation()
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-6">
       <FileManager
         objectId={eventId}
         objectType="event"

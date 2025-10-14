@@ -6,7 +6,7 @@ export function EventFinancesTab() {
   const { t } = useTranslation()
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-6">
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-8">
           <DollarSign className="h-8 w-8 text-muted-foreground mb-2" />

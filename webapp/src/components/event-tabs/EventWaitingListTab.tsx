@@ -147,7 +147,7 @@ export function EventWaitingListTab({ event }: EventWaitingListTabProps) {
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="space-y-4 px-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium">{t('waitingList.clientWaitingList')}</h3>
           <Button onClick={handleNewWaitingListEntry} size="sm">
