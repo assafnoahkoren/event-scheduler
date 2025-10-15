@@ -1,10 +1,13 @@
-import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { trpc } from '@/utils/trpc'
 import { useTranslation } from 'react-i18next'
 import { useIsRtl } from '@/hooks/useIsRtl'
 import { Button } from '@/components/ui/button'
-import { Clock, FileText, Package, Briefcase, CheckSquare, DollarSign, FolderOpen } from 'lucide-react'
+import { Clock, FileText, Package, Briefcase, CheckSquare, DollarSign, FolderOpen, Calendar } from 'lucide-react'
+import { useFormatDayMonth } from '@/hooks/useDateFormatter'
+import { RelativeTimeBadge } from '@/components/RelativeTimeBadge'
+import { DayOfWeekBadge } from '@/components/DayOfWeekBadge'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,8 +33,18 @@ export function Event() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const isRtl = useIsRtl()
+  const formatDayMonth = useFormatDayMonth()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [activeTab, setActiveTab] = useState('details')
+  const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'details')
+
+  // Update URL when tab changes
+  useEffect(() => {
+    const currentTab = searchParams.get('tab')
+    if (activeTab !== currentTab) {
+      setSearchParams({ tab: activeTab }, { replace: true })
+    }
+  }, [activeTab, searchParams, setSearchParams])
 
   const { data: event, isLoading, error } = trpc.events.get.useQuery(
     { id: eventId || '' },
@@ -111,9 +124,21 @@ export function Event() {
     <div className="pb-20">
       <div className="max-w-2xl mx-auto">
         <div className="rounded-lg">
-          <h1 className="text-md font-bold mb-6 bg-muted px-4 py-2">
-            {event.title || t('events.untitledEvent')}
-          </h1>
+          <div className="bg-muted px-4 py-2 mb-6">
+            <h1 className="text-md font-bold mb-2">
+              {event.title || t('events.untitledEvent')}
+            </h1>
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <Calendar className="w-3.5 h-3.5" />
+                <span>{formatDayMonth(event.startDate)}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <DayOfWeekBadge date={event.startDate} />
+                <RelativeTimeBadge date={event.startDate} />
+              </div>
+            </div>
+          </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir={isRtl ? 'rtl' : 'ltr'}>
             <TabsContent value="details" className="mt-6">
