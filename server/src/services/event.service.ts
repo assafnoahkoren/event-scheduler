@@ -554,12 +554,22 @@ export class EventService {
 
       // Add service costs
       for (const provider of event.providers) {
+        // Skip soft-deleted services
+        if (provider.providerService.isDeleted) {
+          continue
+        }
+
         const servicePrice = provider.agreedPrice || provider.providerService.price || 0
         clientCost += servicePrice
       }
 
       // Add product costs
       for (const product of event.products) {
+        // Skip soft-deleted or inactive products
+        if (product.product?.isDeleted || !product.product?.isActive) {
+          continue
+        }
+
         const productPrice = product.price || product.product?.price || 0
         const quantity = product.quantity || 1
         clientCost += productPrice * quantity
@@ -568,6 +578,11 @@ export class EventService {
       // Calculate provider cost
       let providerCost = 0
       for (const provider of event.providers) {
+        // Skip soft-deleted services
+        if (provider.providerService.isDeleted) {
+          continue
+        }
+
         const providerPrice = provider.providerPrice || 0
         providerCost += providerPrice
       }
@@ -645,6 +660,11 @@ export class EventService {
 
     // Add service costs (what we charge the client)
     for (const eventProvider of event.providers) {
+      // Skip soft-deleted services or inactive providers
+      if (eventProvider.providerService.isDeleted || !eventProvider.provider.isActive) {
+        continue
+      }
+
       // Use agreed price if set, otherwise use service default price
       const servicePrice = eventProvider.agreedPrice || eventProvider.providerService.price || 0
       clientCost += servicePrice
@@ -652,6 +672,11 @@ export class EventService {
 
     // Add product costs
     for (const eventProduct of event.products) {
+      // Skip soft-deleted or inactive products
+      if (eventProduct.product?.isDeleted || !eventProduct.product?.isActive) {
+        continue
+      }
+
       const productPrice = eventProduct.price || eventProduct.product?.price || 0
       const quantity = eventProduct.quantity || 1
       clientCost += productPrice * quantity
@@ -661,6 +686,11 @@ export class EventService {
     let providerCost = 0
 
     for (const eventProvider of event.providers) {
+      // Skip soft-deleted services or inactive providers
+      if (eventProvider.providerService.isDeleted || !eventProvider.provider.isActive) {
+        continue
+      }
+
       // Use provider price if set, otherwise default to 0
       const providerPrice = eventProvider.providerPrice || 0
       providerCost += providerPrice
