@@ -33,6 +33,10 @@ export const eventProductsRouter = router({
       const eventProducts = await prisma.eventProduct.findMany({
         where: {
           eventId: input.eventId,
+          product: {
+            isDeleted: false,
+            isActive: true,
+          }
         },
         include: {
           product: true,

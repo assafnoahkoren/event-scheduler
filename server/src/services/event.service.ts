@@ -677,7 +677,7 @@ export class EventService {
     // Add product costs
     for (const eventProduct of event.products) {
       // Skip soft-deleted or inactive products
-      if (eventProduct.product?.isDeleted || !eventProduct.product?.isActive) {
+      if (eventProduct.isDeleted || eventProduct.product?.isDeleted || !eventProduct.product?.isActive) {
         continue
       }
 
@@ -691,7 +691,7 @@ export class EventService {
 
     for (const eventProvider of event.providers) {
       // Skip soft-deleted services or inactive providers
-      if (eventProvider.providerService.isDeleted || !eventProvider.provider.isActive) {
+      if (eventProvider.isDeleted || eventProvider.providerService.isDeleted || !eventProvider.provider.isActive) {
         continue
       }
 
