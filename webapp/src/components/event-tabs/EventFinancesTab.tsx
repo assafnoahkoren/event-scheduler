@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Plus, DollarSign, Calendar, Trash2, Edit } from 'lucide-react'
+import { Plus, DollarSign, Trash2, Edit } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import {
@@ -40,6 +40,12 @@ export function EventFinancesTab({ eventId }: EventFinancesTabProps) {
   const [deletingPaymentId, setDeletingPaymentId] = useState<string | null>(null)
 
   const utils = trpc.useUtils()
+
+  // Fetch event to get organization currency
+  const { data: event } = trpc.events.get.useQuery(
+    { id: eventId },
+    { enabled: !!eventId }
+  )
 
   // Fetch payments for the event
   const { data: payments = [], isLoading } = trpc.payments.list.useQuery(
@@ -130,14 +136,6 @@ export function EventFinancesTab({ eventId }: EventFinancesTabProps) {
     return `${currencySymbol}${Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
   }
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
-  }
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -209,20 +207,11 @@ export function EventFinancesTab({ eventId }: EventFinancesTabProps) {
                         <span className="font-medium text-lg">
                           {formatCurrency(Number(payment.amount), payment.currency)}
                         </span>
-                        {payment.paymentMethod && (
-                          <span className="text-xs text-muted-foreground px-2 py-0.5 bg-muted rounded">
-                            {payment.paymentMethod}
-                          </span>
-                        )}
                       </div>
                       {payment.description && (
                         <p className="text-sm text-muted-foreground mb-1">{payment.description}</p>
                       )}
                       <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {formatDate(new Date(payment.paymentDate))}
-                        </div>
                         {payment.recorder && (
                           <span>
                             {t('payments.recordedBy')}: {payment.recorder.firstName} {payment.recorder.lastName}
@@ -264,14 +253,13 @@ export function EventFinancesTab({ eventId }: EventFinancesTabProps) {
           </DrawerHeader>
           <div className="px-4 pb-4">
             <PaymentForm
+              defaultCurrency={event?.site.organization.defaultCurrency || 'USD'}
               initialData={
                 editingPayment
                   ? {
                       amount: Number(editingPayment.amount),
                       currency: editingPayment.currency,
                       description: editingPayment.description || '',
-                      paymentDate: new Date(editingPayment.paymentDate).toISOString(),
-                      paymentMethod: editingPayment.paymentMethod || '',
                     }
                   : undefined
               }

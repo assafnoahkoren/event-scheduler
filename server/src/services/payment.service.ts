@@ -8,8 +8,6 @@ export const createPaymentSchema = z.object({
   amount: z.number().positive(),
   currency: z.string().default('USD'),
   description: z.string().optional(),
-  paymentDate: z.string().datetime().optional(),
-  paymentMethod: z.string().optional(),
 })
 
 export const updatePaymentSchema = createPaymentSchema.partial().extend({
@@ -109,8 +107,6 @@ export class PaymentService {
         amount: input.amount,
         currency: input.currency,
         description: input.description,
-        paymentDate: input.paymentDate ? new Date(input.paymentDate) : new Date(),
-        paymentMethod: input.paymentMethod,
         recordedBy: userId,
       },
       include: {
@@ -172,7 +168,7 @@ export class PaymentService {
         }
       },
       orderBy: {
-        paymentDate: 'desc'
+        createdAt: 'desc'
       }
     })
   }
@@ -200,14 +196,9 @@ export class PaymentService {
       })
     }
 
-    const updateData: any = { ...data }
-    if (data.paymentDate) {
-      updateData.paymentDate = new Date(data.paymentDate)
-    }
-
     const updatedPayment = await prisma.payment.update({
       where: { id },
-      data: updateData,
+      data,
       include: {
         recorder: {
           select: {

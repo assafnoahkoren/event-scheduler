@@ -25,19 +25,16 @@ const paymentFormSchema = z.object({
   amount: z.number().positive('Amount must be greater than 0'),
   currency: z.string().min(1, 'Currency is required'),
   description: z.string().optional(),
-  paymentDate: z.string().datetime().optional(),
-  paymentMethod: z.string().optional(),
 })
 
 export type PaymentFormData = z.infer<typeof paymentFormSchema>
 
 interface PaymentFormProps {
+  defaultCurrency?: string
   initialData?: {
     amount: number
-    currency: string
+    currency?: string
     description?: string
-    paymentDate?: string
-    paymentMethod?: string
   }
   onSubmit: (data: PaymentFormData) => void
   onCancel: () => void
@@ -45,6 +42,7 @@ interface PaymentFormProps {
 }
 
 export function PaymentForm({
+  defaultCurrency = 'USD',
   initialData,
   onSubmit,
   onCancel,
@@ -56,10 +54,8 @@ export function PaymentForm({
     resolver: zodResolver(paymentFormSchema),
     defaultValues: initialData || {
       amount: 0,
-      currency: 'USD',
+      currency: defaultCurrency,
       description: '',
-      paymentDate: new Date().toISOString(),
-      paymentMethod: '',
     },
   })
 
@@ -115,45 +111,6 @@ export function PaymentForm({
             )}
           />
         </div>
-
-        <FormField
-          control={form.control}
-          name="paymentMethod"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('payments.paymentMethod')}</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t('payments.paymentMethodPlaceholder')}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="paymentDate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('payments.paymentDate')}</FormLabel>
-              <FormControl>
-                <Input
-                  type="datetime-local"
-                  {...field}
-                  value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ''}
-                  onChange={(e) => {
-                    const date = e.target.value ? new Date(e.target.value).toISOString() : new Date().toISOString()
-                    field.onChange(date)
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <FormField
           control={form.control}
