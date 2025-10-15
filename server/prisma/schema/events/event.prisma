@@ -44,6 +44,9 @@ model Event {
   // Tasks related to this event
   tasks Task[]
 
+  // Payments for this event
+  payments Payment[]
+
   // Soft delete
   deletedAt   DateTime? @map("deleted_at")
   isDeleted   Boolean   @default(false) @map("is_deleted")

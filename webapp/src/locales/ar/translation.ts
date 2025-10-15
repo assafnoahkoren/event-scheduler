@@ -488,5 +488,31 @@ export const arTranslation: TranslationType = {
   },
   finances: {
     title: "المالية"
+  },
+  payments: {
+    title: "المدفوعات",
+    addPayment: "إضافة دفعة",
+    editPayment: "تعديل الدفعة",
+    noPayments: "لا توجد دفعات بعد",
+    noPaymentsDescription: "سجل المدفوعات المستلمة لهذا الحدث",
+    amount: "المبلغ",
+    amountPlaceholder: "0.00",
+    currency: "العملة",
+    description: "الوصف",
+    descriptionPlaceholder: "وصف الدفعة (اختياري)",
+    paymentDate: "تاريخ الدفع",
+    paymentMethod: "طريقة الدفع",
+    paymentMethodPlaceholder: "نقداً، بطاقة، تحويل، إلخ",
+    recordedBy: "سُجل بواسطة",
+    createSuccess: "تم تسجيل الدفعة بنجاح",
+    createError: "فشل تسجيل الدفعة",
+    updateSuccess: "تم تحديث الدفعة بنجاح",
+    updateError: "فشل تحديث الدفعة",
+    deleteSuccess: "تم حذف الدفعة بنجاح",
+    deleteError: "فشل حذف الدفعة",
+    confirmDeleteTitle: "حذف الدفعة",
+    confirmDeleteDescription: "هل أنت متأكد من حذف هذه الدفعة؟",
+    totalReceived: "إجمالي المستلم",
+    paymentsCount: "{{count}} دفعة(ات)"
   }
 } as const

@@ -486,5 +486,31 @@ export const enTranslation = {
   },
   finances: {
     title: "Finances"
+  },
+  payments: {
+    title: "Payments",
+    addPayment: "Add Payment",
+    editPayment: "Edit Payment",
+    noPayments: "No payments yet",
+    noPaymentsDescription: "Record payments received for this event",
+    amount: "Amount",
+    amountPlaceholder: "0.00",
+    currency: "Currency",
+    description: "Description",
+    descriptionPlaceholder: "Payment description (optional)",
+    paymentDate: "Payment Date",
+    paymentMethod: "Payment Method",
+    paymentMethodPlaceholder: "Cash, Card, Transfer, etc.",
+    recordedBy: "Recorded by",
+    createSuccess: "Payment recorded successfully",
+    createError: "Failed to record payment",
+    updateSuccess: "Payment updated successfully",
+    updateError: "Failed to update payment",
+    deleteSuccess: "Payment deleted successfully",
+    deleteError: "Failed to delete payment",
+    confirmDeleteTitle: "Delete Payment",
+    confirmDeleteDescription: "Are you sure you want to delete this payment?",
+    totalReceived: "Total Received",
+    paymentsCount: "{{count}} payment(s)"
   }
 } as const

@@ -14,6 +14,7 @@ import { filesRouter } from './files.router';
 import { aiRouter } from './ai.router';
 import { userActivityRouter } from './user-activity.router';
 import { taskRouter } from './task.router';
+import { paymentRouter } from './payment.router';
 
 export const appRouter = router({
   // Auth routes
@@ -57,6 +58,9 @@ export const appRouter = router({
 
   // Task management routes
   tasks: taskRouter,
+
+  // Payment routes
+  payments: paymentRouter,
 
   // Public routes
   ping: publicProcedure

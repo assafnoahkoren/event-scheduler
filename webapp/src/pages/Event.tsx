@@ -146,7 +146,7 @@ export function Event() {
             </TabsContent>
 
             <TabsContent value="finances" className="mt-6">
-              <EventFinancesTab />
+              {eventId && <EventFinancesTab eventId={eventId} />}
             </TabsContent>
 
             <TabsContent value="files" className="mt-6">

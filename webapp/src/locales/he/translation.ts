@@ -488,5 +488,31 @@ export const heTranslation: TranslationType = {
   },
   finances: {
     title: "כספים"
+  },
+  payments: {
+    title: "תשלומים",
+    addPayment: "הוסף תשלום",
+    editPayment: "ערוך תשלום",
+    noPayments: "אין תשלומים עדיין",
+    noPaymentsDescription: "רשום תשלומים שהתקבלו עבור אירוע זה",
+    amount: "סכום",
+    amountPlaceholder: "0.00",
+    currency: "מטבע",
+    description: "תיאור",
+    descriptionPlaceholder: "תיאור התשלום (אופציונלי)",
+    paymentDate: "תאריך תשלום",
+    paymentMethod: "אמצעי תשלום",
+    paymentMethodPlaceholder: "מזומן, כרטיס, העברה וכו'",
+    recordedBy: "נרשם על ידי",
+    createSuccess: "התשלום נרשם בהצלחה",
+    createError: "רישום התשלום נכשל",
+    updateSuccess: "התשלום עודכן בהצלחה",
+    updateError: "עדכון התשלום נכשל",
+    deleteSuccess: "התשלום נמחק בהצלחה",
+    deleteError: "מחיקת התשלום נכשלה",
+    confirmDeleteTitle: "מחיקת תשלום",
+    confirmDeleteDescription: "האם אתה בטוח שברצונך למחוק תשלום זה?",
+    totalReceived: "סה\"כ התקבל",
+    paymentsCount: "{{count}} תשלום(ים)"
   }
 } as const
