@@ -211,13 +211,17 @@ export function EventFinancesTab({ eventId }: EventFinancesTabProps) {
                       {payment.description && (
                         <p className="text-sm text-muted-foreground mb-1">{payment.description}</p>
                       )}
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        {payment.recorder && (
+                      {payment.recorder && (
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                           <span>
-                            {t('payments.recordedBy')}: {payment.recorder.firstName} {payment.recorder.lastName}
+                            {t('payments.recordedBy')}: {
+                              payment.recorder.firstName && payment.recorder.lastName
+                                ? `${payment.recorder.firstName} ${payment.recorder.lastName}`
+                                : payment.recorder.email
+                            }
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       <Button

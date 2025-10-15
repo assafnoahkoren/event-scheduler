@@ -115,6 +115,7 @@ export class PaymentService {
             id: true,
             firstName: true,
             lastName: true,
+            email: true,
           }
         }
       }
@@ -164,6 +165,7 @@ export class PaymentService {
             id: true,
             firstName: true,
             lastName: true,
+            email: true,
           }
         }
       },
@@ -205,6 +207,7 @@ export class PaymentService {
             id: true,
             firstName: true,
             lastName: true,
+            email: true,
           }
         }
       }
