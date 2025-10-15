@@ -153,8 +153,8 @@ export function EventTasksTab({ eventId }: EventTasksTabProps) {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+      <Card className='border-none'>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 pt-0">
           <CardTitle>{t('tasks.title')}</CardTitle>
           <Button onClick={handleAddTask} size="sm">
             <Plus className="h-4 w-4 me-2" />

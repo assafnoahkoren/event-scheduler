@@ -35,8 +35,8 @@ export function TaskCard({
   }
 
   return (
-    <div className="space-y-2">
-      <Card className={level > 0 ? 'ms-6 relative' : 'relative'}>
+    <div>
+      <Card className={level > 0 ? 'ms-6 relative rounded-t-none border-t-0' : 'relative'}>
         <CardContent className="p-4 cursor-pointer" onClick={() => onEdit(task)}>
           <div className="flex items-start gap-3">
             {/* Checkbox for quick complete/pending toggle */}
@@ -80,23 +80,25 @@ export function TaskCard({
             </div>
 
             {/* Action buttons */}
-            <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onAddSubtask(task.id)}
-                title={t('tasks.addSubtask')}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
+            {level === 0 && (
+              <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onAddSubtask(task.id)}
+                  title={t('tasks.addSubtask')}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
 
       {/* Render subtasks recursively */}
       {task.subtasks && task.subtasks.length > 0 && (
-        <div className="space-y-2">
+        <div>
           {task.subtasks.map((subtask) => (
             <TaskCard
               key={subtask.id}

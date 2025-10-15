@@ -170,6 +170,17 @@ class TaskService {
         parentTask: true,
         subtasks: {
           where: { isDeleted: false },
+          include: {
+            assignedTo: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                avatarUrl: true,
+              },
+            },
+          },
         },
         createdBy: {
           select: {
