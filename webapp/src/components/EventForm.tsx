@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -50,6 +51,7 @@ export function EventForm({
 }: EventFormProps) {
   const { t } = useTranslation()
   const utils = trpc.useUtils()
+  const descriptionRef = useRef<HTMLTextAreaElement>(null)
 
   // Form state
   const [type, setType] = useState<'EVENT' | 'PRE_EVENT_MEETING'>(event?.type || 'EVENT')
@@ -67,6 +69,19 @@ export function EventForm({
     event?.status || 'DRAFT'
   )
   const [showClientForm, setShowClientForm] = useState(false)
+
+  // Auto-resize textarea
+  useEffect(() => {
+    const textarea = descriptionRef.current
+    if (textarea) {
+      // Reset height to auto to get the correct scrollHeight
+      textarea.style.height = 'auto'
+      // Set the height to scrollHeight, but cap at max height (200px)
+      const scrollHeight = textarea.scrollHeight
+      const maxHeight = 200 // Maximum height in pixels
+      textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`
+    }
+  }, [description])
 
   // Fetch selected client details
   const { data: selectedClient } = trpc.clients.get.useQuery(
@@ -226,12 +241,15 @@ export function EventForm({
       {/* Description */}
       <div className="space-y-2">
         <Label htmlFor="description">{t('events.eventDescription')}</Label>
-        <Input
+        <Textarea
+          ref={descriptionRef}
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder={t('events.eventDescription')}
           disabled={isSubmitting}
+          className="resize-none overflow-auto min-h-[80px] transition-height"
+          style={{ height: '80px' }}
         />
       </div>
 
