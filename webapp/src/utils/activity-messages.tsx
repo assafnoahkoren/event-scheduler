@@ -16,6 +16,7 @@ export interface RenderContext {
   onClose?: () => void
   onNavigate?: (path: string) => void
   t: any
+  formatDate: (date: Date | string, formatStr?: string) => string
 }
 
 // Message type configuration

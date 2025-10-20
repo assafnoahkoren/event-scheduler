@@ -5,6 +5,7 @@ import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { cn } from '@/lib/utils'
 import { Loader2, TrendingUp, TrendingDown } from 'lucide-react'
+import { FormattedDate } from '@/components/ui/date'
 
 interface ProfitChartProps {
   startDate: string
@@ -48,11 +49,7 @@ export function ProfitChart({ startDate, endDate, className }: ProfitChartProps)
       return (
         <div className="bg-background border rounded-md p-2 shadow-sm">
           <p className="text-xs font-medium">
-            {new Date(data.date).toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric'
-            })}
+            <FormattedDate date={data.date} variant="full" />
           </p>
           <p className={cn(
             "text-xs font-semibold",

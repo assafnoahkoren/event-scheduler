@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { trpc } from '@/utils/trpc'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
+import { useDateFormatter } from '@/hooks/useDateFormatter'
 import { renderActivityNotification } from '@/utils/activity-messages'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '../../../../server/src/routers/appRouter'
@@ -22,6 +23,7 @@ export function NotificationsList({ onClose }: NotificationsListProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { currentOrg } = useCurrentOrg()
+  const { formatDate } = useDateFormatter()
 
   const { data: rawData, isLoading, error } = trpc.userActivity.getOrganizationActivity.useQuery(
     {
@@ -69,19 +71,24 @@ export function NotificationsList({ onClose }: NotificationsListProps) {
           ? `${activity.user.firstName} ${activity.user.lastName}`
           : activity.user.email
 
-        return renderActivityNotification(
-          activity.messageType,
-          activity.data,
-          {
-            activityId: activity.id,
-            userName,
-            userAvatarUrl: activity.user.avatarUrl,
-            isUnread,
-            createdAt: new Date(activity.createdAt),
-            onClose,
-            onNavigate: navigate,
-            t,
-          }
+        return (
+          <div key={activity.id}>
+            {renderActivityNotification(
+              activity.messageType,
+              activity.data,
+              {
+                activityId: activity.id,
+                userName,
+                userAvatarUrl: activity.user.avatarUrl,
+                isUnread,
+                createdAt: new Date(activity.createdAt),
+                onClose,
+                onNavigate: navigate,
+                t,
+                formatDate,
+              }
+            )}
+          </div>
         )
       })}
     </div>

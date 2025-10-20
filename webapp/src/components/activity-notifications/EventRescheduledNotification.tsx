@@ -1,5 +1,4 @@
 import { NotificationItem } from '@/components/notifications/NotificationItem'
-import { format } from 'date-fns'
 import type { NotificationRenderContext } from './EventCreatedNotification'
 import { CalendarClock } from 'lucide-react'
 
@@ -16,8 +15,8 @@ export function EventRescheduledNotification(
   context: NotificationRenderContext
 ) {
   const eventTitle = data?.title || 'Untitled Event'
-  const oldDate = data?.oldDate ? format(new Date(data.oldDate), 'MM/dd/yyyy') : 'Unknown Date'
-  const newDate = data?.newDate ? format(new Date(data.newDate), 'MM/dd/yyyy') : 'Unknown Date'
+  const oldDate = data?.oldDate ? context.formatDate(data.oldDate) : 'Unknown Date'
+  const newDate = data?.newDate ? context.formatDate(data.newDate) : 'Unknown Date'
 
   return (
     <NotificationItem

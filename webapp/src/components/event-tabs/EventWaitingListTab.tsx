@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Clock, Plus } from 'lucide-react'
-import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
+import { FormattedDate } from '@/components/ui/date'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { WaitingListForm, type WaitingListFormData } from '@/components/WaitingListForm'
 import {
@@ -169,7 +169,7 @@ export function EventWaitingListTab({ event }: EventWaitingListTabProps) {
                       </div>
                       <div className="text-sm text-muted-foreground space-y-1">
                         <div>{getRuleTypeLabel(entry)}</div>
-                        <div>{t('waitingList.expires')}: {format(new Date(entry.expirationDate), 'PPP')}</div>
+                        <div>{t('waitingList.expires')}: <FormattedDate date={entry.expirationDate} variant="full" /></div>
                         {entry.notes && (
                           <div className="mt-2 p-2 bg-muted rounded text-sm">{entry.notes}</div>
                         )}

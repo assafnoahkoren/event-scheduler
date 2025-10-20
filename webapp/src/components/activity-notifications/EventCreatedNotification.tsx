@@ -1,5 +1,4 @@
 import { NotificationItem } from '@/components/notifications/NotificationItem'
-import { format } from 'date-fns'
 import { CalendarPlus } from 'lucide-react'
 
 export interface EventCreatedData {
@@ -18,6 +17,7 @@ export interface NotificationRenderContext {
   onClose?: () => void
   onNavigate?: (path: string) => void
   t: any
+  formatDate: (date: Date | string, formatStr?: string) => string
 }
 
 export function EventCreatedNotification(
@@ -25,7 +25,7 @@ export function EventCreatedNotification(
   context: NotificationRenderContext
 ) {
   const eventTitle = data?.title || 'Untitled Event'
-  const eventDate = data?.startDate ? format(new Date(data.startDate), 'MM/dd/yyyy') : 'Unknown Date'
+  const eventDate = data?.startDate ? context.formatDate(data.startDate) : 'Unknown Date'
 
   return (
     <NotificationItem

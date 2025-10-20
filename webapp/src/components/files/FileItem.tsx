@@ -4,6 +4,7 @@ import { Download, Trash2, File, Image, FileText, X, Eye } from 'lucide-react'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { useTranslation } from 'react-i18next'
 import { FilePreview } from './FilePreview'
+import { FormattedDate } from '@/components/ui/date'
 
 interface FileItemProps {
   file: {
@@ -90,7 +91,7 @@ export function FileItem({
           <div className="flex-1 min-w-0">
             <div className="text-sm font-medium truncate">{file.originalName}</div>
             <div className="text-xs text-muted-foreground">
-              {formatFileSize(file.size || 0)} • {new Date(file.createdAt).toLocaleDateString()}
+              {formatFileSize(file.size || 0)} • <FormattedDate date={file.createdAt} />
             </div>
           </div>
         </div>

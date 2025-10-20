@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Settings, Users, Trash2, Loader2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { FormattedDate } from '@/components/ui/date'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -158,7 +159,7 @@ export function SiteSettings() {
                 <div className="space-y-2">
                   <Label>{t('sites.createdAt')}</Label>
                   <div className="text-sm text-muted-foreground">
-                    {new Date(currentSite.createdAt).toLocaleDateString()}
+                    <FormattedDate date={currentSite.createdAt} />
                   </div>
                 </div>
               </CardContent>
