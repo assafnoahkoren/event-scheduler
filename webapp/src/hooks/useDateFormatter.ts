@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { format, formatDistance, formatRelative, isToday, isTomorrow, isYesterday } from 'date-fns'
 import { enUS, he, ar } from 'date-fns/locale'
 import { useMemo } from 'react'
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 
 // Locale mapping
 const localeMap = {
@@ -17,21 +18,25 @@ type LocaleKey = keyof typeof localeMap
  */
 export function useDateFormatter() {
   const { i18n, t } = useTranslation()
+  const { currentOrg } = useCurrentOrg()
 
   const locale = useMemo(() => {
     const currentLang = i18n.language as LocaleKey
     return localeMap[currentLang] || enUS
   }, [i18n.language])
 
+  // Get date format from organization settings, fallback to 'PP' for localized default
+  const defaultDateFormat = currentOrg?.dateFormat || 'PP'
+
   /**
    * Format a date with a custom format string
    * @param date - Date to format
-   * @param formatStr - Format string (default: 'PP' for localized date)
+   * @param formatStr - Format string (default: organization's dateFormat or 'PP' for localized date)
    * @returns Formatted date string
    */
-  const formatDate = (date: Date | string, formatStr: string = 'PP') => {
+  const formatDate = (date: Date | string, formatStr?: string) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date
-    return format(dateObj, formatStr, { locale })
+    return format(dateObj, formatStr || defaultDateFormat, { locale })
   }
 
   /**
@@ -161,7 +166,8 @@ export function useDateFormatter() {
     formatRelativeDate,
     getDateLabel,
     formatISO,
-    locale // Export the locale in case components need it directly
+    locale, // Export the locale in case components need it directly
+    defaultDateFormat // Export the default date format from organization settings
   }
 }
 

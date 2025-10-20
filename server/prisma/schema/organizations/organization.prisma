@@ -12,6 +12,7 @@ model Organization {
   defaultCurrency String @default("USD") @map("default_currency")
   timezone        String @default("UTC")
   language        String @default("en") // en, ar, he
+  dateFormat      String @default("dd/MM/yy") @map("date_format") // Date format string for date-fns
 
   // Billing/Plan info
   plan        String   @default("free") // free, pro, enterprise
