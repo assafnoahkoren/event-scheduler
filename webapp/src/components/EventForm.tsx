@@ -1,10 +1,9 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -31,6 +30,7 @@ interface EventFormProps {
 }
 
 export interface EventFormData {
+  type: 'EVENT' | 'PRE_EVENT_MEETING'
   title: string
   description?: string
   startDate: Date
@@ -50,9 +50,9 @@ export function EventForm({
 }: EventFormProps) {
   const { t } = useTranslation()
   const utils = trpc.useUtils()
-  const descriptionRef = useRef<HTMLTextAreaElement>(null)
 
   // Form state
+  const [type, setType] = useState<'EVENT' | 'PRE_EVENT_MEETING'>(event?.type || 'EVENT')
   const [title, setTitle] = useState(event?.title || '')
   const [description, setDescription] = useState(event?.description || '')
   const [startDate, setStartDate] = useState(
@@ -67,19 +67,6 @@ export function EventForm({
     event?.status || 'DRAFT'
   )
   const [showClientForm, setShowClientForm] = useState(false)
-
-  // Auto-resize textarea
-  useEffect(() => {
-    const textarea = descriptionRef.current
-    if (textarea) {
-      // Reset height to auto to get the correct scrollHeight
-      textarea.style.height = 'auto'
-      // Set the height to scrollHeight, but cap at max height (200px)
-      const scrollHeight = textarea.scrollHeight
-      const maxHeight = 200 // Maximum height in pixels
-      textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`
-    }
-  }, [description])
 
   // Fetch selected client details
   const { data: selectedClient } = trpc.clients.get.useQuery(
@@ -112,6 +99,7 @@ export function EventForm({
     e.preventDefault()
 
     onSubmit({
+      type,
       title: title.trim(),
       description: description.trim() || undefined,
       startDate,
@@ -126,6 +114,29 @@ export function EventForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Event Type Button Group */}
+      <div className="space-y-2">
+        <Label>{t('events.eventType')}</Label>
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            type="button"
+            variant={type === 'EVENT' ? 'default' : 'outline'}
+            onClick={() => setType('EVENT')}
+            disabled={isSubmitting}
+          >
+            {t('events.event')}
+          </Button>
+          <Button
+            type="button"
+            variant={type === 'PRE_EVENT_MEETING' ? 'default' : 'outline'}
+            onClick={() => setType('PRE_EVENT_MEETING')}
+            disabled={isSubmitting}
+          >
+            {t('events.preEventMeeting')}
+          </Button>
+        </div>
+      </div>
+
       {/* Title */}
       <div className="space-y-2">
         <Label htmlFor="title">{t('events.eventTitle')}</Label>
@@ -178,47 +189,49 @@ export function EventForm({
       )}
 
       {/* Date and Status in same row */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className={type === 'PRE_EVENT_MEETING' ? '' : 'grid grid-cols-2 gap-4'}>
         {/* Date */}
         <div className="space-y-2">
           <Label htmlFor="date">{t('events.date')}</Label>
           <Input
             id="date"
-            type="date"
-            value={format(startDate, 'yyyy-MM-dd')}
+            type={type === 'PRE_EVENT_MEETING' ? 'datetime-local' : 'date'}
+            value={type === 'PRE_EVENT_MEETING'
+              ? format(startDate, "yyyy-MM-dd'T'HH:mm")
+              : format(startDate, 'yyyy-MM-dd')
+            }
             onChange={(e) => setStartDate(new Date(e.target.value))}
             disabled={isSubmitting}
           />
         </div>
 
-        {/* Status */}
-        <div className="space-y-2">
-          <Label htmlFor="status">{t('events.status')}</Label>
-          <Select value={status} onValueChange={(value: any) => setStatus(value)} disabled={isSubmitting}>
-            <SelectTrigger id="status">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="DRAFT">{t('events.draft')}</SelectItem>
-              <SelectItem value="SCHEDULED">{t('events.scheduled')}</SelectItem>
-              <SelectItem value="CANCELLED">{t('events.cancelled')}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Status - Only show for EVENT */}
+        {type === 'EVENT' && (
+          <div className="space-y-2">
+            <Label htmlFor="status">{t('events.status')}</Label>
+            <Select value={status} onValueChange={(value: any) => setStatus(value)} disabled={isSubmitting}>
+              <SelectTrigger id="status">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="DRAFT">{t('events.draft')}</SelectItem>
+                <SelectItem value="SCHEDULED">{t('events.scheduled')}</SelectItem>
+                <SelectItem value="CANCELLED">{t('events.cancelled')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
       {/* Description */}
       <div className="space-y-2">
         <Label htmlFor="description">{t('events.eventDescription')}</Label>
-        <Textarea
-          ref={descriptionRef}
+        <Input
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder={t('events.eventDescription')}
           disabled={isSubmitting}
-          className="resize-none overflow-auto min-h-[80px] transition-height"
-          style={{ height: '80px' }}
         />
       </div>
 

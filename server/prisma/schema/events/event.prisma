@@ -8,6 +8,7 @@ model Event {
   site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
   // Event details
+  type        EventType @default(EVENT)
   title       String?
   description String?
   location    String?
@@ -68,4 +69,9 @@ enum EventStatus {
   DRAFT
   SCHEDULED
   CANCELLED
+}
+
+enum EventType {
+  EVENT
+  PRE_EVENT_MEETING
 }

@@ -1,12 +1,13 @@
 import { z } from 'zod'
 import { prisma } from '../db'
-import { EventStatus } from '@prisma/client'
+import { EventStatus, EventType } from '@prisma/client'
 import { TRPCError } from '@trpc/server'
 import { userActivityService } from './user-activity.service'
 
 // Schemas
 export const createEventSchema = z.object({
   siteId: z.string().uuid(),
+  type: z.nativeEnum(EventType).default('EVENT'),
   title: z.string().optional(),
   description: z.string().optional(),
   clientId: z.string().uuid().optional(),
