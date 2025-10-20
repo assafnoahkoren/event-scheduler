@@ -253,6 +253,18 @@ export function EventForm({
         />
       </div>
 
+      <div className="space-y-2">
+        <Label htmlFor="stub">test</Label>
+        <Input
+          id="stub"
+          type="text"
+          value={''}
+          onChange={() => {}}
+          placeholder="Stub input"
+          disabled={isSubmitting}
+        />
+      </div>
+
       {/* Actions */}
       <div className="flex justify-end gap-2">
         {onCancel && (
