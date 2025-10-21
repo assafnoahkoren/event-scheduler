@@ -56,7 +56,7 @@ export function UpcomingEvents() {
 
   return (
     <Card className="w-full border-0 shadow-none">
-      <CardHeader>
+      <CardHeader className='pt-0'>
         <CardTitle>{t('events.upcomingEvents')}</CardTitle>
       </CardHeader>
       <CardContent className='px-0'>

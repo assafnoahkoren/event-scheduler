@@ -60,7 +60,7 @@ export function DraftEvents() {
 
   return (
     <Card className="w-full border-0 shadow-none">
-      <CardHeader>
+      <CardHeader className='pt-0'>
         <CardTitle>{t('events.draftEvents')}</CardTitle>
       </CardHeader>
       <CardContent className='p-0'>
