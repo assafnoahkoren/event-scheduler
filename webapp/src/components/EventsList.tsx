@@ -115,10 +115,20 @@ export function EventsList() {
           if (item.type === 'date') {
             const date = parseISO(item.date!)
             return (
-              <div className={`sticky top-0 z-10 bg-muted backdrop-blur-sm py-3 px-4 border-b mb-8`}>
-                <h3 className="font-semibold text-sm">
-                  {formatDate(date, 'EEEE, MMMM d, yyyy')}
-                </h3>
+              <div className="sticky top-0 z-10 bg-muted backdrop-blur-sm py-2 px-4 border-b mb-8">
+                <div className="flex justify-between items-center gap-1">
+                  <span className="text-xl font-bold">
+                    {formatDate(date, 'EEE')}
+                  </span>
+                  <div className="flex items-baseline gap-2">
+                    <h1 className="text-2xl font-bold">
+                      {formatDate(date, 'd')}
+                    </h1>
+                    <span className="text-sm text-muted-foreground">
+                      {formatDate(date, 'MMMM')}
+                    </span>
+                  </div>
+                </div>
               </div>
             )
           } else {
