@@ -32,7 +32,11 @@ export const heTranslation: TranslationType = {
     tomorrow: "מחר",
     yesterday: "אתמול",
     clear: "נקה",
-    selectAction: "בחר פעולה לביצוע"
+    selectAction: "בחר פעולה לביצוע",
+    grid: "קבוצות",
+    gridView: "תצוגת קבוצות",
+    list: "רשימה",
+    listView: "תצוגת רשימה"
   },
   calendar: {
     months: {

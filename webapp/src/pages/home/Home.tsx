@@ -8,12 +8,14 @@ import { WaitingListMatchNotification } from '@/components/WaitingListMatchNotif
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import { usePersistentState } from '@/hooks/usePersistentState'
+import { useTranslation } from 'react-i18next'
 import { LayoutGrid, List } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 type ViewMode = 'grid' | 'list'
 
 export function Home() {
+  const { t } = useTranslation()
   const { currentOrg, isLoading: orgLoading } = useCurrentOrg()
   const { currentSite } = useCurrentSite()
   const [viewMode, setViewMode] = usePersistentState<ViewMode>('home-view-mode', 'grid')
@@ -41,22 +43,24 @@ export function Home() {
           <EventCalendar />
 
           {/* View toggle buttons */}
-          <div className="flex justify-start gap-2 p-4">
+          <div className="flex w-full gap-2 p-4">
             <Button
               variant={viewMode === 'grid' ? 'default' : 'outline'}
-              size="icon"
               onClick={() => setViewMode('grid')}
-              aria-label="Grid view"
+              aria-label={t('common.gridView')}
+              className="flex-1"
             >
-              <LayoutGrid className="h-4 w-4" />
+              <LayoutGrid className="h-4 w-4 me-2" />
+              {t('common.grid')}
             </Button>
             <Button
               variant={viewMode === 'list' ? 'default' : 'outline'}
-              size="icon"
               onClick={() => setViewMode('list')}
-              aria-label="List view"
+              aria-label={t('common.listView')}
+              className="flex-1"
             >
-              <List className="h-4 w-4" />
+              <List className="h-4 w-4 me-2" />
+              {t('common.list')}
             </Button>
           </div>
 

@@ -32,7 +32,11 @@ export const arTranslation: TranslationType = {
     tomorrow: "غداً",
     yesterday: "أمس",
     clear: "مسح",
-    selectAction: "اختر إجراءً لتنفيذه"
+    selectAction: "اختر إجراءً لتنفيذه",
+    grid: "شبكة",
+    gridView: "عرض الشبكة",
+    list: "قائمة",
+    listView: "عرض القائمة"
   },
   calendar: {
     months: {

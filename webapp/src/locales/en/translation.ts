@@ -30,7 +30,11 @@ export const enTranslation = {
     tomorrow: "Tomorrow",
     yesterday: "Yesterday",
     clear: "Clear",
-    selectAction: "Select an action to perform"
+    selectAction: "Select an action to perform",
+    grid: "Grid",
+    gridView: "Grid view",
+    list: "List",
+    listView: "List view"
   },
   calendar: {
     months: {
