@@ -115,7 +115,7 @@ export function EventsList() {
           if (item.type === 'date') {
             const date = parseISO(item.date!)
             return (
-              <div className={`sticky top-0 z-10 bg-muted backdrop-blur-sm py-3 px-4 border-b mb-8 ${index === 0 ? '' : 'mt-8'}`}>
+              <div className={`sticky top-0 z-10 bg-muted backdrop-blur-sm py-3 px-4 border-b mb-8`}>
                 <h3 className="font-semibold text-sm">
                   {formatDate(date, 'EEEE, MMMM d, yyyy')}
                 </h3>
@@ -123,7 +123,7 @@ export function EventsList() {
             )
           } else {
             return (
-              <div className="px-4">
+              <div className="px-4 pb-4">
                 <EventCard event={item.event!} />
               </div>
             )
