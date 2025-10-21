@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { CreateFirstSite } from './CreateFirstSite'
 import { CreateFirstOrg } from './CreateFirstOrg'
 import { EventCalendar } from '@/components/EventCalendar'
@@ -8,6 +7,7 @@ import { EventsList } from '@/components/EventsList'
 import { WaitingListMatchNotification } from '@/components/WaitingListMatchNotification'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
+import { usePersistentState } from '@/hooks/usePersistentState'
 import { LayoutGrid, List } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -16,7 +16,7 @@ type ViewMode = 'grid' | 'list'
 export function Home() {
   const { currentOrg, isLoading: orgLoading } = useCurrentOrg()
   const { currentSite } = useCurrentSite()
-  const [viewMode, setViewMode] = useState<ViewMode>('grid')
+  const [viewMode, setViewMode] = usePersistentState<ViewMode>('home-view-mode', 'grid')
 
   // Show loading state while checking for organization
   if (orgLoading) {
