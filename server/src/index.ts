@@ -5,8 +5,8 @@ import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import { appRouter } from './routers/appRouter';
 import { createContext } from './trpc';
 
-const app = express();
 const PORT = process.env.PORT || 3000;
+const app = express();
 
 app.use(cors({
   origin: (_origin, callback) => {
