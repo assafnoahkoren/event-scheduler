@@ -31,6 +31,28 @@ const Drawer = ({
     identifier
   )
 
+  // Handle VisualViewport for mobile keyboard
+  React.useEffect(() => {
+    const setVH = () => {
+      const vv = window.visualViewport
+      const h = vv ? vv.height : window.innerHeight
+      document.documentElement.style.setProperty('--vvh', `${h * 0.01}px`)
+    }
+
+    setVH()
+
+    const vv = window.visualViewport
+    vv?.addEventListener('resize', setVH)
+    vv?.addEventListener('scroll', setVH)
+    window.addEventListener('resize', setVH)
+
+    return () => {
+      vv?.removeEventListener('resize', setVH)
+      vv?.removeEventListener('scroll', setVH)
+      window.removeEventListener('resize', setVH)
+    }
+  }, [])
+
   return (
     <DrawerPrimitive.Root
       shouldScaleBackground={shouldScaleBackground}
@@ -74,13 +96,18 @@ const DrawerContent = React.forwardRef<
       ref={ref}
       className={cn(
         "fixed end-0 bottom-0 z-50 flex w-full flex-col border-s bg-background rounded-t-2xl",
-        halfScreen ? "top-[50vh]" : "top-[50px]",
+        halfScreen
+          ? "[max-height:calc(var(--vvh,1vh)*50)]"
+          : "[max-height:calc(var(--vvh,1vh)*100-50px)]",
         className
       )}
+      style={{
+        paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))',
+      }}
       {...props}
     >
       <div className="mx-auto mt-4 h-1.5 w-12 flex-shrink-0 rounded-full bg-slate-300" />
-      <div className="max-w-2xl mx-auto w-full flex flex-col flex-1 min-h-0">
+      <div className="max-w-2xl mx-auto w-full flex flex-col flex-1 min-h-0 overflow-auto">
         {children}
       </div>
     </DrawerPrimitive.Content>
