@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { navigateToEvent } from '@/utils/navigation'
 import { RelativeTimeBadge } from '@/components/RelativeTimeBadge'
 import { DayOfWeekBadge } from '@/components/DayOfWeekBadge'
-import { useFormatDayMonth } from '@/hooks/useDateFormatter'
+import { useFormatDayMonth, useDateFormatter } from '@/hooks/useDateFormatter'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '../../../server/src/routers/appRouter'
 
@@ -22,6 +22,7 @@ export function EventCard({ event, onClick }: EventCardProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const formatDayMonth = useFormatDayMonth()
+  const { formatTime } = useDateFormatter()
 
   const handleClick = () => {
     if (onClick) {
@@ -61,14 +62,19 @@ export function EventCard({ event, onClick }: EventCardProps) {
 
   return (
     <div className="relative mt-3">
-      {/* Floating status badge */}
+      {/* Floating status/meeting badge */}
       <Badge
         className={cn(
           "absolute -top-3 start-3 z-10 text-xs",
-          getStatusColor(event.status)
+          event.type === 'PRE_EVENT_MEETING'
+            ? "bg-purple-100 text-purple-800 hover:bg-purple-100"
+            : getStatusColor(event.status)
         )}
       >
-        {getStatusLabel(event.status)}
+        {event.type === 'PRE_EVENT_MEETING'
+          ? `${t('events.preEventMeeting')} - ${formatTime(event.startDate)}`
+          : getStatusLabel(event.status)
+        }
       </Badge>
 
       {/* Floating chips container */}
