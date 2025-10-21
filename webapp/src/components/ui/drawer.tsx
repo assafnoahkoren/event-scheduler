@@ -96,12 +96,10 @@ const DrawerContent = React.forwardRef<
       ref={ref}
       className={cn(
         "fixed end-0 bottom-0 z-50 flex w-full flex-col border-s bg-background rounded-t-2xl",
-        halfScreen
-          ? "[max-height:calc(var(--vvh,1vh)*50)]"
-          : "[max-height:calc(var(--vvh,1vh)*100-50px)]",
         className
       )}
       style={{
+        top: halfScreen ? 'calc(var(--vvh, 1vh) * 50)' : '50px',
         paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))',
       }}
       {...props}
