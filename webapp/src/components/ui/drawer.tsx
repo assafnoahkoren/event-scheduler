@@ -46,10 +46,21 @@ const Drawer = ({
     vv?.addEventListener('scroll', setVH)
     window.addEventListener('resize', setVH)
 
+    // Handle input blur to catch keyboard dismiss
+    const handleBlur = () => {
+      // Use setTimeout to ensure keyboard has time to close
+      setTimeout(setVH, 100)
+      setTimeout(setVH, 300)
+    }
+
+    // Listen for all input blur events
+    document.addEventListener('focusout', handleBlur)
+
     return () => {
       vv?.removeEventListener('resize', setVH)
       vv?.removeEventListener('scroll', setVH)
       window.removeEventListener('resize', setVH)
+      document.removeEventListener('focusout', handleBlur)
     }
   }, [])
 
