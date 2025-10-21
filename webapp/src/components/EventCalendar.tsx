@@ -12,6 +12,7 @@ import { useLongPress } from 'use-long-press'
 import { useSwipeable } from 'react-swipeable'
 import { useUrlMonth } from '@/hooks/useUrlMonth'
 import { useIsRtl } from '@/hooks/useIsRtl'
+import { CalendarClock } from 'lucide-react'
 import {
   Drawer,
   DrawerContent,
@@ -138,6 +139,7 @@ export function EventCalendar() {
 
     createEventMutation.mutate({
       siteId: currentSite.id,
+      type: formData.type,
       title: formData.title,
       description: formData.description,
       startDate: formData.startDate.toISOString(),
@@ -158,6 +160,7 @@ export function EventCalendar() {
     const dayEvents = eventsByDate.get(format(date, 'yyyy-MM-dd')) || []
     const hasDraftEvent = dayEvents.some(event => event.status === 'DRAFT')
     const hasScheduledEvent = dayEvents.some(event => event.status !== 'DRAFT')
+    const hasPreEventMeeting = dayEvents.some(event => event.type === 'PRE_EVENT_MEETING')
     const eventCount = dayEvents.length
 
     // Handle click events manually to avoid mobile scroll interference
@@ -194,9 +197,9 @@ export function EventCalendar() {
       <div
         className={cn(
           "h-full w-full flex items-center justify-center relative p-1",
-          // Background colors for events
-          hasDraftEvent && isCurrentMonth && "bg-blue-100 hover:bg-blue-200",
-          !hasDraftEvent && hasScheduledEvent && isCurrentMonth && "bg-green-100 hover:bg-green-200",
+          // Background colors for events (only if not PRE_EVENT_MEETING)
+          !hasPreEventMeeting && hasDraftEvent && isCurrentMonth && "bg-blue-100 hover:bg-blue-200",
+          !hasPreEventMeeting && !hasDraftEvent && hasScheduledEvent && isCurrentMonth && "bg-green-100 hover:bg-green-200",
           // Disabled styling
           !isCurrentMonth && "text-gray-400",
           // Add cursor pointer for interactive cells
@@ -212,6 +215,9 @@ export function EventCalendar() {
         )}>
           {format(date, 'd')}
         </span>
+        {hasPreEventMeeting && isCurrentMonth && (
+          <CalendarClock className="absolute top-0.5 inset-x-0 mx-auto w-4 h-4 text-purple-600 pointer-events-none" />
+        )}
         {eventCount > 1 && isCurrentMonth && (
           <span className="absolute bottom-0.5 text-xs font-medium text-gray-600 pointer-events-none">
             ({eventCount})
