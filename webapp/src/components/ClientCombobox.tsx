@@ -133,64 +133,52 @@ export function ClientCombobox({
                 {t('common.loading')}
               </div>
             ) : clients.length === 0 ? (
-              <div className="py-2 text-center">
-                <p className="text-sm text-muted-foreground mb-2">
-                  {t('clients.noClientsFound')}
-                </p>
-                <div
-                  onClick={() => handleOpenClientDialog(searchQuery.trim())}
-                  className="mx-2 px-2 py-1.5 text-sm rounded-md hover:bg-accent hover:text-accent-foreground cursor-pointer flex items-center justify-center"
-                >
-                  <UserPlus className="me-2 h-4 w-4" />
-                  {searchQuery.trim()
-                    ? t('clients.createClient', { name: searchQuery.trim() })
-                    : t('clients.newClient')}
-                </div>
+              <div className="py-6 text-center text-sm text-muted-foreground">
+                {t('clients.noClientsFound')}
               </div>
             ) : (
-              <>
-                <div className="mb-1">
-                  {clients.map((client) => (
-                    <div
-                      key={client.id}
-                      onClick={() => handleSelect(client.id)}
-                      className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
-                    >
-                      <Check
-                        className={cn(
-                          'me-2 h-4 w-4',
-                          value === client.id ? 'opacity-100' : 'opacity-0'
-                        )}
-                      />
-                      <div className="flex-1">
-                        <div className="font-medium">{client.name}</div>
-                        {(client.email || client.phone) && (
-                          <div className="text-xs text-muted-foreground">
-                            {client.email && <span>{client.email}</span>}
-                            {client.email && client.phone && <span> • </span>}
-                            {client.phone && <span>{client.phone}</span>}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="border-t pt-1">
+              <div className="space-y-1">
+                {clients.map((client) => (
                   <div
-                    onClick={() => handleOpenClientDialog(searchQuery.trim())}
+                    key={client.id}
+                    onClick={() => handleSelect(client.id)}
                     className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                   >
-                    <UserPlus className="me-2 h-4 w-4" />
-                    {searchQuery.trim() && !clients.find(c => c.name.toLowerCase() === searchQuery.trim().toLowerCase())
-                      ? t('clients.createClient', { name: searchQuery.trim() })
-                      : t('clients.newClient')}
+                    <Check
+                      className={cn(
+                        'me-2 h-4 w-4',
+                        value === client.id ? 'opacity-100' : 'opacity-0'
+                      )}
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium">{client.name}</div>
+                      {(client.email || client.phone) && (
+                        <div className="text-xs text-muted-foreground">
+                          {client.email && <span>{client.email}</span>}
+                          {client.email && client.phone && <span> • </span>}
+                          {client.phone && <span>{client.phone}</span>}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </>
+                ))}
+              </div>
             )}
           </div>
         </PopoverContent>
       </Popover>
+
+        {/* Add new client button - outside popover */}
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={() => handleOpenClientDialog()}
+          disabled={disabled}
+          title={t('clients.newClient')}
+        >
+          <UserPlus className="h-4 w-4" />
+        </Button>
 
       {/* Action buttons for selected client */}
       {selectedClient && (
