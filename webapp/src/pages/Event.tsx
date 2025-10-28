@@ -81,6 +81,7 @@ export function Event() {
 
     updateMutation.mutate({
       id: eventId,
+      type: formData.type,
       title: formData.title,
       description: formData.description || undefined,
       startDate: formData.startDate.toISOString(),
