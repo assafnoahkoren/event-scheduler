@@ -424,23 +424,29 @@ export class UserActivityService {
       },
     })
 
-    const isOwner = await prisma.organization.findFirst({
+    const organization = await prisma.organization.findFirst({
       where: {
         id: input.organizationId,
         ownerId: userId,
       },
     })
 
-    if (!orgMember && !isOwner) {
+    if (!orgMember && !organization) {
       throw new TRPCError({
         code: 'FORBIDDEN',
         message: 'You do not have permission to view activities in this organization',
       })
     }
 
+    // Determine when the user joined (owners use org creation date, members use joinedAt)
+    const userJoinedAt = orgMember?.joinedAt ?? organization?.createdAt ?? new Date()
+
     const activities = await prisma.userActivity.findMany({
       where: {
         organizationId: input.organizationId,
+        createdAt: {
+          gte: userJoinedAt, // Only show activities after user joined
+        },
       },
       include: {
         user: {
@@ -478,6 +484,9 @@ export class UserActivityService {
     const total = await prisma.userActivity.count({
       where: {
         organizationId: input.organizationId,
+        createdAt: {
+          gte: userJoinedAt, // Only count activities after user joined
+        },
       },
     })
 
@@ -557,24 +566,30 @@ export class UserActivityService {
       },
     })
 
-    const isOwner = await prisma.organization.findFirst({
+    const organization = await prisma.organization.findFirst({
       where: {
         id: input.organizationId,
         ownerId: userId,
       },
     })
 
-    if (!orgMember && !isOwner) {
+    if (!orgMember && !organization) {
       throw new TRPCError({
         code: 'FORBIDDEN',
         message: 'You do not have permission to view activities in this organization',
       })
     }
 
-    // Count unviewed activities in the last 100 notifications
+    // Determine when the user joined (owners use org creation date, members use joinedAt)
+    const userJoinedAt = orgMember?.joinedAt ?? organization?.createdAt ?? new Date()
+
+    // Count unviewed activities in the last 100 notifications (only after user joined)
     const unviewedActivities = await prisma.userActivity.findMany({
       where: {
         organizationId: input.organizationId,
+        createdAt: {
+          gte: userJoinedAt, // Only count activities after user joined
+        },
         views: {
           none: {
             userId,
