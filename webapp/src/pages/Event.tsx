@@ -4,10 +4,11 @@ import { trpc } from '@/utils/trpc'
 import { useTranslation } from 'react-i18next'
 import { useIsRtl } from '@/hooks/useIsRtl'
 import { Button } from '@/components/ui/button'
-import { Clock, FileText, Package, Briefcase, CheckSquare, DollarSign, FolderOpen, Calendar } from 'lucide-react'
+import { Clock, FileText, Package, Briefcase, CheckSquare, DollarSign, FolderOpen, Calendar, User } from 'lucide-react'
 import { useFormatDayMonth } from '@/hooks/useDateFormatter'
 import { RelativeTimeBadge } from '@/components/RelativeTimeBadge'
 import { DayOfWeekBadge } from '@/components/DayOfWeekBadge'
+import { UserName } from '@/components/UserName'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -130,9 +131,17 @@ export function Event() {
               {event.title || t('events.untitledEvent')}
             </h1>
             <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Calendar className="w-3.5 h-3.5" />
-                <span>{formatDayMonth(event.startDate)}</span>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>{formatDayMonth(event.startDate)}</span>
+                </div>
+                {event.createdBy && (
+                  <div className="flex items-center gap-1">
+                    <User className="w-3.5 h-3.5" />
+                    <UserName userId={event.createdBy} />
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-2">
                 <DayOfWeekBadge date={event.startDate} />
