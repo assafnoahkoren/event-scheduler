@@ -148,6 +148,7 @@ export const arTranslation: TranslationType = {
     endDate: "تاريخ النهاية",
     allDay: "طوال اليوم",
     untitledEvent: "حدث بدون عنوان",
+    createdByOnDate: "أنشأه {{name}} في {{date}}",
     status: "الحالة",
     draft: "مسودة",
     scheduled: "مجدول",

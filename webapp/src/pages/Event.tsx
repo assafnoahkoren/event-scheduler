@@ -8,7 +8,7 @@ import { Clock, FileText, Package, Briefcase, CheckSquare, DollarSign, FolderOpe
 import { useFormatDayMonth } from '@/hooks/useDateFormatter'
 import { RelativeTimeBadge } from '@/components/RelativeTimeBadge'
 import { DayOfWeekBadge } from '@/components/DayOfWeekBadge'
-import { UserName } from '@/components/UserName'
+import { useUserName } from '@/hooks/useUserName'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,6 +51,8 @@ export function Event() {
     { id: eventId || '' },
     { enabled: !!eventId }
   )
+
+  const { name: creatorName } = useUserName(event?.createdBy)
 
   const utils = trpc.useUtils()
 
@@ -136,10 +138,15 @@ export function Event() {
                   <Calendar className="w-3.5 h-3.5" />
                   <span>{formatDayMonth(event.startDate)}</span>
                 </div>
-                {event.createdBy && (
+                {creatorName && (
                   <div className="flex items-center gap-1">
                     <User className="w-3.5 h-3.5" />
-                    <UserName userId={event.createdBy} />
+                    <span>
+                      {t('events.createdByOnDate', {
+                        name: creatorName,
+                        date: formatDayMonth(event.createdAt),
+                      })}
+                    </span>
                   </div>
                 )}
               </div>

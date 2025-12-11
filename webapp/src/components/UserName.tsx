@@ -1,5 +1,5 @@
-import { trpc } from '@/utils/trpc'
 import { cn } from '@/lib/utils'
+import { useUserName } from '@/hooks/useUserName'
 
 interface UserNameProps {
   userId: string
@@ -8,23 +8,15 @@ interface UserNameProps {
 }
 
 export function UserName({ userId, className, fallback = '...' }: UserNameProps) {
-  const { data: user, isLoading } = trpc.users.getById.useQuery(
-    { userId },
-    { enabled: !!userId }
-  )
+  const { name, isLoading } = useUserName(userId, fallback)
 
   if (isLoading) {
     return <span className={cn('text-muted-foreground', className)}>{fallback}</span>
   }
 
-  if (!user) {
+  if (!name) {
     return null
   }
 
-  const displayName =
-    user.firstName || user.lastName
-      ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
-      : user.email
-
-  return <span className={className}>{displayName}</span>
+  return <span className={className}>{name}</span>
 }

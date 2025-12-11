@@ -148,6 +148,7 @@ export const heTranslation: TranslationType = {
     endDate: "תאריך סיום",
     allDay: "כל היום",
     untitledEvent: "אירוע ללא כותרת",
+    createdByOnDate: "נוצר על ידי {{name}} ב-{{date}}",
     status: "סטטוס",
     draft: "מתעניין",
     scheduled: "סגור",

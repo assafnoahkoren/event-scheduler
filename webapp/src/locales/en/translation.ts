@@ -146,6 +146,7 @@ export const enTranslation = {
     endDate: "End Date",
     allDay: "All Day",
     untitledEvent: "Untitled Event",
+    createdByOnDate: "Created by {{name}} on {{date}}",
     status: "Status",
     draft: "Draft",
     scheduled: "Scheduled",
