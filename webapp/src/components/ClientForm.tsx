@@ -66,14 +66,8 @@ export function ClientForm({
     }
   }
 
-  // Check if this is being used inside another form (like EventForm)
-  const isNested = !!(onCancel && client)
-
-  const FormWrapper = isNested ? 'div' : 'form'
-  const formProps = isNested ? { className: "space-y-4" } : { onSubmit: handleSubmit, className: "space-y-4" }
-
   return (
-    <FormWrapper {...formProps}>
+    <div className="space-y-4">
       {/* Name */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
@@ -132,13 +126,13 @@ export function ClientForm({
           </Button>
         )}
         <Button
-          type={isNested ? "button" : "submit"}
-          onClick={isNested ? () => handleSubmit() : undefined}
+          type="button"
+          onClick={() => handleSubmit()}
           disabled={!isValid || isSubmitting}
         >
           {isSubmitting ? t('common.loading') : (client ? t('common.save') : t('common.create'))}
         </Button>
       </div>
-    </FormWrapper>
+    </div>
   )
 }
