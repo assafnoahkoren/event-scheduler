@@ -29,6 +29,7 @@ model Site {
   events      Event[]
   products    Product[]
   waitingListEntries WaitingListEntry[]
+  floorPlans  SiteFloorPlan[]
   // organizationPermissions OrganizationPermission[] // DEFERRED: Deep permissions for later
 
   @@index([ownerId])

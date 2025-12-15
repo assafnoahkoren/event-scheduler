@@ -32,6 +32,7 @@ model UploadedFile {
 
   // Relations
   uploadedByUser User @relation(fields: [uploadedBy], references: [id])
+  siteFloorPlan  SiteFloorPlan?
 
   // Indexes
   @@index([uploadedBy])

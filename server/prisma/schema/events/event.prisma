@@ -48,6 +48,9 @@ model Event {
   // Payments for this event
   payments Payment[]
 
+  // Floor plan layouts for this event
+  floorPlanLayouts EventFloorPlanLayout[]
+
   // Soft delete
   deletedAt   DateTime? @map("deleted_at")
   isDeleted   Boolean   @default(false) @map("is_deleted")

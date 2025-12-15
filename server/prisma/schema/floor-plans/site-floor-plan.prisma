@@ -1,0 +1,115 @@
+// SiteFloorPlan - Floor plan image with calibration data for a site
+
+model SiteFloorPlan {
+  id              String   @id @default(uuid())
+
+  // Site relationship
+  siteId          String   @map("site_id")
+  site            Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  // Floor plan details
+  name            String   // e.g., "Main Hall", "Garden Area", "Rooftop"
+
+  // Floor plan image
+  imageFileId     String?  @unique @map("image_file_id")
+  imageFile       UploadedFile? @relation(fields: [imageFileId], references: [id])
+
+  // Calibration - calculated from user drawing a reference line
+  pixelsPerMeter  Float?   @map("pixels_per_meter")  // null until calibrated
+
+  // Ordering for multiple floor plans
+  sortOrder       Int      @default(0) @map("sort_order")
+
+  // Soft delete
+  deletedAt       DateTime? @map("deleted_at")
+  isDeleted       Boolean   @default(false) @map("is_deleted")
+
+  // Timestamps
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  templates       FloorPlanTemplate[]      // Multiple templates per floor plan
+  eventLayouts    EventFloorPlanLayout[]
+
+  @@index([siteId])
+  @@index([sortOrder])
+  @@index([isDeleted])
+  @@index([siteId, isDeleted])
+  @@map("site_floor_plans")
+}
+
+// FloorPlanTemplate - A reusable layout template for a floor plan
+
+model FloorPlanTemplate {
+  id              String   @id @default(uuid())
+
+  // Floor plan relationship
+  floorPlanId     String   @map("floor_plan_id")
+  floorPlan       SiteFloorPlan @relation(fields: [floorPlanId], references: [id], onDelete: Cascade)
+
+  // Template details
+  name            String   // e.g., "Big Event (20 tables)", "Small Event", "Conference Setup"
+
+  // Ordering
+  sortOrder       Int      @default(0) @map("sort_order")
+
+  // Soft delete
+  deletedAt       DateTime? @map("deleted_at")
+  isDeleted       Boolean   @default(false) @map("is_deleted")
+
+  // Timestamps
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  components      FloorPlanTemplateComponent[]
+
+  @@index([floorPlanId])
+  @@index([sortOrder])
+  @@index([isDeleted])
+  @@index([floorPlanId, isDeleted])
+  @@map("floor_plan_templates")
+}
+
+// FloorPlanTemplateComponent - Components placed on a template
+
+model FloorPlanTemplateComponent {
+  id              String   @id @default(uuid())
+
+  // Template relationship
+  templateId      String   @map("template_id")
+  template        FloorPlanTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  // Component type relationship
+  componentTypeId String   @map("component_type_id")
+  componentType   ComponentType @relation(fields: [componentTypeId], references: [id])
+
+  // Position in meters (real-world coordinates)
+  xInMeters       Float    @map("x_in_meters")
+  yInMeters       Float    @map("y_in_meters")
+
+  // Dimensions in meters (can override component type defaults)
+  widthInMeters   Float    @map("width_in_meters")
+  heightInMeters  Float    @map("height_in_meters")
+
+  // Rotation in degrees (0-360)
+  rotation        Float    @default(0)
+
+  // Optional label (e.g., "Table 1", "VIP Section")
+  label           String?
+
+  // Soft delete
+  deletedAt       DateTime? @map("deleted_at")
+  isDeleted       Boolean   @default(false) @map("is_deleted")
+
+  // Timestamps
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([templateId])
+  @@index([componentTypeId])
+  @@index([isDeleted])
+  @@index([templateId, isDeleted])
+  @@map("floor_plan_template_components")
+}
