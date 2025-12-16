@@ -8,7 +8,7 @@ import { FloorPlanCard } from '@/components/floor-plans/FloorPlanCard'
 import { CreateFloorPlanDialog } from '@/components/floor-plans/CreateFloorPlanDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Plus, Search, Map } from 'lucide-react'
+import { Plus, Search, Map, Package } from 'lucide-react'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@/../../server/src/routers/appRouter'
 
@@ -51,10 +51,16 @@ export function FloorPlans() {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-bold">{t('floorPlans.title')}</h1>
-          <Button onClick={() => setCreateDialogOpen(true)}>
-            <Plus className="h-4 w-4 me-2" />
-            {t('floorPlans.newFloorPlan')}
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => navigate('/component-types')}>
+              <Package className="h-4 w-4 me-2" />
+              {t('componentTypes.title')}
+            </Button>
+            <Button onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="h-4 w-4 me-2" />
+              {t('floorPlans.newFloorPlan')}
+            </Button>
+          </div>
         </div>
 
         {/* Search */}

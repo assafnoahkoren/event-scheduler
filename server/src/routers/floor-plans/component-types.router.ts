@@ -11,6 +11,8 @@ const componentTypeDataSchema = z.object({
   defaultWidthInMeters: z.number().positive('Width must be positive'),
   defaultHeightInMeters: z.number().positive('Height must be positive'),
   occupancy: z.number().int().positive().optional(),
+  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Color must be a valid hex color').optional(),
+  borderRadius: z.number().min(0, 'Border radius must be non-negative').optional(),
 })
 
 const updateComponentTypeSchema = componentTypeDataSchema
@@ -19,6 +21,8 @@ const updateComponentTypeSchema = componentTypeDataSchema
     id: z.string().uuid(),
     icon: z.string().nullable().optional(),
     occupancy: z.number().int().positive().nullable().optional(),
+    color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Color must be a valid hex color').nullable().optional(),
+    borderRadius: z.number().min(0, 'Border radius must be non-negative').nullable().optional(),
   })
 
 export const componentTypesRouter = router({

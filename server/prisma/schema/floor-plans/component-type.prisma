@@ -19,6 +19,10 @@ model ComponentType {
   // Occupancy (e.g., 8 seats for a round table, 10 for rectangular)
   occupancy               Int?    @map("occupancy")
 
+  // Visual styling
+  color                   String?               // Hex color for component (e.g., "#FF5733")
+  borderRadius            Float?  @map("border_radius")  // Border radius in pixels (0 = square, higher = more rounded)
+
   // Soft delete
   deletedAt       DateTime? @map("deleted_at")
   isDeleted       Boolean   @default(false) @map("is_deleted")
