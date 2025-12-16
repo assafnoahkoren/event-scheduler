@@ -17,6 +17,7 @@ import { WaitingList } from '@/pages/waiting-list/WaitingList'
 import { ServiceProviders } from '@/pages/ServiceProviders'
 import { ServiceProviderDetail } from '@/pages/service-providers/ServiceProviderDetail'
 import { ServiceCategories } from '@/pages/ServiceCategories'
+import { FloorPlans } from '@/pages/floor-plans/FloorPlans'
 import '@/styles/swiper-custom.css'
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
             <Route path="/service-providers" element={<ServiceProviders />} />
             <Route path="/service-providers/:providerId" element={<ServiceProviderDetail />} />
             <Route path="/service-categories" element={<ServiceCategories />} />
+            <Route path="/floor-plans" element={<FloorPlans />} />
           </Route>
         </Route>
 

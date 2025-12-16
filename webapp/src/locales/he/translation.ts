@@ -522,5 +522,31 @@ export const heTranslation: TranslationType = {
     confirmDeleteDescription: "האם אתה בטוח שברצונך למחוק תשלום זה?",
     totalReceived: "סה\"כ התקבל",
     paymentsCount: "{{count}} תשלום(ים)"
+  },
+  floorPlans: {
+    title: "תוכניות קומה",
+    floorPlan: "תוכנית קומה",
+    newFloorPlan: "תוכנית קומה חדשה",
+    createFloorPlan: "צור תוכנית קומה",
+    editFloorPlan: "ערוך תוכנית קומה",
+    deleteFloorPlan: "מחק תוכנית קומה",
+    noFloorPlans: "אין תוכניות קומה עדיין",
+    noFloorPlansDescription: "העלה תוכניות מקום לעיצוב פריסות אירועים",
+    name: "שם",
+    namePlaceholder: "אולם ראשי, אזור גן וכו'",
+    searchFloorPlans: "חפש תוכניות קומה...",
+    noFloorPlansFound: "לא נמצאו תוכניות קומה",
+    tryAdjustingSearch: "נסה להתאים את החיפוש",
+    confirmDeleteTitle: "מחיקת תוכנית קומה",
+    confirmDeleteDescription: "האם אתה בטוח שברצונך למחוק תוכנית קומה זו? כל התבניות המשויכות יימחקו גם כן.",
+    createSuccess: "תוכנית הקומה נוצרה בהצלחה",
+    createError: "יצירת תוכנית הקומה נכשלה",
+    updateSuccess: "תוכנית הקומה עודכנה בהצלחה",
+    updateError: "עדכון תוכנית הקומה נכשל",
+    deleteSuccess: "תוכנית הקומה נמחקה בהצלחה",
+    deleteError: "מחיקת תוכנית הקומה נכשלה",
+    templates: "תבניות",
+    notCalibrated: "לא מכויל",
+    calibrated: "מכויל"
   }
 } as const

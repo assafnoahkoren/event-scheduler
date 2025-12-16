@@ -520,5 +520,31 @@ export const enTranslation = {
     confirmDeleteDescription: "Are you sure you want to delete this payment?",
     totalReceived: "Total Received",
     paymentsCount: "{{count}} payment(s)"
+  },
+  floorPlans: {
+    title: "Floor Plans",
+    floorPlan: "Floor Plan",
+    newFloorPlan: "New Floor Plan",
+    createFloorPlan: "Create Floor Plan",
+    editFloorPlan: "Edit Floor Plan",
+    deleteFloorPlan: "Delete Floor Plan",
+    noFloorPlans: "No floor plans yet",
+    noFloorPlansDescription: "Upload venue floor plans to design event layouts",
+    name: "Name",
+    namePlaceholder: "Main Hall, Garden Area, etc.",
+    searchFloorPlans: "Search floor plans...",
+    noFloorPlansFound: "No floor plans found",
+    tryAdjustingSearch: "Try adjusting your search",
+    confirmDeleteTitle: "Delete Floor Plan",
+    confirmDeleteDescription: "Are you sure you want to delete this floor plan? All templates associated with it will also be deleted.",
+    createSuccess: "Floor plan created successfully",
+    createError: "Failed to create floor plan",
+    updateSuccess: "Floor plan updated successfully",
+    updateError: "Failed to update floor plan",
+    deleteSuccess: "Floor plan deleted successfully",
+    deleteError: "Failed to delete floor plan",
+    templates: "templates",
+    notCalibrated: "Not calibrated",
+    calibrated: "Calibrated"
   }
 } as const

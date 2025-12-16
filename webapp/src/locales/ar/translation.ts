@@ -522,5 +522,31 @@ export const arTranslation: TranslationType = {
     confirmDeleteDescription: "هل أنت متأكد من حذف هذه الدفعة؟",
     totalReceived: "إجمالي المستلم",
     paymentsCount: "{{count}} دفعة(ات)"
+  },
+  floorPlans: {
+    title: "مخططات الطوابق",
+    floorPlan: "مخطط الطابق",
+    newFloorPlan: "مخطط طابق جديد",
+    createFloorPlan: "إنشاء مخطط طابق",
+    editFloorPlan: "تعديل مخطط الطابق",
+    deleteFloorPlan: "حذف مخطط الطابق",
+    noFloorPlans: "لا توجد مخططات طوابق بعد",
+    noFloorPlansDescription: "قم برفع مخططات الأماكن لتصميم تخطيطات الأحداث",
+    name: "الاسم",
+    namePlaceholder: "القاعة الرئيسية، منطقة الحديقة، إلخ",
+    searchFloorPlans: "البحث في مخططات الطوابق...",
+    noFloorPlansFound: "لم يتم العثور على مخططات طوابق",
+    tryAdjustingSearch: "حاول تعديل البحث",
+    confirmDeleteTitle: "حذف مخطط الطابق",
+    confirmDeleteDescription: "هل أنت متأكد من حذف مخطط الطابق هذا؟ سيتم أيضاً حذف جميع القوالب المرتبطة به.",
+    createSuccess: "تم إنشاء مخطط الطابق بنجاح",
+    createError: "فشل إنشاء مخطط الطابق",
+    updateSuccess: "تم تحديث مخطط الطابق بنجاح",
+    updateError: "فشل تحديث مخطط الطابق",
+    deleteSuccess: "تم حذف مخطط الطابق بنجاح",
+    deleteError: "فشل حذف مخطط الطابق",
+    templates: "قوالب",
+    notCalibrated: "غير معاير",
+    calibrated: "معاير"
   }
 } as const
