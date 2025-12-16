@@ -16,6 +16,7 @@ import { userActivityRouter } from './user-activity.router';
 import { taskRouter } from './task.router';
 import { paymentRouter } from './payment.router';
 import { userRouter } from './user.router';
+import { floorPlanRouter } from './floor-plans';
 
 export const appRouter = router({
   // Auth routes
@@ -65,6 +66,9 @@ export const appRouter = router({
 
   // User routes
   users: userRouter,
+
+  // Floor plan feature (componentTypes, siteFloorPlans, templates, eventLayouts)
+  floorPlans: floorPlanRouter,
 
   // Public routes
   ping: publicProcedure
