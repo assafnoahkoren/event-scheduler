@@ -34,7 +34,11 @@ export const enTranslation = {
     grid: "Grid",
     gridView: "Grid view",
     list: "List",
-    listView: "List view"
+    listView: "List view",
+    reset: "Reset",
+    zoomIn: "Zoom in",
+    zoomOut: "Zoom out",
+    resetZoom: "Reset zoom"
   },
   calendar: {
     months: {
@@ -545,6 +549,20 @@ export const enTranslation = {
     deleteError: "Failed to delete floor plan",
     templates: "templates",
     notCalibrated: "Not calibrated",
-    calibrated: "Calibrated"
+    calibrated: "Calibrated",
+    calibrate: "Calibrate",
+    recalibrate: "Recalibrate",
+    calibrationTitle: "Calibrate Floor Plan",
+    calibrationDescription: "Set the scale by drawing a line on the floor plan and entering its real-world distance.",
+    calibrationInstructions: "Click two points on the floor plan to draw a reference line, then enter the actual distance in meters.",
+    realDistance: "Real Distance",
+    meters: "meters",
+    calculatedScale: "Calculated Scale",
+    pixelsPerMeterUnit: "px/m",
+    currentCalibration: "Current calibration",
+    calibrationSuccess: "Floor plan calibrated successfully",
+    calibrationError: "Failed to calibrate floor plan",
+    applyCalibration: "Apply Calibration",
+    panHint: "Hold Alt + drag to pan"
   }
 } as const

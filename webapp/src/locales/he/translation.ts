@@ -36,7 +36,11 @@ export const heTranslation: TranslationType = {
     grid: "קבוצות",
     gridView: "תצוגת קבוצות",
     list: "רשימה",
-    listView: "תצוגת רשימה"
+    listView: "תצוגת רשימה",
+    reset: "איפוס",
+    zoomIn: "הגדל",
+    zoomOut: "הקטן",
+    resetZoom: "איפוס תצוגה"
   },
   calendar: {
     months: {
@@ -547,6 +551,20 @@ export const heTranslation: TranslationType = {
     deleteError: "מחיקת תוכנית הקומה נכשלה",
     templates: "תבניות",
     notCalibrated: "לא מכויל",
-    calibrated: "מכויל"
+    calibrated: "מכויל",
+    calibrate: "כיול",
+    recalibrate: "כייל מחדש",
+    calibrationTitle: "כיול תוכנית קומה",
+    calibrationDescription: "הגדר את הקנה מידה על ידי ציור קו על תוכנית הקומה והזנת המרחק האמיתי.",
+    calibrationInstructions: "לחץ על שתי נקודות בתוכנית הקומה כדי לצייר קו ייחוס, ואז הזן את המרחק בפועל במטרים.",
+    realDistance: "מרחק אמיתי",
+    meters: "מטרים",
+    calculatedScale: "קנה מידה מחושב",
+    pixelsPerMeterUnit: "פיקסל/מ'",
+    currentCalibration: "כיול נוכחי",
+    calibrationSuccess: "תוכנית הקומה כויילה בהצלחה",
+    calibrationError: "כיול תוכנית הקומה נכשל",
+    applyCalibration: "החל כיול",
+    panHint: "החזק Alt + גרור להזזה"
   }
 } as const

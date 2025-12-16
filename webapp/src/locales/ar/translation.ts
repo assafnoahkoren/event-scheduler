@@ -36,7 +36,11 @@ export const arTranslation: TranslationType = {
     grid: "شبكة",
     gridView: "عرض الشبكة",
     list: "قائمة",
-    listView: "عرض القائمة"
+    listView: "عرض القائمة",
+    reset: "إعادة تعيين",
+    zoomIn: "تكبير",
+    zoomOut: "تصغير",
+    resetZoom: "إعادة تعيين التكبير"
   },
   calendar: {
     months: {
@@ -547,6 +551,20 @@ export const arTranslation: TranslationType = {
     deleteError: "فشل حذف مخطط الطابق",
     templates: "قوالب",
     notCalibrated: "غير معاير",
-    calibrated: "معاير"
+    calibrated: "معاير",
+    calibrate: "معايرة",
+    recalibrate: "إعادة المعايرة",
+    calibrationTitle: "معايرة مخطط الطابق",
+    calibrationDescription: "اضبط المقياس برسم خط على مخطط الطابق وإدخال المسافة الحقيقية.",
+    calibrationInstructions: "انقر على نقطتين في مخطط الطابق لرسم خط مرجعي، ثم أدخل المسافة الفعلية بالأمتار.",
+    realDistance: "المسافة الحقيقية",
+    meters: "متر",
+    calculatedScale: "المقياس المحسوب",
+    pixelsPerMeterUnit: "بكسل/متر",
+    currentCalibration: "المعايرة الحالية",
+    calibrationSuccess: "تمت معايرة مخطط الطابق بنجاح",
+    calibrationError: "فشل معايرة مخطط الطابق",
+    applyCalibration: "تطبيق المعايرة",
+    panHint: "اضغط Alt + اسحب للتحريك"
   }
 } as const
