@@ -595,5 +595,30 @@ export const enTranslation = {
     deleteError: "Failed to delete component type",
     confirmDeleteTitle: "Delete Component Type",
     confirmDeleteDescription: "Are you sure you want to delete {{name}}? This action cannot be undone."
+  },
+  templateEditor: {
+    components: "Components",
+    properties: "Properties",
+    type: "Type",
+    position: "Position",
+    size: "Size",
+    label: "Label",
+    rotation: "Rotation",
+    editComponent: "Edit Component",
+    notFound: "Template not found",
+    componentAdded: "Component added",
+    componentAddError: "Failed to add component",
+    componentUpdated: "Component updated",
+    componentUpdateError: "Failed to update component",
+    componentDeleted: "Component deleted",
+    componentDeleteError: "Failed to delete component",
+    changesSaved: "Changes saved",
+    saveError: "Failed to save changes",
+    newTemplate: "New Template",
+    createTemplate: "Create Template",
+    templateName: "Template Name",
+    templateNamePlaceholder: "Enter template name",
+    noTemplates: "No templates yet",
+    noTemplatesDescription: "Create a template to design event layouts"
   }
 } as const

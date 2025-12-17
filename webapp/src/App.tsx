@@ -20,6 +20,7 @@ import { ServiceCategories } from '@/pages/ServiceCategories'
 import { FloorPlans } from '@/pages/floor-plans/FloorPlans'
 import { FloorPlanDetail } from '@/pages/floor-plans/FloorPlanDetail'
 import { ComponentTypes } from '@/pages/floor-plans/ComponentTypes'
+import { TemplateEditor } from '@/pages/floor-plans/TemplateEditor'
 import '@/styles/swiper-custom.css'
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
             <Route path="/service-categories" element={<ServiceCategories />} />
             <Route path="/floor-plans" element={<FloorPlans />} />
             <Route path="/floor-plans/:floorPlanId" element={<FloorPlanDetail />} />
+            <Route path="/templates/:templateId" element={<TemplateEditor />} />
             <Route path="/component-types" element={<ComponentTypes />} />
           </Route>
         </Route>

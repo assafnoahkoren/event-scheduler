@@ -17,7 +17,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { ArrowLeft, Upload, Trash2, Image, Save, Loader2 } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import { ArrowLeft, Upload, Trash2, Image, Save, Loader2, Plus, Layout, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { CalibrationTool } from '@/components/floor-plans/CalibrationTool'
 import { useSignedUrl } from '@/hooks/useSignedUrl'
@@ -33,6 +40,8 @@ export function FloorPlanDetail() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
   const [initialized, setInitialized] = useState(false)
+  const [showNewTemplateDialog, setShowNewTemplateDialog] = useState(false)
+  const [newTemplateName, setNewTemplateName] = useState('')
 
   const utils = trpc.useUtils()
 
@@ -90,6 +99,19 @@ export function FloorPlanDetail() {
     onError: (error) => {
       toast.error(t('files.uploadError'), { description: error.message })
       setIsUploading(false)
+    },
+  })
+
+  const createTemplateMutation = trpc.floorPlans.templates.create.useMutation({
+    onSuccess: (data) => {
+      toast.success(t('componentTypes.createSuccess'))
+      setShowNewTemplateDialog(false)
+      setNewTemplateName('')
+      utils.floorPlans.siteFloorPlans.get.invalidate({ id: floorPlanId! })
+      navigate(`/templates/${data.id}`)
+    },
+    onError: (error) => {
+      toast.error(t('componentTypes.createError'), { description: error.message })
     },
   })
 
@@ -168,6 +190,14 @@ export function FloorPlanDetail() {
     updateMutation.mutate({
       id: floorPlanId,
       imageFileId: null,
+    })
+  }
+
+  const handleCreateTemplate = () => {
+    if (!floorPlanId || !newTemplateName.trim()) return
+    createTemplateMutation.mutate({
+      floorPlanId,
+      name: newTemplateName.trim(),
     })
   }
 
@@ -326,6 +356,61 @@ export function FloorPlanDetail() {
           </CardContent>
         </Card>
 
+        {/* Templates */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>{t('floorPlans.templates')}</span>
+              <Button
+                size="sm"
+                onClick={() => setShowNewTemplateDialog(true)}
+                disabled={!floorPlan.imageFile || !floorPlan.pixelsPerMeter}
+              >
+                <Plus className="h-4 w-4 me-2" />
+                {t('templateEditor.newTemplate')}
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!floorPlan.imageFile ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                {t('floorPlans.noFloorPlansDescription')}
+              </p>
+            ) : !floorPlan.pixelsPerMeter ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                {t('floorPlans.notCalibrated')} - {t('floorPlans.calibrationInstructions')}
+              </p>
+            ) : floorPlan.templates && floorPlan.templates.length > 0 ? (
+              <div className="space-y-2">
+                {floorPlan.templates.map((template) => (
+                  <div
+                    key={template.id}
+                    className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 cursor-pointer transition-colors"
+                    onClick={() => navigate(`/templates/${template.id}`)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Layout className="h-5 w-5 text-muted-foreground" />
+                      <div>
+                        <p className="font-medium">{template.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {template.components?.length || 0} {t('templateEditor.components').toLowerCase()}
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground rtl:rotate-180" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Layout className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground mb-2">{t('templateEditor.noTemplates')}</p>
+                <p className="text-sm text-muted-foreground">{t('templateEditor.noTemplatesDescription')}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Danger Zone */}
         <Card className="border-destructive/50">
           <CardHeader>
@@ -372,6 +457,47 @@ export function FloorPlanDetail() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* New Template Dialog */}
+      <Dialog open={showNewTemplateDialog} onOpenChange={setShowNewTemplateDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('templateEditor.createTemplate')}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="templateName">{t('templateEditor.templateName')}</Label>
+              <Input
+                id="templateName"
+                value={newTemplateName}
+                onChange={(e) => setNewTemplateName(e.target.value)}
+                placeholder={t('templateEditor.templateNamePlaceholder')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newTemplateName.trim()) {
+                    handleCreateTemplate()
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowNewTemplateDialog(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              onClick={handleCreateTemplate}
+              disabled={!newTemplateName.trim() || createTemplateMutation.isPending}
+            >
+              {createTemplateMutation.isPending ? (
+                <Loader2 className="h-4 w-4 me-2 animate-spin" />
+              ) : (
+                <Plus className="h-4 w-4 me-2" />
+              )}
+              {t('common.create')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

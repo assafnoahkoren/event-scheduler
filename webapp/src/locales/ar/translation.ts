@@ -597,5 +597,30 @@ export const arTranslation: TranslationType = {
     deleteError: "فشل حذف نوع المكون",
     confirmDeleteTitle: "حذف نوع المكون",
     confirmDeleteDescription: "هل أنت متأكد من حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء."
+  },
+  templateEditor: {
+    components: "المكونات",
+    properties: "الخصائص",
+    type: "النوع",
+    position: "الموقع",
+    size: "الحجم",
+    label: "التسمية",
+    rotation: "الدوران",
+    editComponent: "تحرير المكون",
+    notFound: "القالب غير موجود",
+    componentAdded: "تمت إضافة المكون",
+    componentAddError: "فشل إضافة المكون",
+    componentUpdated: "تم تحديث المكون",
+    componentUpdateError: "فشل تحديث المكون",
+    componentDeleted: "تم حذف المكون",
+    componentDeleteError: "فشل حذف المكون",
+    changesSaved: "تم حفظ التغييرات",
+    saveError: "فشل حفظ التغييرات",
+    newTemplate: "قالب جديد",
+    createTemplate: "إنشاء قالب",
+    templateName: "اسم القالب",
+    templateNamePlaceholder: "أدخل اسم القالب",
+    noTemplates: "لا توجد قوالب بعد",
+    noTemplatesDescription: "أنشئ قالباً لتصميم تخطيطات الأحداث"
   }
 } as const

@@ -597,5 +597,30 @@ export const heTranslation: TranslationType = {
     deleteError: "מחיקת סוג הרכיב נכשלה",
     confirmDeleteTitle: "מחיקת סוג רכיב",
     confirmDeleteDescription: "האם אתה בטוח שברצונך למחוק את {{name}}? פעולה זו אינה ניתנת לביטול."
+  },
+  templateEditor: {
+    components: "רכיבים",
+    properties: "מאפיינים",
+    type: "סוג",
+    position: "מיקום",
+    size: "גודל",
+    label: "תווית",
+    rotation: "סיבוב",
+    editComponent: "ערוך רכיב",
+    notFound: "התבנית לא נמצאה",
+    componentAdded: "הרכיב נוסף",
+    componentAddError: "הוספת הרכיב נכשלה",
+    componentUpdated: "הרכיב עודכן",
+    componentUpdateError: "עדכון הרכיב נכשל",
+    componentDeleted: "הרכיב נמחק",
+    componentDeleteError: "מחיקת הרכיב נכשלה",
+    changesSaved: "השינויים נשמרו",
+    saveError: "שמירת השינויים נכשלה",
+    newTemplate: "תבנית חדשה",
+    createTemplate: "צור תבנית",
+    templateName: "שם התבנית",
+    templateNamePlaceholder: "הזן שם תבנית",
+    noTemplates: "אין תבניות עדיין",
+    noTemplatesDescription: "צור תבנית לעיצוב פריסות אירועים"
   }
 } as const

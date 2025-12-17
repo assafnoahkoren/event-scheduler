@@ -109,7 +109,7 @@ export const templatesRouter = router({
   get: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { template } = await getTemplateWithSiteAccess(ctx.user.id, input.id)
+      await getTemplateWithSiteAccess(ctx.user.id, input.id)
 
       const fullTemplate = await prisma.floorPlanTemplate.findFirst({
         where: {
@@ -131,7 +131,14 @@ export const templatesRouter = router({
         },
       })
 
-      return fullTemplate ?? template
+      if (!fullTemplate) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Template not found',
+        })
+      }
+
+      return fullTemplate
     }),
 
   // Create a new template
