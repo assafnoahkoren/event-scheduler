@@ -39,6 +39,19 @@ type PlacedComponent = TemplateComponent & {
   isDragging?: boolean
 }
 
+// Snap threshold in meters
+const SNAP_THRESHOLD_METERS = 0.1
+
+type SnapLine = {
+  type: 'horizontal' | 'vertical'
+  position: number // in pixels
+  // For gap indicators
+  isGap?: boolean
+  gapStart?: number // in pixels
+  gapEnd?: number // in pixels
+  gapSizeMeters?: number // gap size in meters for display
+}
+
 export function TemplateEditor() {
   const { templateId } = useParams<{ templateId: string }>()
   const { t } = useTranslation()
@@ -64,6 +77,9 @@ export function TemplateEditor() {
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [editingComponent, setEditingComponent] = useState<PlacedComponent | null>(null)
   const [editForm, setEditForm] = useState({ label: '', rotation: '0' })
+
+  // Snap lines state
+  const [snapLines, setSnapLines] = useState<SnapLine[]>([])
 
   // Image dimensions
   const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null)
@@ -249,6 +265,253 @@ export function TemplateEditor() {
     setDraggedComponentType(null)
   }
 
+  // Calculate snap points for a component being dragged
+  const calculateSnap = useCallback((
+    draggedId: string,
+    proposedX: number,
+    proposedY: number,
+    draggedWidth: number,
+    draggedHeight: number
+  ) => {
+    const newSnapLines: SnapLine[] = []
+    let snappedX = proposedX
+    let snappedY = proposedY
+    let hasXSnap = false
+    let hasYSnap = false
+
+    // Get edges of the dragged component (center, left, right, top, bottom)
+    const draggedLeft = proposedX - draggedWidth / 2
+    const draggedRight = proposedX + draggedWidth / 2
+    const draggedTop = proposedY - draggedHeight / 2
+    const draggedBottom = proposedY + draggedHeight / 2
+    const draggedCenterX = proposedX
+    const draggedCenterY = proposedY
+
+    // Collect all existing gaps between components (for gap matching)
+    const horizontalGaps: number[] = [] // gaps in X direction
+    const verticalGaps: number[] = [] // gaps in Y direction
+
+    const otherComponents = localComponents.filter(c => c.id !== draggedId)
+
+    // Calculate gaps between all pairs of other components
+    for (let i = 0; i < otherComponents.length; i++) {
+      for (let j = i + 1; j < otherComponents.length; j++) {
+        const a = otherComponents[i]
+        const b = otherComponents[j]
+
+        const aLeft = a.xInMeters - a.widthInMeters / 2
+        const aRight = a.xInMeters + a.widthInMeters / 2
+        const aTop = a.yInMeters - a.heightInMeters / 2
+        const aBottom = a.yInMeters + a.heightInMeters / 2
+
+        const bLeft = b.xInMeters - b.widthInMeters / 2
+        const bRight = b.xInMeters + b.widthInMeters / 2
+        const bTop = b.yInMeters - b.heightInMeters / 2
+        const bBottom = b.yInMeters + b.heightInMeters / 2
+
+        // Horizontal gap (X direction)
+        if (aRight < bLeft) {
+          horizontalGaps.push(bLeft - aRight)
+        } else if (bRight < aLeft) {
+          horizontalGaps.push(aLeft - bRight)
+        }
+
+        // Vertical gap (Y direction)
+        if (aBottom < bTop) {
+          verticalGaps.push(bTop - aBottom)
+        } else if (bBottom < aTop) {
+          verticalGaps.push(aTop - bBottom)
+        }
+      }
+    }
+
+    // Check against all other components
+    for (const other of localComponents) {
+      if (other.id === draggedId) continue
+
+      const otherWidth = other.widthInMeters
+      const otherHeight = other.heightInMeters
+      const otherLeft = other.xInMeters - otherWidth / 2
+      const otherRight = other.xInMeters + otherWidth / 2
+      const otherTop = other.yInMeters - otherHeight / 2
+      const otherBottom = other.yInMeters + otherHeight / 2
+      const otherCenterX = other.xInMeters
+      const otherCenterY = other.yInMeters
+
+      // Vertical alignment checks (X axis)
+      // Left to left
+      if (Math.abs(draggedLeft - otherLeft) < SNAP_THRESHOLD_METERS) {
+        snappedX = otherLeft + draggedWidth / 2
+        newSnapLines.push({ type: 'vertical', position: metersToPixels(otherLeft) })
+        hasXSnap = true
+      }
+      // Right to right
+      else if (Math.abs(draggedRight - otherRight) < SNAP_THRESHOLD_METERS) {
+        snappedX = otherRight - draggedWidth / 2
+        newSnapLines.push({ type: 'vertical', position: metersToPixels(otherRight) })
+        hasXSnap = true
+      }
+      // Center to center (X)
+      else if (Math.abs(draggedCenterX - otherCenterX) < SNAP_THRESHOLD_METERS) {
+        snappedX = otherCenterX
+        newSnapLines.push({ type: 'vertical', position: metersToPixels(otherCenterX) })
+        hasXSnap = true
+      }
+      // Left to right
+      else if (Math.abs(draggedLeft - otherRight) < SNAP_THRESHOLD_METERS) {
+        snappedX = otherRight + draggedWidth / 2
+        newSnapLines.push({ type: 'vertical', position: metersToPixels(otherRight) })
+        hasXSnap = true
+      }
+      // Right to left
+      else if (Math.abs(draggedRight - otherLeft) < SNAP_THRESHOLD_METERS) {
+        snappedX = otherLeft - draggedWidth / 2
+        newSnapLines.push({ type: 'vertical', position: metersToPixels(otherLeft) })
+        hasXSnap = true
+      }
+
+      // Horizontal alignment checks (Y axis)
+      // Top to top
+      if (Math.abs(draggedTop - otherTop) < SNAP_THRESHOLD_METERS) {
+        snappedY = otherTop + draggedHeight / 2
+        newSnapLines.push({ type: 'horizontal', position: metersToPixels(otherTop) })
+        hasYSnap = true
+      }
+      // Bottom to bottom
+      else if (Math.abs(draggedBottom - otherBottom) < SNAP_THRESHOLD_METERS) {
+        snappedY = otherBottom - draggedHeight / 2
+        newSnapLines.push({ type: 'horizontal', position: metersToPixels(otherBottom) })
+        hasYSnap = true
+      }
+      // Center to center (Y)
+      else if (Math.abs(draggedCenterY - otherCenterY) < SNAP_THRESHOLD_METERS) {
+        snappedY = otherCenterY
+        newSnapLines.push({ type: 'horizontal', position: metersToPixels(otherCenterY) })
+        hasYSnap = true
+      }
+      // Top to bottom
+      else if (Math.abs(draggedTop - otherBottom) < SNAP_THRESHOLD_METERS) {
+        snappedY = otherBottom + draggedHeight / 2
+        newSnapLines.push({ type: 'horizontal', position: metersToPixels(otherBottom) })
+        hasYSnap = true
+      }
+      // Bottom to top
+      else if (Math.abs(draggedBottom - otherTop) < SNAP_THRESHOLD_METERS) {
+        snappedY = otherTop - draggedHeight / 2
+        newSnapLines.push({ type: 'horizontal', position: metersToPixels(otherTop) })
+        hasYSnap = true
+      }
+    }
+
+    // Gap matching - snap to maintain equal spacing
+    if (!hasXSnap) {
+      for (const other of otherComponents) {
+        const otherLeft = other.xInMeters - other.widthInMeters / 2
+        const otherRight = other.xInMeters + other.widthInMeters / 2
+        const otherCenterY = other.yInMeters
+
+        // Check if dragged component is to the right of other
+        const gapToRight = draggedLeft - otherRight
+        if (gapToRight > 0) {
+          for (const existingGap of horizontalGaps) {
+            if (Math.abs(gapToRight - existingGap) < SNAP_THRESHOLD_METERS) {
+              snappedX = otherRight + existingGap + draggedWidth / 2
+              // Show gap indicator as a line between the two components
+              const gapY = (draggedCenterY + otherCenterY) / 2
+              newSnapLines.push({
+                type: 'horizontal',
+                position: metersToPixels(gapY),
+                isGap: true,
+                gapStart: metersToPixels(otherRight),
+                gapEnd: metersToPixels(otherRight + existingGap),
+                gapSizeMeters: existingGap,
+              })
+              hasXSnap = true
+              break
+            }
+          }
+        }
+
+        // Check if dragged component is to the left of other
+        const gapToLeft = otherLeft - draggedRight
+        if (!hasXSnap && gapToLeft > 0) {
+          for (const existingGap of horizontalGaps) {
+            if (Math.abs(gapToLeft - existingGap) < SNAP_THRESHOLD_METERS) {
+              snappedX = otherLeft - existingGap - draggedWidth / 2
+              const gapY = (draggedCenterY + otherCenterY) / 2
+              newSnapLines.push({
+                type: 'horizontal',
+                position: metersToPixels(gapY),
+                isGap: true,
+                gapStart: metersToPixels(otherLeft - existingGap),
+                gapEnd: metersToPixels(otherLeft),
+                gapSizeMeters: existingGap,
+              })
+              hasXSnap = true
+              break
+            }
+          }
+        }
+
+        if (hasXSnap) break
+      }
+    }
+
+    if (!hasYSnap) {
+      for (const other of otherComponents) {
+        const otherTop = other.yInMeters - other.heightInMeters / 2
+        const otherBottom = other.yInMeters + other.heightInMeters / 2
+        const otherCenterX = other.xInMeters
+
+        // Check if dragged component is below other
+        const gapBelow = draggedTop - otherBottom
+        if (gapBelow > 0) {
+          for (const existingGap of verticalGaps) {
+            if (Math.abs(gapBelow - existingGap) < SNAP_THRESHOLD_METERS) {
+              snappedY = otherBottom + existingGap + draggedHeight / 2
+              const gapX = (draggedCenterX + otherCenterX) / 2
+              newSnapLines.push({
+                type: 'vertical',
+                position: metersToPixels(gapX),
+                isGap: true,
+                gapStart: metersToPixels(otherBottom),
+                gapEnd: metersToPixels(otherBottom + existingGap),
+                gapSizeMeters: existingGap,
+              })
+              hasYSnap = true
+              break
+            }
+          }
+        }
+
+        // Check if dragged component is above other
+        const gapAbove = otherTop - draggedBottom
+        if (!hasYSnap && gapAbove > 0) {
+          for (const existingGap of verticalGaps) {
+            if (Math.abs(gapAbove - existingGap) < SNAP_THRESHOLD_METERS) {
+              snappedY = otherTop - existingGap - draggedHeight / 2
+              const gapX = (draggedCenterX + otherCenterX) / 2
+              newSnapLines.push({
+                type: 'vertical',
+                position: metersToPixels(gapX),
+                isGap: true,
+                gapStart: metersToPixels(otherTop - existingGap),
+                gapEnd: metersToPixels(otherTop),
+                gapSizeMeters: existingGap,
+              })
+              hasYSnap = true
+              break
+            }
+          }
+        }
+
+        if (hasYSnap) break
+      }
+    }
+
+    return { snappedX, snappedY, snapLines: newSnapLines }
+  }, [localComponents, metersToPixels])
+
   // Handle component drag
   const handleComponentDrag = (componentId: string, e: React.MouseEvent) => {
     if (e.altKey) return // Don't start drag if panning
@@ -270,8 +533,21 @@ export function TemplateEditor() {
       const deltaX = (moveEvent.clientX - startX) / zoom
       const deltaY = (moveEvent.clientY - startY) / zoom
 
-      finalX = pixelsToMeters(startPosX + deltaX)
-      finalY = pixelsToMeters(startPosY + deltaY)
+      const proposedX = pixelsToMeters(startPosX + deltaX)
+      const proposedY = pixelsToMeters(startPosY + deltaY)
+
+      // Calculate snap
+      const { snappedX, snappedY, snapLines: newSnapLines } = calculateSnap(
+        componentId,
+        proposedX,
+        proposedY,
+        component.widthInMeters,
+        component.heightInMeters
+      )
+
+      finalX = snappedX
+      finalY = snappedY
+      setSnapLines(newSnapLines)
 
       setLocalComponents(prev =>
         prev.map(c =>
@@ -285,6 +561,7 @@ export function TemplateEditor() {
     const handleDragEnd = () => {
       document.removeEventListener('mousemove', handleDragMove)
       document.removeEventListener('mouseup', handleDragEnd)
+      setSnapLines([]) // Clear snap lines
 
       // Auto-save position after drag ends
       if (finalX !== component.xInMeters || finalY !== component.yInMeters) {
@@ -544,6 +821,88 @@ export function TemplateEditor() {
                     {component.label || component.componentType?.name}
                   </span>
                 </div>
+              )
+            })}
+
+            {/* Snap guide lines */}
+            {snapLines.map((line, index) => {
+              // Gap indicator - show as a line segment with size label
+              if (line.isGap && line.gapStart !== undefined && line.gapEnd !== undefined) {
+                const isHorizontalGap = line.type === 'horizontal' // horizontal line = gap in X direction
+                return (
+                  <div key={index} className="absolute pointer-events-none">
+                    {/* Gap line */}
+                    <div
+                      style={
+                        isHorizontalGap
+                          ? {
+                              position: 'absolute',
+                              left: line.gapStart,
+                              top: line.position - 1,
+                              width: line.gapEnd - line.gapStart,
+                              height: 2,
+                              backgroundColor: '#22c55e',
+                            }
+                          : {
+                              position: 'absolute',
+                              left: line.position - 1,
+                              top: line.gapStart,
+                              width: 2,
+                              height: line.gapEnd - line.gapStart,
+                              backgroundColor: '#22c55e',
+                            }
+                      }
+                    />
+                    {/* Gap size label */}
+                    <div
+                      className="absolute bg-green-500 text-white text-xs px-1 rounded"
+                      style={
+                        isHorizontalGap
+                          ? {
+                              left: line.gapStart + (line.gapEnd - line.gapStart) / 2,
+                              top: line.position - 10,
+                              transform: 'translateX(-50%)',
+                              fontSize: '10px',
+                              whiteSpace: 'nowrap',
+                            }
+                          : {
+                              left: line.position + 4,
+                              top: line.gapStart + (line.gapEnd - line.gapStart) / 2,
+                              transform: 'translateY(-50%)',
+                              fontSize: '10px',
+                              whiteSpace: 'nowrap',
+                            }
+                      }
+                    >
+                      {line.gapSizeMeters?.toFixed(2)}m
+                    </div>
+                  </div>
+                )
+              }
+
+              // Regular alignment line
+              return (
+                <div
+                  key={index}
+                  className="absolute pointer-events-none"
+                  style={
+                    line.type === 'vertical'
+                      ? {
+                          left: line.position,
+                          top: 0,
+                          width: 1,
+                          height: renderedImageSize?.height || 2000,
+                          backgroundColor: '#f97316',
+                        }
+                      : {
+                          left: 0,
+                          top: line.position,
+                          width: renderedImageSize?.width || 2000,
+                          height: 1,
+                          backgroundColor: '#f97316',
+                        }
+                  }
+                />
               )
             })}
           </div>
