@@ -20,6 +20,7 @@ import {
   Plus,
   Minus,
   RotateCcw,
+  RotateCw,
   Save,
   Loader2,
   Trash2,
@@ -580,6 +581,74 @@ export function TemplateEditor() {
     document.addEventListener('mouseup', handleDragEnd)
   }
 
+  // Handle component rotation
+  const handleComponentRotation = (componentId: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    const component = localComponents.find(c => c.id === componentId)
+    if (!component) return
+
+    const centerX = metersToPixels(component.xInMeters)
+    const centerY = metersToPixels(component.yInMeters)
+
+    // Get the canvas position to calculate correct coordinates
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+
+    let finalRotation = component.rotation
+
+    const handleRotateMove = (moveEvent: MouseEvent) => {
+      // Calculate mouse position relative to canvas (accounting for pan and zoom)
+      const mouseX = (moveEvent.clientX - rect.left) / zoom
+      const mouseY = (moveEvent.clientY - rect.top) / zoom
+
+      // Calculate angle from component center to mouse position
+      const deltaX = mouseX - centerX
+      const deltaY = mouseY - centerY
+      let angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI)
+
+      // Adjust angle (atan2 gives angle from positive X axis, we want from top-right)
+      angle = angle + 45 // Offset since handle is at top-right corner
+
+      // Normalize to 0-360
+      angle = ((angle % 360) + 360) % 360
+
+      // Always snap to 15-degree increments
+      angle = Math.round(angle / 15) * 15
+
+      finalRotation = angle
+
+      setLocalComponents(prev =>
+        prev.map(c =>
+          c.id === componentId
+            ? { ...c, rotation: finalRotation }
+            : c
+        )
+      )
+    }
+
+    const handleRotateEnd = () => {
+      document.removeEventListener('mousemove', handleRotateMove)
+      document.removeEventListener('mouseup', handleRotateEnd)
+
+      // Auto-save rotation after drag ends
+      if (finalRotation !== component.rotation) {
+        bulkUpdateMutation.mutate({
+          templateId: templateId!,
+          components: [{
+            id: componentId,
+            rotation: finalRotation,
+          }],
+        })
+      }
+    }
+
+    document.addEventListener('mousemove', handleRotateMove)
+    document.addEventListener('mouseup', handleRotateEnd)
+  }
+
   // Handle save
   const handleSave = () => {
     if (!templateId) return
@@ -782,44 +851,79 @@ export function TemplateEditor() {
               const y = metersToPixels(component.yInMeters)
               const width = metersToPixels(component.widthInMeters)
               const height = metersToPixels(component.heightInMeters)
+              const isSelected = selectedComponentId === component.id
 
               return (
                 <div
                   key={component.id}
-                  className="absolute flex items-center justify-center text-xs font-medium cursor-move select-none overflow-hidden"
+                  className="absolute"
                   style={{
-                    left: x - width / 2,
-                    top: y - height / 2,
-                    width,
-                    height,
-                    backgroundColor: component.componentType?.color || '#E5E7EB',
-                    borderRadius: component.componentType?.borderRadius
-                      ? `${component.componentType.borderRadius}px`
-                      : '4px',
-                    transform: `rotate(${component.rotation}deg)`,
-                    opacity: 0.85,
-                    border: selectedComponentId === component.id
-                      ? '1px solid #3b82f6'
-                      : '1px solid transparent',
+                    left: x,
+                    top: y,
+                    transform: 'translate(-50%, -50%)',
                   }}
-                  onMouseDown={(e) => handleComponentDrag(component.id, e)}
-                  onDoubleClick={() => handleEditComponent(component)}
                 >
-                  <span
-                    className="text-center leading-none break-words"
+                  {/* Component body with rotation wrapper */}
+                  <div
+                    className="relative"
                     style={{
-                      maxWidth: '95%',
-                      maxHeight: '90%',
-                      overflow: 'hidden',
-                      fontSize: `${Math.max(4, Math.min(10, Math.min(width, height) * 0.2))}px`,
-                      wordBreak: 'break-word',
-                      display: '-webkit-box',
-                      WebkitLineClamp: Math.max(1, Math.floor(height / 8)),
-                      WebkitBoxOrient: 'vertical',
+                      transform: `rotate(${component.rotation}deg)`,
                     }}
                   >
-                    {component.label || component.componentType?.name}
-                  </span>
+                    <div
+                      className="flex items-center justify-center text-xs font-medium cursor-move select-none overflow-hidden"
+                      style={{
+                        width,
+                        height,
+                        backgroundColor: component.componentType?.color || '#E5E7EB',
+                        borderRadius: component.componentType?.borderRadius
+                          ? `${component.componentType.borderRadius}px`
+                          : '4px',
+                        opacity: 0.85,
+                        border: isSelected
+                          ? '1px solid #3b82f6'
+                          : '1px solid transparent',
+                      }}
+                      onMouseDown={(e) => handleComponentDrag(component.id, e)}
+                      onDoubleClick={() => handleEditComponent(component)}
+                    >
+                      <span
+                        className="text-center leading-none break-words"
+                        style={{
+                          maxWidth: '95%',
+                          maxHeight: '90%',
+                          overflow: 'hidden',
+                          fontSize: `${Math.max(4, Math.min(10, Math.min(width, height) * 0.2))}px`,
+                          wordBreak: 'break-word',
+                          display: '-webkit-box',
+                          WebkitLineClamp: Math.max(1, Math.floor(height / 8)),
+                          WebkitBoxOrient: 'vertical',
+                        }}
+                      >
+                        {component.label || component.componentType?.name}
+                      </span>
+                    </div>
+
+                    {/* Rotation handle - attached to top-right corner */}
+                    {isSelected && (
+                      <div
+                        className="absolute cursor-grab active:cursor-grabbing"
+                        style={{
+                          right: -8,
+                          top: -8,
+                          transform: 'translate(50%, -50%)',
+                        }}
+                        onMouseDown={(e) => handleComponentRotation(component.id, e)}
+                      >
+                        <div
+                          className="w-5 h-5 bg-blue-500 rounded-full border-2 border-white shadow-md flex items-center justify-center"
+                          title="Drag to rotate (hold Shift for 15° increments)"
+                        >
+                          <RotateCw className="w-3 h-3 text-white" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )
             })}
