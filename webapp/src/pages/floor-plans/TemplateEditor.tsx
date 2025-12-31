@@ -196,9 +196,32 @@ export function TemplateEditor() {
     return meters * template.floorPlan.pixelsPerMeter * dpiScale
   }, [template?.floorPlan?.pixelsPerMeter, dpiScale])
 
+  // Zoom to center of viewport
+  const zoomToCenter = useCallback((newZoom: number) => {
+    if (!containerRef.current) {
+      setZoom(newZoom)
+      return
+    }
+    const container = containerRef.current
+    const rect = container.getBoundingClientRect()
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+
+    // Calculate the point in canvas space that's currently at the center
+    const canvasX = (centerX - pan.x) / zoom
+    const canvasY = (centerY - pan.y) / zoom
+
+    // After zoom, we want the same canvas point to be at the center
+    const newPanX = centerX - canvasX * newZoom
+    const newPanY = centerY - canvasY * newZoom
+
+    setZoom(newZoom)
+    setPan({ x: newPanX, y: newPanY })
+  }, [zoom, pan])
+
   // Handle zoom
-  const handleZoomIn = () => setZoom(prev => prev * 1.25)
-  const handleZoomOut = () => setZoom(prev => Math.max(0.1, prev / 1.25))
+  const handleZoomIn = () => zoomToCenter(zoom * 1.25)
+  const handleZoomOut = () => zoomToCenter(Math.max(0.1, zoom / 1.25))
   const handleResetZoom = () => {
     setZoom(1)
     setPan({ x: 0, y: 0 })
@@ -209,9 +232,30 @@ export function TemplateEditor() {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault()
       const delta = e.deltaY > 0 ? 0.9 : 1.1
-      setZoom(prev => Math.max(0.1, prev * delta))
+      const newZoom = Math.max(0.1, zoom * delta)
+
+      if (!containerRef.current) {
+        setZoom(newZoom)
+        return
+      }
+
+      const container = containerRef.current
+      const rect = container.getBoundingClientRect()
+      const centerX = rect.width / 2
+      const centerY = rect.height / 2
+
+      // Calculate the point in canvas space that's currently at the center
+      const canvasX = (centerX - pan.x) / zoom
+      const canvasY = (centerY - pan.y) / zoom
+
+      // After zoom, we want the same canvas point to be at the center
+      const newPanX = centerX - canvasX * newZoom
+      const newPanY = centerY - canvasY * newZoom
+
+      setZoom(newZoom)
+      setPan({ x: newPanX, y: newPanY })
     }
-  }, [])
+  }, [zoom, pan])
 
   // Handle canvas mouse down for panning
   const handleCanvasMouseDown = (e: React.MouseEvent) => {
