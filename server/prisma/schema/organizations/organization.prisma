@@ -34,6 +34,7 @@ model Organization {
   serviceProviders   ServiceProvider[]
   serviceCategories  ServiceCategory[]
   userActivities     UserActivity[]
+  componentTypes     ComponentType[]
 
   @@index([ownerId])
   @@index([isDeleted])

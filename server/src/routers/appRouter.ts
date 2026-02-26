@@ -11,11 +11,12 @@ import { waitingListRouter } from './waiting-list.router';
 import { serviceProviderRouter } from './service-provider.router';
 import { eventProviderRouter } from './event-provider.router';
 import { filesRouter } from './files.router';
-import { aiRouter } from './ai.router';
+// import { aiRouter } from './ai.router'; // Disabled - requires valid OPENAI_API_KEY
 import { userActivityRouter } from './user-activity.router';
 import { taskRouter } from './task.router';
 import { paymentRouter } from './payment.router';
 import { userRouter } from './user.router';
+import { floorPlanRouter } from './floor-plans';
 
 export const appRouter = router({
   // Auth routes
@@ -51,8 +52,8 @@ export const appRouter = router({
   // File upload and management routes
   files: filesRouter,
 
-  // AI assistant routes
-  ai: aiRouter,
+  // AI assistant routes (disabled - requires valid OPENAI_API_KEY)
+  // ai: aiRouter,
 
   // User activity tracking routes
   userActivity: userActivityRouter,
@@ -65,6 +66,9 @@ export const appRouter = router({
 
   // User routes
   users: userRouter,
+
+  // Floor plan feature (componentTypes, siteFloorPlans, templates, eventLayouts)
+  floorPlans: floorPlanRouter,
 
   // Public routes
   ping: publicProcedure

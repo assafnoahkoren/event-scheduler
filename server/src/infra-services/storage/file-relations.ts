@@ -9,6 +9,7 @@ export const FILE_OBJECT_TYPES = {
   USER: 'user',
   ORGANIZATION: 'organization',
   SITE: 'site',
+  SITE_FLOOR_PLAN: 'siteFloorPlan',
 } as const
 
 export const FILE_RELATIONS = {
@@ -37,6 +38,9 @@ export const FILE_RELATIONS = {
   // Site relations
   SITE_LOGO: 'logo',
   SITE_BANNER: 'banner',
+
+  // Site Floor Plan relations
+  SITE_FLOOR_PLAN_IMAGE: 'image',
 } as const
 
 export type FileObjectType = typeof FILE_OBJECT_TYPES[keyof typeof FILE_OBJECT_TYPES]
@@ -68,6 +72,10 @@ export interface ObjectTypeMapping {
     model: typeof prisma.site
     include: Prisma.SiteInclude
   }
+  [FILE_OBJECT_TYPES.SITE_FLOOR_PLAN]: {
+    model: typeof prisma.siteFloorPlan
+    include: Prisma.SiteFloorPlanInclude
+  }
 }
 
 // Valid relations for each object type
@@ -98,6 +106,9 @@ export const VALID_RELATIONS: Record<FileObjectType, FileRelation[]> = {
     FILE_RELATIONS.SITE_LOGO,
     FILE_RELATIONS.SITE_BANNER,
   ],
+  [FILE_OBJECT_TYPES.SITE_FLOOR_PLAN]: [
+    FILE_RELATIONS.SITE_FLOOR_PLAN_IMAGE,
+  ],
 }
 
 // Helper function to get the Prisma model for a given object type
@@ -115,6 +126,8 @@ export function getModelForObjectType(objectType: FileObjectType) {
       return prisma.organization
     case FILE_OBJECT_TYPES.SITE:
       return prisma.site
+    case FILE_OBJECT_TYPES.SITE_FLOOR_PLAN:
+      return prisma.siteFloorPlan
     default:
       throw new Error(`Unknown object type: ${objectType}`)
   }
@@ -269,6 +282,30 @@ export async function verifyUserAccess(
         return !!siteUser
       }
 
+      case FILE_OBJECT_TYPES.SITE_FLOOR_PLAN: {
+        // User can upload to floor plan if they have editor+ permissions on the parent site
+        const floorPlan = await prisma.siteFloorPlan.findFirst({
+          where: {
+            id: objectId,
+            isDeleted: false
+          }
+        })
+
+        if (!floorPlan) return false
+
+        const siteUser = await prisma.siteUser.findFirst({
+          where: {
+            userId,
+            siteId: floorPlan.siteId,
+            role: {
+              in: ['OWNER', 'ADMIN', 'EDITOR']
+            }
+          }
+        })
+
+        return !!siteUser
+      }
+
       default:
         return false
     }
@@ -375,6 +412,7 @@ export const DEFAULT_FOLDERS: Record<FileObjectType, string> = {
   [FILE_OBJECT_TYPES.USER]: 'users',
   [FILE_OBJECT_TYPES.ORGANIZATION]: 'organizations',
   [FILE_OBJECT_TYPES.SITE]: 'sites',
+  [FILE_OBJECT_TYPES.SITE_FLOOR_PLAN]: 'floor-plans',
 }
 
 // Get default folder for object type and relation

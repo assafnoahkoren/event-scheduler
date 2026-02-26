@@ -1,0 +1,43 @@
+// ComponentType - Draggable component types for floor plan editor (organization-level)
+
+model ComponentType {
+  id              String   @id @default(uuid())
+
+  // Organization relationship - components are org-specific
+  organizationId  String   @map("organization_id")
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  // Component details
+  name            String                // e.g., "Round Table (8)", "Stage", "Bar"
+  icon            String?               // Icon identifier for UI (e.g., "circle", "square", "mic")
+  category        String                // "seating", "stage", "decor", "service", "entertainment"
+
+  // Default dimensions in meters
+  defaultWidthInMeters    Float   @map("default_width_in_meters")
+  defaultHeightInMeters   Float   @map("default_height_in_meters")
+
+  // Occupancy (e.g., 8 seats for a round table, 10 for rectangular)
+  occupancy               Int?    @map("occupancy")
+
+  // Visual styling
+  color                   String?               // Hex color for component (e.g., "#FF5733")
+  borderRadius            Float?  @map("border_radius")  // Border radius in pixels (0 = square, higher = more rounded)
+
+  // Soft delete
+  deletedAt       DateTime? @map("deleted_at")
+  isDeleted       Boolean   @default(false) @map("is_deleted")
+
+  // Timestamps
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  templateComponents       FloorPlanTemplateComponent[]
+  eventLayoutComponents    EventLayoutComponent[]
+
+  @@index([organizationId])
+  @@index([category])
+  @@index([isDeleted])
+  @@index([organizationId, isDeleted])
+  @@map("component_types")
+}

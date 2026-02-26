@@ -1,0 +1,77 @@
+// EventFloorPlanLayout - Event-specific floor plan layout
+
+model EventFloorPlanLayout {
+  id              String   @id @default(uuid())
+
+  // Event relationship
+  eventId         String   @map("event_id")
+  event           Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  // Floor plan relationship (which site floor plan this is based on)
+  floorPlanId     String   @map("floor_plan_id")
+  floorPlan       SiteFloorPlan @relation(fields: [floorPlanId], references: [id])
+
+  // Optional name override (defaults to floor plan name)
+  name            String?
+
+  // Soft delete
+  deletedAt       DateTime? @map("deleted_at")
+  isDeleted       Boolean   @default(false) @map("is_deleted")
+
+  // Timestamps
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  components      EventLayoutComponent[]
+
+  // One layout per event per floor plan
+  @@unique([eventId, floorPlanId])
+  @@index([eventId])
+  @@index([floorPlanId])
+  @@index([isDeleted])
+  @@index([eventId, isDeleted])
+  @@map("event_floor_plan_layouts")
+}
+
+// EventLayoutComponent - Components placed on an event's floor plan layout
+
+model EventLayoutComponent {
+  id              String   @id @default(uuid())
+
+  // Layout relationship
+  layoutId        String   @map("layout_id")
+  layout          EventFloorPlanLayout @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+
+  // Component type relationship
+  componentTypeId String   @map("component_type_id")
+  componentType   ComponentType @relation(fields: [componentTypeId], references: [id])
+
+  // Position in meters (real-world coordinates)
+  xInMeters       Float    @map("x_in_meters")
+  yInMeters       Float    @map("y_in_meters")
+
+  // Dimensions in meters (can override component type defaults)
+  widthInMeters   Float    @map("width_in_meters")
+  heightInMeters  Float    @map("height_in_meters")
+
+  // Rotation in degrees (0-360)
+  rotation        Float    @default(0)
+
+  // Optional label (e.g., "Table 1", "VIP Section")
+  label           String?
+
+  // Soft delete
+  deletedAt       DateTime? @map("deleted_at")
+  isDeleted       Boolean   @default(false) @map("is_deleted")
+
+  // Timestamps
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([layoutId])
+  @@index([componentTypeId])
+  @@index([isDeleted])
+  @@index([layoutId, isDeleted])
+  @@map("event_layout_components")
+}
