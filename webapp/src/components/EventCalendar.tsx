@@ -159,8 +159,9 @@ export function EventCalendar() {
     isToday: boolean
   }) => {
     const dayEvents = eventsByDate.get(format(date, 'yyyy-MM-dd')) || []
-    const hasDraftEvent = dayEvents.some(event => event.status === 'DRAFT')
-    const hasScheduledEvent = dayEvents.some(event => event.status !== 'DRAFT')
+    const nonMeetingEvents = dayEvents.filter(event => event.type !== 'PRE_EVENT_MEETING')
+    const hasDraftEvent = nonMeetingEvents.some(event => event.status === 'DRAFT')
+    const hasScheduledEvent = nonMeetingEvents.some(event => event.status !== 'DRAFT')
     const hasPreEventMeeting = dayEvents.some(event => event.type === 'PRE_EVENT_MEETING')
     const eventCount = dayEvents.length
 
@@ -198,9 +199,9 @@ export function EventCalendar() {
       <div
         className={cn(
           "h-full w-full flex items-center justify-center relative p-1",
-          // Background colors for events (only if not PRE_EVENT_MEETING)
-          !hasPreEventMeeting && hasDraftEvent && isCurrentMonth && "bg-blue-100 hover:bg-blue-200",
-          !hasPreEventMeeting && !hasDraftEvent && hasScheduledEvent && isCurrentMonth && "bg-green-100 hover:bg-green-200",
+          // Background colors for non-meeting events
+          hasDraftEvent && isCurrentMonth && "bg-blue-100 hover:bg-blue-200",
+          !hasDraftEvent && hasScheduledEvent && isCurrentMonth && "bg-green-100 hover:bg-green-200",
           // Disabled styling
           !isCurrentMonth && "text-gray-400",
           // Add cursor pointer for interactive cells
