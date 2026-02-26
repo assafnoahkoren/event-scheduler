@@ -94,6 +94,7 @@ export function EventCalendar() {
 
     const grouped = new Map<string, any[]>()
     eventsData.forEach((event: any) => {
+      if (event.status === 'CANCELLED') return
       const dateKey = format(new Date(event.startDate), 'yyyy-MM-dd')
       if (!grouped.has(dateKey)) {
         grouped.set(dateKey, [])
