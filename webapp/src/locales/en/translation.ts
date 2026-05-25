@@ -146,6 +146,7 @@ export const enTranslation = {
     event: "Event",
     preEventMeeting: "Pre-Event Meeting",
     eventTitle: "Event Title",
+    eventNickname: "Nickname",
     eventDescription: "Description",
     eventLocation: "Location",
     date: "Date",

@@ -148,6 +148,7 @@ export const arTranslation: TranslationType = {
     event: "حدث",
     preEventMeeting: "اجتماع ما قبل الحدث",
     eventTitle: "عنوان الحدث",
+    eventNickname: "لقب",
     eventDescription: "الوصف",
     eventLocation: "الموقع",
     date: "التاريخ",

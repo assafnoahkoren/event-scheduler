@@ -148,6 +148,7 @@ export const heTranslation: TranslationType = {
     event: "אירוע",
     preEventMeeting: "פגישה",
     eventTitle: "כותרת האירוע",
+    eventNickname: "כינוי",
     eventDescription: "תיאור",
     eventLocation: "מיקום",
     date: "תאריך",
