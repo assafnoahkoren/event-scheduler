@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { EventCard } from '@/components/EventCard'
+import { SearchResultEventCard } from '@/components/SearchResultEventCard'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -91,7 +91,7 @@ export function EventSearchBar() {
           ) : (
             <div className="divide-y">
               {results.map(event => (
-                <EventCard key={event.id} event={event} onClick={() => handleResultClick(event.id)} />
+                <SearchResultEventCard key={event.id} event={event} onClick={() => handleResultClick(event.id)} />
               ))}
             </div>
           )}
