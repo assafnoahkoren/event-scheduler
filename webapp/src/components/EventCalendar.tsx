@@ -142,6 +142,7 @@ export function EventCalendar() {
       siteId: currentSite.id,
       type: formData.type,
       title: formData.title,
+      nickname: formData.nickname || undefined,
       description: formData.description,
       startDate: formData.startDate.toISOString(),
       endDate: formData.endDate?.toISOString(),

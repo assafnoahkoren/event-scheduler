@@ -86,6 +86,7 @@ export function Event() {
       id: eventId,
       type: formData.type,
       title: formData.title,
+      nickname: formData.nickname || undefined,
       description: formData.description || undefined,
       startDate: formData.startDate.toISOString(),
       endDate: formData.endDate?.toISOString() || undefined,
