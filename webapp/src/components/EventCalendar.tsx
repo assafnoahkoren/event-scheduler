@@ -221,7 +221,7 @@ export function EventCalendar() {
           </span>
         </div>
         {nonMeetingEvents.length === 1 && isCurrentMonth && (
-          <div className="absolute top-0.5 start-0.5 flex gap-0.5 pointer-events-none">
+          <div className="absolute -top-1.5 -end-1.5 flex gap-0.5 pointer-events-none z-10">
             <DollarSign
               className={cn(
                 "w-3 h-3",

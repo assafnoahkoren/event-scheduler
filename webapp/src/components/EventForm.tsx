@@ -356,7 +356,6 @@ export function EventForm({
             value={depositAmount}
             onChange={(e) => setDepositAmount(e.target.value === '' ? '' : Number(e.target.value))}
             placeholder="0"
-            disabled={isSubmitting}
           />
         </div>
         <div className="space-y-2">
@@ -365,8 +364,8 @@ export function EventForm({
             <Checkbox
               id="acumPaid"
               checked={acumPaid}
+              className="h-7 w-7"
               onCheckedChange={(checked) => setAcumPaid(checked === true)}
-              disabled={isSubmitting}
             />
           </div>
         </div>
