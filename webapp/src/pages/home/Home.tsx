@@ -5,6 +5,7 @@ import { DraftEvents } from '@/components/DraftEvents'
 import { UpcomingEvents } from '@/components/UpcomingEvents'
 import { EventsList } from '@/components/EventsList'
 import { WaitingListMatchNotification } from '@/components/WaitingListMatchNotification'
+import { EventSearchBar } from '@/components/EventSearchBar'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import { usePersistentState } from '@/hooks/usePersistentState'
@@ -40,6 +41,7 @@ export function Home() {
       {currentSite ? (
         <div className="space-y-0">
           <WaitingListMatchNotification />
+          <EventSearchBar />
           <EventCalendar />
 
           {/* View toggle buttons */}
