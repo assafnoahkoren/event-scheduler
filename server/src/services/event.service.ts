@@ -10,6 +10,7 @@ export const createEventSchema = z.object({
   type: z.nativeEnum(EventType).default('EVENT'),
   title: z.string().optional(),
   description: z.string().optional(),
+  nickname: z.string().optional(),
   clientId: z.string().uuid().optional(),
   startDate: z.string().datetime(),
   endDate: z.string().datetime().optional(),
