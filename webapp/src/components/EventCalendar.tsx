@@ -12,7 +12,7 @@ import { useLongPress } from 'use-long-press'
 import { useSwipeable } from 'react-swipeable'
 import { useUrlMonth } from '@/hooks/useUrlMonth'
 import { useIsRtl } from '@/hooks/useIsRtl'
-import { CalendarClock } from 'lucide-react'
+import { CalendarClock, DollarSign, Music } from 'lucide-react'
 import {
   Drawer,
   DrawerContent,
@@ -220,6 +220,26 @@ export function EventCalendar() {
             {format(date, 'd')}
           </span>
         </div>
+        {nonMeetingEvents.length === 1 && isCurrentMonth && (
+          <div className="absolute top-0.5 start-0.5 flex gap-0.5 pointer-events-none">
+            <DollarSign
+              className={cn(
+                "w-3 h-3",
+                (nonMeetingEvents[0].depositAmount ?? 0) > 0
+                  ? "text-green-500"
+                  : "text-red-500"
+              )}
+            />
+            <Music
+              className={cn(
+                "w-3 h-3",
+                nonMeetingEvents[0].acumPaid
+                  ? "text-green-500"
+                  : "text-red-500"
+              )}
+            />
+          </div>
+        )}
         <div className="h-5 flex items-start justify-center overflow-hidden shrink-0 -mx-1 -mb-1">
           {nonMeetingEvents.length === 1 && nonMeetingEvents[0].nickname && isCurrentMonth && (
             <span className="w-full text-center text-[0.5rem] text-gray-500 leading-tight pointer-events-none line-clamp-2">
