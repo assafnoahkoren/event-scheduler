@@ -218,6 +218,11 @@ export function EventCalendar() {
         )}>
           {format(date, 'd')}
         </span>
+        {nonMeetingEvents.length === 1 && nonMeetingEvents[0].nickname && isCurrentMonth && (
+          <span className="absolute bottom-0.5 start-0 end-0 text-center text-xs text-gray-500 leading-none pointer-events-none truncate px-0.5">
+            {nonMeetingEvents[0].nickname}
+          </span>
+        )}
         {hasPreEventMeeting && isCurrentMonth && (
           <CalendarClock className="absolute top-0.5 inset-x-0 mx-auto w-4 h-4 text-purple-600 pointer-events-none" />
         )}
