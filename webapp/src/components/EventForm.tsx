@@ -74,6 +74,10 @@ export function EventForm({
   )
   const [showClientForm, setShowClientForm] = useState(false)
 
+  type AutoSaveStatus = 'idle' | 'saving' | 'saved' | 'error'
+  const [autoSaveStatus, setAutoSaveStatus] = useState<AutoSaveStatus>('idle')
+  const wasSubmitting = useRef(false)
+
   // Auto-resize textarea
   useEffect(() => {
     const textarea = descriptionRef.current
@@ -86,6 +90,24 @@ export function EventForm({
       textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`
     }
   }, [description])
+
+  useEffect(() => {
+    if (!event) return
+
+    if (isSubmitting) {
+      wasSubmitting.current = true
+      setAutoSaveStatus('saving')
+    } else if (wasSubmitting.current) {
+      wasSubmitting.current = false
+      if (saveError) {
+        setAutoSaveStatus('error')
+      } else {
+        setAutoSaveStatus('saved')
+        const timer = setTimeout(() => setAutoSaveStatus('idle'), 2000)
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [isSubmitting, saveError, event])
 
   // Fetch selected client details
   const { data: selectedClient } = trpc.clients.get.useQuery(
