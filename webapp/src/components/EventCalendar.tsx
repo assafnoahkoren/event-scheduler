@@ -218,7 +218,7 @@ export function EventCalendar() {
           {format(date, 'd')}
         </span>
         {nonMeetingEvents.length === 1 && nonMeetingEvents[0].nickname && isCurrentMonth && (
-          <span className="absolute bottom-0.5 start-0 end-0 text-center text-xs text-gray-500 leading-none pointer-events-none truncate px-0.5">
+          <span className="absolute bottom-0.5 start-0 end-0 text-center text-[0.5rem] text-gray-500 leading-none pointer-events-none truncate px-0.5">
             {nonMeetingEvents[0].nickname}
           </span>
         )}
