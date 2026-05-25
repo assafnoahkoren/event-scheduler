@@ -81,6 +81,8 @@ export function EventForm({
   const wasSubmitting = useRef(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isFirstRender = useRef(true)
+  const onSubmitRef = useRef(onSubmit)
+  useEffect(() => { onSubmitRef.current = onSubmit }, [onSubmit])
 
   // Auto-resize textarea
   useEffect(() => {
@@ -121,11 +123,14 @@ export function EventForm({
       return
     }
 
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    if (!isValid) return
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+      debounceRef.current = null
+    }
+    if (!title.trim()) return
 
     debounceRef.current = setTimeout(() => {
-      onSubmit({
+      onSubmitRef.current({
         type,
         title: title.trim(),
         nickname: nickname.trim() || undefined,
@@ -139,7 +144,10 @@ export function EventForm({
     }, 1000)
 
     return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current)
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current)
+        debounceRef.current = null
+      }
     }
   }, [type, title, nickname, description, startDate, endDate, isAllDay, clientId, status]) // eslint-disable-line react-hooks/exhaustive-deps
 
