@@ -87,6 +87,8 @@ export function Event() {
       type: formData.type,
       title: formData.title,
       nickname: formData.nickname || undefined,
+      depositAmount: formData.depositAmount,
+      acumPaid: formData.acumPaid,
       description: formData.description || undefined,
       startDate: formData.startDate.toISOString(),
       endDate: formData.endDate?.toISOString() || undefined,

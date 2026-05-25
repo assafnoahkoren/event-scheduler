@@ -143,6 +143,8 @@ export function EventCalendar() {
       type: formData.type,
       title: formData.title,
       nickname: formData.nickname || undefined,
+      depositAmount: formData.depositAmount,
+      acumPaid: formData.acumPaid,
       description: formData.description,
       startDate: formData.startDate.toISOString(),
       endDate: formData.endDate?.toISOString(),

@@ -203,6 +203,8 @@ export function WaitingListMatchNotification() {
       clientId: formData.clientId || undefined,
       status: formData.status || 'SCHEDULED',
       nickname: formData.nickname || undefined,
+      depositAmount: formData.depositAmount,
+      acumPaid: formData.acumPaid,
       type: formData.type,
     })
   }
