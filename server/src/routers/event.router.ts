@@ -3,7 +3,8 @@ import {
   eventService,
   createEventSchema,
   updateEventSchema,
-  getEventsSchema
+  getEventsSchema,
+  searchEventsSchema
 } from '../services/event.service'
 import { z } from 'zod'
 
@@ -57,5 +58,11 @@ export const eventRouter = router({
         input.startDate,
         input.endDate
       )
+    }),
+
+  search: protectedProcedure
+    .input(searchEventsSchema)
+    .query(async ({ ctx, input }) => {
+      return eventService.searchEvents(ctx.user.id, input)
     }),
 })
