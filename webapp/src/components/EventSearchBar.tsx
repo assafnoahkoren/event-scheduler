@@ -16,11 +16,12 @@ export function EventSearchBar() {
   const containerRef = useRef<HTMLDivElement>(null)
   const debouncedQuery = useDebounce(query, 300)
 
-  const showOverlay = isFocused && query.length >= 2
+  const showOverlay = isFocused && debouncedQuery.length >= 2
 
+  const siteId = currentSite?.id ?? ''
   const { data: results = [], isLoading } = trpc.events.search.useQuery(
-    { siteId: currentSite!.id, query: debouncedQuery },
-    { enabled: showOverlay && debouncedQuery.length >= 2 }
+    { siteId, query: debouncedQuery },
+    { enabled: !!currentSite && showOverlay && debouncedQuery.length >= 2 }
   )
 
   useEffect(() => {
@@ -32,14 +33,14 @@ export function EventSearchBar() {
 
   useEffect(() => {
     if (!isFocused) return
-    const handleMouseDown = (e: MouseEvent) => {
+    const handlePointerDown = (e: PointerEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsFocused(false)
         setQuery('')
       }
     }
-    document.addEventListener('mousedown', handleMouseDown)
-    return () => document.removeEventListener('mousedown', handleMouseDown)
+    document.addEventListener('pointerdown', handlePointerDown)
+    return () => document.removeEventListener('pointerdown', handlePointerDown)
   }, [isFocused])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -72,7 +73,7 @@ export function EventSearchBar() {
 
       {showOverlay && (
         <div
-          className="fixed inset-x-0 bottom-0 bg-white z-50 overflow-y-auto shadow-lg border-t"
+          className="fixed inset-x-0 bottom-0 bg-background z-50 overflow-y-auto shadow-lg border-t"
           style={{ top: overlayTop }}
         >
           {isLoading ? (
@@ -86,9 +87,7 @@ export function EventSearchBar() {
           ) : (
             <div className="divide-y">
               {results.map(event => (
-                <div key={event.id} onClick={handleResultClick}>
-                  <EventCard event={event} />
-                </div>
+                <EventCard key={event.id} event={event} onClick={handleResultClick} />
               ))}
             </div>
           )}
