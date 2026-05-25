@@ -12,6 +12,7 @@ model Event {
   title       String?
   description String?
   location    String?
+  nickname    String?
 
   // Client relationship (optional)
   clientId    String?  @map("client_id")
