@@ -151,6 +151,8 @@ export const heTranslation: TranslationType = {
     preEventMeeting: "פגישה",
     eventTitle: "כותרת האירוע",
     eventNickname: "כינוי",
+    depositAmount: "מקדמה",
+    acumPaid: 'אקו"מ שולם',
     eventDescription: "תיאור",
     eventLocation: "מיקום",
     date: "תאריך",

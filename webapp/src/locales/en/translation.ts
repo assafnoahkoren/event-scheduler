@@ -149,6 +149,8 @@ export const enTranslation = {
     preEventMeeting: "Pre-Event Meeting",
     eventTitle: "Event Title",
     eventNickname: "Nickname",
+    depositAmount: "Deposit",
+    acumPaid: "ACUM Paid",
     eventDescription: "Description",
     eventLocation: "Location",
     date: "Date",
