@@ -226,9 +226,9 @@ export function EventCalendar() {
         {hasPreEventMeeting && isCurrentMonth && (
           <CalendarClock className="absolute top-0.5 inset-x-0 mx-auto w-4 h-4 text-purple-600 pointer-events-none" />
         )}
-        {eventCount > 1 && isCurrentMonth && (
+        {nonMeetingEvents.length > 1 && isCurrentMonth && (
           <span className="absolute bottom-0.5 text-xs font-medium text-gray-600 pointer-events-none">
-            ({eventCount})
+            ({nonMeetingEvents.length})
           </span>
         )}
       </div>
