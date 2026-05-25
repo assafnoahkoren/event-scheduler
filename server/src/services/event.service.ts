@@ -11,6 +11,8 @@ export const createEventSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
   nickname: z.string().optional(),
+  depositAmount: z.number().optional(),
+  acumPaid: z.boolean().optional(),
   clientId: z.string().uuid().optional(),
   startDate: z.string().datetime(),
   endDate: z.string().datetime().optional(),
