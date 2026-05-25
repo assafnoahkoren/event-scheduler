@@ -21,6 +21,8 @@ import type { AppRouter } from '@/../../server/src/routers/appRouter'
 type RouterOutput = inferRouterOutputs<AppRouter>
 type Event = RouterOutput['events']['get']
 
+type AutoSaveStatus = 'idle' | 'saving' | 'saved' | 'error'
+
 interface EventFormProps {
   event?: Event | null
   initialDate?: Date
@@ -74,7 +76,7 @@ export function EventForm({
   )
   const [showClientForm, setShowClientForm] = useState(false)
 
-  type AutoSaveStatus = 'idle' | 'saving' | 'saved' | 'error'
+  // Drives the auto-save status indicator rendered in the actions row
   const [autoSaveStatus, setAutoSaveStatus] = useState<AutoSaveStatus>('idle')
   const wasSubmitting = useRef(false)
 
