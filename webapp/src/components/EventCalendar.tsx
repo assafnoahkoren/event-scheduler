@@ -198,7 +198,7 @@ export function EventCalendar() {
     return (
       <div
         className={cn(
-          "h-full w-full flex items-center justify-center relative p-1",
+          "h-full w-full flex flex-col relative p-1",
           // Background colors for non-meeting events
           hasDraftEvent && isCurrentMonth && "bg-blue-100 hover:bg-blue-200",
           !hasDraftEvent && hasScheduledEvent && isCurrentMonth && "bg-green-100 hover:bg-green-200",
@@ -210,18 +210,21 @@ export function EventCalendar() {
         {...(isCurrentMonth ? longPressHandlers() : {})}
         onClick={isCurrentMonth ? handleClick : undefined}
       >
-        <span className={cn(
-          "flex items-center justify-center w-8 h-8 rounded-full pointer-events-none",
-          // Today styling - border instead of background
-          isToday && "bg-blue-500 text-white",
-        )}>
-          {format(date, 'd')}
-        </span>
-        {nonMeetingEvents.length === 1 && nonMeetingEvents[0].nickname && isCurrentMonth && (
-          <span className="absolute bottom-0.5 start-0 end-0 text-center text-[0.5rem] text-gray-500 leading-none pointer-events-none truncate px-0.5">
-            {nonMeetingEvents[0].nickname}
+        <div className="flex-1 flex items-center justify-center min-h-0">
+          <span className={cn(
+            "flex items-center justify-center w-8 h-8 rounded-full pointer-events-none",
+            isToday && "bg-blue-500 text-white",
+          )}>
+            {format(date, 'd')}
           </span>
-        )}
+        </div>
+        <div className="h-5 flex items-start justify-center overflow-hidden shrink-0 -mx-1 -mb-1">
+          {nonMeetingEvents.length === 1 && nonMeetingEvents[0].nickname && isCurrentMonth && (
+            <span className="w-full text-center text-[0.5rem] text-gray-500 leading-tight pointer-events-none line-clamp-2">
+              {nonMeetingEvents[0].nickname}
+            </span>
+          )}
+        </div>
         {hasPreEventMeeting && isCurrentMonth && (
           <CalendarClock className="absolute top-0.5 inset-x-0 mx-auto w-4 h-4 text-purple-600 pointer-events-none" />
         )}
