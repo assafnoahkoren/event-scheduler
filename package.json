@@ -6,6 +6,9 @@
     "webapp",
     "server"
   ],
+  "dependencies": {
+    "prisma": "6.16.2"
+  },
   "scripts": {
     "dev:webapp": "npm run dev -w webapp",
     "dev:server": "npm run dev -w server",
