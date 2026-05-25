@@ -164,7 +164,6 @@ export function EventCalendar() {
     const hasDraftEvent = nonMeetingEvents.some(event => event.status === 'DRAFT')
     const hasScheduledEvent = nonMeetingEvents.some(event => event.status !== 'DRAFT')
     const hasPreEventMeeting = dayEvents.some(event => event.type === 'PRE_EVENT_MEETING')
-    const eventCount = dayEvents.length
 
     // Handle click events manually to avoid mobile scroll interference
     const handleClick = (e: React.MouseEvent | React.TouchEvent) => {
