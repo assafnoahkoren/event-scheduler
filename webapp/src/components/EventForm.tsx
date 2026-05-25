@@ -337,24 +337,38 @@ export function EventForm({
       
 
       {/* Actions */}
-      <div className="flex justify-end gap-2">
-        {onCancel && (
+      {event ? (
+        <div className="flex justify-end h-9 items-center">
+          {autoSaveStatus === 'saving' && (
+            <span className="text-sm text-muted-foreground">Saving...</span>
+          )}
+          {autoSaveStatus === 'saved' && (
+            <span className="text-sm text-muted-foreground">Saved ✓</span>
+          )}
+          {autoSaveStatus === 'error' && (
+            <span className="text-sm text-destructive">Failed to save</span>
+          )}
+        </div>
+      ) : (
+        <div className="flex justify-end gap-2">
+          {onCancel && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              {t('common.cancel')}
+            </Button>
+          )}
           <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={isSubmitting}
+            type="submit"
+            disabled={!isValid || isSubmitting}
           >
-            {t('common.cancel')}
+            {isSubmitting ? t('common.loading') : t('common.create')}
           </Button>
-        )}
-        <Button
-          type="submit"
-          disabled={!isValid || isSubmitting}
-        >
-          {isSubmitting ? t('common.loading') : (event ? t('common.save') : t('common.create'))}
-        </Button>
-      </div>
+        </div>
+      )}
     </form>
   )
 }
