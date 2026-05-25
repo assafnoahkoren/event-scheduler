@@ -33,6 +33,7 @@ interface EventFormProps {
 export interface EventFormData {
   type: 'EVENT' | 'PRE_EVENT_MEETING'
   title: string
+  nickname?: string
   description?: string
   startDate: Date
   endDate?: Date
@@ -56,6 +57,7 @@ export function EventForm({
   // Form state
   const [type, setType] = useState<'EVENT' | 'PRE_EVENT_MEETING'>(event?.type || 'EVENT')
   const [title, setTitle] = useState(event?.title || '')
+  const [nickname, setNickname] = useState(event?.nickname || '')
   const [description, setDescription] = useState(event?.description || '')
   const [startDate, setStartDate] = useState(
     event?.startDate ? new Date(event.startDate) : (initialDate || new Date())
@@ -116,6 +118,7 @@ export function EventForm({
     onSubmit({
       type,
       title: title.trim(),
+      nickname: nickname.trim() || undefined,
       description: description.trim() || undefined,
       startDate,
       endDate,
@@ -160,6 +163,18 @@ export function EventForm({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder={t('events.eventTitle')}
+          disabled={isSubmitting}
+        />
+      </div>
+
+      {/* Nickname */}
+      <div className="space-y-2">
+        <Label htmlFor="nickname">{t('events.eventNickname')}</Label>
+        <Input
+          id="nickname"
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
+          placeholder={t('events.eventNickname')}
           disabled={isSubmitting}
         />
       </div>
