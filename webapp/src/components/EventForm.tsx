@@ -28,6 +28,7 @@ interface EventFormProps {
   onSubmit: (data: EventFormData) => void
   onCancel?: () => void
   isSubmitting?: boolean
+  saveError?: boolean
 }
 
 export interface EventFormData {
@@ -48,7 +49,8 @@ export function EventForm({
   initialClientId,
   onSubmit,
   onCancel,
-  isSubmitting = false
+  isSubmitting = false,
+  saveError = false
 }: EventFormProps) {
   const { t } = useTranslation()
   const utils = trpc.useUtils()

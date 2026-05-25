@@ -168,6 +168,7 @@ export function Event() {
                   onDeleteClick={() => setShowDeleteDialog(true)}
                   isUpdating={updateMutation.isPending}
                   isDeleting={deleteMutation.isPending}
+                  isUpdateError={updateMutation.isError}
                 />
               )}
             </TabsContent>

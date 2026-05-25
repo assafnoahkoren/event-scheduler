@@ -11,6 +11,7 @@ interface EventDetailsTabProps {
   onDeleteClick: () => void
   isUpdating: boolean
   isDeleting: boolean
+  isUpdateError?: boolean
 }
 
 export function EventDetailsTab({
@@ -20,6 +21,7 @@ export function EventDetailsTab({
   onDeleteClick,
   isUpdating,
   isDeleting,
+  isUpdateError = false,
 }: EventDetailsTabProps) {
   const { t } = useTranslation()
 
@@ -28,7 +30,7 @@ export function EventDetailsTab({
       {/* Event Costs Section */}
       <EventCostsSection eventId={eventId} />
 
-      <EventForm event={event} onSubmit={onUpdate} isSubmitting={isUpdating} />
+      <EventForm event={event} onSubmit={onUpdate} isSubmitting={isUpdating} saveError={isUpdateError} />
 
       <div className="pt-4 border-t">
         <Button
