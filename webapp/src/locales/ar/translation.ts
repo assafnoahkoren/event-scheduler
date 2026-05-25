@@ -142,6 +142,7 @@ export const arTranslation: TranslationType = {
     noEvents: "لا توجد أحداث مجدولة بعد",
     searchPlaceholder: "البحث عن أحداث...",
     searchNoResults: "لم يتم العثور على أحداث",
+    searchStartTyping: "ابدأ الكتابة للبحث عن أحداث",
     createEvent: "إنشاء حدث",
     eventType: "نوع الحدث",
     event: "حدث",
