@@ -38,7 +38,7 @@ export interface EventFormData {
   type: 'EVENT' | 'PRE_EVENT_MEETING'
   title: string
   nickname?: string
-  depositAmount?: number
+  depositAmount?: number | null
   acumPaid?: boolean
   description?: string
   startDate: Date
@@ -141,7 +141,7 @@ export function EventForm({
         type,
         title: title.trim(),
         nickname: nickname.trim() || undefined,
-        depositAmount: depositAmount !== '' ? depositAmount : undefined,
+        depositAmount: depositAmount !== '' ? depositAmount : null,
         acumPaid,
         description: description.trim() || undefined,
         startDate,
@@ -194,7 +194,7 @@ export function EventForm({
       type,
       title: title.trim(),
       nickname: nickname.trim() || undefined,
-      depositAmount: depositAmount !== '' ? depositAmount : undefined,
+      depositAmount: depositAmount !== '' ? depositAmount : null,
       acumPaid,
       description: description.trim() || undefined,
       startDate,
