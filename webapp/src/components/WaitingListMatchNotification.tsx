@@ -202,6 +202,8 @@ export function WaitingListMatchNotification() {
       isAllDay: formData.isAllDay,
       clientId: formData.clientId || undefined,
       status: formData.status || 'SCHEDULED',
+      nickname: formData.nickname || undefined,
+      type: formData.type,
     })
   }
 
