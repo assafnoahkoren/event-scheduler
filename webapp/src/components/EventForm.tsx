@@ -79,6 +79,8 @@ export function EventForm({
   // Drives the auto-save status indicator rendered in the actions row
   const [autoSaveStatus, setAutoSaveStatus] = useState<AutoSaveStatus>('idle')
   const wasSubmitting = useRef(false)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isFirstRender = useRef(true)
 
   // Auto-resize textarea
   useEffect(() => {
@@ -110,6 +112,36 @@ export function EventForm({
       }
     }
   }, [isSubmitting, saveError, event])
+
+  useEffect(() => {
+    if (!event) return
+
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (!isValid) return
+
+    debounceRef.current = setTimeout(() => {
+      onSubmit({
+        type,
+        title: title.trim(),
+        nickname: nickname.trim() || undefined,
+        description: description.trim() || undefined,
+        startDate,
+        endDate,
+        isAllDay,
+        clientId,
+        status,
+      })
+    }, 1000)
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [type, title, nickname, description, startDate, endDate, isAllDay, clientId, status]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch selected client details
   const { data: selectedClient } = trpc.clients.get.useQuery(
