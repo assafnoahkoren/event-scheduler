@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
 import { ClientCombobox } from '@/components/ClientCombobox'
 import { ClientForm, type ClientFormData } from '@/components/ClientForm'
 import { trpc } from '@/utils/trpc'
@@ -37,6 +38,8 @@ export interface EventFormData {
   type: 'EVENT' | 'PRE_EVENT_MEETING'
   title: string
   nickname?: string
+  depositAmount?: number
+  acumPaid?: boolean
   description?: string
   startDate: Date
   endDate?: Date
@@ -62,6 +65,8 @@ export function EventForm({
   const [type, setType] = useState<'EVENT' | 'PRE_EVENT_MEETING'>(event?.type || 'EVENT')
   const [title, setTitle] = useState(event?.title || '')
   const [nickname, setNickname] = useState(event?.nickname || '')
+  const [depositAmount, setDepositAmount] = useState<number | ''>(event?.depositAmount ?? '')
+  const [acumPaid, setAcumPaid] = useState(event?.acumPaid ?? false)
   const [description, setDescription] = useState(event?.description || '')
   const [startDate, setStartDate] = useState(
     event?.startDate ? new Date(event.startDate) : (initialDate || new Date())
@@ -136,6 +141,8 @@ export function EventForm({
         type,
         title: title.trim(),
         nickname: nickname.trim() || undefined,
+        depositAmount: depositAmount !== '' ? depositAmount : undefined,
+        acumPaid,
         description: description.trim() || undefined,
         startDate,
         endDate,
@@ -151,7 +158,7 @@ export function EventForm({
         debounceRef.current = null
       }
     }
-  }, [type, title, nickname, description, startDate, endDate, isAllDay, clientId, status]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [type, title, nickname, depositAmount, acumPaid, description, startDate, endDate, isAllDay, clientId, status]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch selected client details
   const { data: selectedClient } = trpc.clients.get.useQuery(
@@ -187,6 +194,8 @@ export function EventForm({
       type,
       title: title.trim(),
       nickname: nickname.trim() || undefined,
+      depositAmount: depositAmount !== '' ? depositAmount : undefined,
+      acumPaid,
       description: description.trim() || undefined,
       startDate,
       endDate,
@@ -336,7 +345,32 @@ export function EventForm({
         />
       </div>
 
-      
+      {/* Deposit & ACUM */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="depositAmount">{t('events.depositAmount')}</Label>
+          <Input
+            id="depositAmount"
+            type="number"
+            min="0"
+            value={depositAmount}
+            onChange={(e) => setDepositAmount(e.target.value === '' ? '' : Number(e.target.value))}
+            placeholder="0"
+            disabled={isSubmitting}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="acumPaid">{t('events.acumPaid')}</Label>
+          <div className="flex items-center h-10">
+            <Checkbox
+              id="acumPaid"
+              checked={acumPaid}
+              onCheckedChange={(checked) => setAcumPaid(checked === true)}
+              disabled={isSubmitting}
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Actions */}
       {event ? (
