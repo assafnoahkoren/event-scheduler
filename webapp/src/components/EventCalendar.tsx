@@ -227,7 +227,7 @@ export function EventCalendar() {
                 "w-3 h-3",
                 (nonMeetingEvents[0].depositAmount ?? 0) > 0
                   ? "text-green-500"
-                  : "text-red-500"
+                  : "text-red-500 opacity-40"
               )}
             />
             <Music
@@ -235,7 +235,7 @@ export function EventCalendar() {
                 "w-3 h-3",
                 nonMeetingEvents[0].acumPaid
                   ? "text-green-500"
-                  : "text-red-500"
+                  : "text-red-500 opacity-40"
               )}
             />
           </div>
