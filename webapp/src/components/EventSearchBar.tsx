@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { EventCard } from '@/components/EventCard'
@@ -6,9 +7,11 @@ import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useTranslation } from 'react-i18next'
+import { navigateToEvent } from '@/utils/navigation'
 
 export function EventSearchBar() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { currentSite } = useCurrentSite()
   const [query, setQuery] = useState('')
   const [isFocused, setIsFocused] = useState(false)
@@ -50,9 +53,10 @@ export function EventSearchBar() {
     }
   }
 
-  const handleResultClick = () => {
+  const handleResultClick = (eventId: string) => {
     setIsFocused(false)
     setQuery('')
+    navigateToEvent(navigate, eventId)
   }
 
   if (!currentSite) return null
@@ -87,7 +91,7 @@ export function EventSearchBar() {
           ) : (
             <div className="divide-y">
               {results.map(event => (
-                <EventCard key={event.id} event={event} onClick={handleResultClick} />
+                <EventCard key={event.id} event={event} onClick={() => handleResultClick(event.id)} />
               ))}
             </div>
           )}
