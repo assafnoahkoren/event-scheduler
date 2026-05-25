@@ -30,6 +30,13 @@ export const getEventsSchema = z.object({
   status: z.nativeEnum(EventStatus).optional(),
 })
 
+export const searchEventsSchema = z.object({
+  siteId: z.string().uuid(),
+  query: z.string().min(1),
+})
+
+export type SearchEventsInput = z.infer<typeof searchEventsSchema>
+
 // Types
 export type CreateEventInput = z.infer<typeof createEventSchema>
 export type UpdateEventInput = z.infer<typeof updateEventSchema>
@@ -93,6 +100,15 @@ export class EventService {
       objectType: 'Event',
       objectId: eventId,
     })
+  }
+
+  private parseDdMm(query: string): { day: number; month: number } | null {
+    const match = query.match(/^(\d{1,2})\/(\d{1,2})$/)
+    if (!match) return null
+    const day = parseInt(match[1], 10)
+    const month = parseInt(match[2], 10)
+    if (day < 1 || day > 31 || month < 1 || month > 12) return null
+    return { day, month }
   }
 
   async createEvent(userId: string, input: CreateEventInput) {
@@ -480,6 +496,53 @@ export class EventService {
     })
 
     return { success: true }
+  }
+
+  async searchEvents(userId: string, input: SearchEventsInput) {
+    const siteUser = await prisma.siteUser.findFirst({
+      where: { userId, siteId: input.siteId }
+    })
+
+    if (!siteUser) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You do not have permission to view events in this site'
+      })
+    }
+
+    const orClauses: any[] = [
+      { title: { contains: input.query, mode: 'insensitive' } },
+      { description: { contains: input.query, mode: 'insensitive' } },
+      { client: { name: { contains: input.query, mode: 'insensitive' } } },
+    ]
+
+    const parsed = this.parseDdMm(input.query)
+    if (parsed) {
+      const currentYear = new Date().getFullYear()
+      for (const year of [currentYear - 1, currentYear, currentYear + 1]) {
+        const start = new Date(year, parsed.month - 1, parsed.day, 0, 0, 0, 0)
+        const end = new Date(year, parsed.month - 1, parsed.day, 23, 59, 59, 999)
+        orClauses.push({ startDate: { gte: start, lte: end } })
+      }
+    }
+
+    const events = await prisma.event.findMany({
+      where: { siteId: input.siteId, OR: orClauses },
+      include: {
+        client: true,
+        creator: { select: { id: true, firstName: true, lastName: true } }
+      }
+    })
+
+    const now = new Date()
+    const future = events
+      .filter(e => e.startDate >= now)
+      .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
+    const past = events
+      .filter(e => e.startDate < now)
+      .sort((a, b) => b.startDate.getTime() - a.startDate.getTime())
+
+    return [...future, ...past]
   }
 
   async calculateProfitByDateRange(userId: string, siteId: string, startDate: string, endDate: string) {
