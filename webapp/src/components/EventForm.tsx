@@ -83,6 +83,8 @@ export function EventForm({
   const isFirstRender = useRef(true)
   const onSubmitRef = useRef(onSubmit)
   useEffect(() => { onSubmitRef.current = onSubmit }, [onSubmit])
+  // Reset isFirstRender on unmount so StrictMode double-invocation and re-mounts start clean
+  useEffect(() => () => { isFirstRender.current = true }, [])
 
   // Auto-resize textarea
   useEffect(() => {
