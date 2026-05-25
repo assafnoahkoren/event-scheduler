@@ -16,6 +16,8 @@ export const arTranslation: TranslationType = {
     cancel: "إلغاء",
     save: "حفظ",
     saving: "جاري الحفظ...",
+    saved: "تم الحفظ ✓",
+    failedToSave: "فشل الحفظ",
     delete: "حذف",
     deleting: "جاري الحذف...",
     edit: "تعديل",

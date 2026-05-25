@@ -14,6 +14,8 @@ export const enTranslation = {
     cancel: "Cancel",
     save: "Save",
     saving: "Saving...",
+    saved: "Saved ✓",
+    failedToSave: "Failed to save",
     delete: "Delete",
     deleting: "Deleting...",
     edit: "Edit",

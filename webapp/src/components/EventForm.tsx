@@ -340,13 +340,13 @@ export function EventForm({
       {event ? (
         <div className="flex justify-end h-9 items-center">
           {autoSaveStatus === 'saving' && (
-            <span className="text-sm text-muted-foreground">Saving...</span>
+            <span className="text-sm text-muted-foreground">{t('common.saving')}</span>
           )}
           {autoSaveStatus === 'saved' && (
-            <span className="text-sm text-muted-foreground">Saved ✓</span>
+            <span className="text-sm text-muted-foreground">{t('common.saved')}</span>
           )}
           {autoSaveStatus === 'error' && (
-            <span className="text-sm text-destructive">Failed to save</span>
+            <span className="text-sm text-destructive">{t('common.failedToSave')}</span>
           )}
         </div>
       ) : (

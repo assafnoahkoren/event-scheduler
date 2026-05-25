@@ -16,6 +16,8 @@ export const heTranslation: TranslationType = {
     cancel: "ביטול",
     save: "שמור",
     saving: "שומר...",
+    saved: "נשמר ✓",
+    failedToSave: "שמירה נכשלה",
     delete: "מחק",
     deleting: "מוחק...",
     edit: "ערוך",
