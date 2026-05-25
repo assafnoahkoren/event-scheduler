@@ -208,7 +208,7 @@ export function EventForm({
             type="button"
             variant={type === 'EVENT' ? 'default' : 'outline'}
             onClick={() => setType('EVENT')}
-            disabled={isSubmitting}
+            disabled={!event && isSubmitting}
           >
             {t('events.event')}
           </Button>
@@ -216,7 +216,7 @@ export function EventForm({
             type="button"
             variant={type === 'PRE_EVENT_MEETING' ? 'default' : 'outline'}
             onClick={() => setType('PRE_EVENT_MEETING')}
-            disabled={isSubmitting}
+            disabled={!event && isSubmitting}
           >
             {t('events.preEventMeeting')}
           </Button>
@@ -231,7 +231,7 @@ export function EventForm({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder={t('events.eventTitle')}
-          disabled={isSubmitting}
+          disabled={!event && isSubmitting}
         />
       </div>
 
@@ -243,7 +243,7 @@ export function EventForm({
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
           placeholder={t('events.eventNickname')}
-          disabled={isSubmitting}
+          disabled={!event && isSubmitting}
         />
       </div>
 
@@ -256,7 +256,7 @@ export function EventForm({
             setClientId(value)
             setShowClientForm(false) // Hide form when changing client
           }}
-          disabled={isSubmitting}
+          disabled={!event && isSubmitting}
         />
 
         {/* Show Edit button when a client is selected */}
@@ -266,7 +266,7 @@ export function EventForm({
             variant="outline"
             size="sm"
             onClick={() => setShowClientForm(!showClientForm)}
-            disabled={isSubmitting}
+            disabled={!event && isSubmitting}
           >
             {showClientForm && t('common.cancel')} {t('common.edit')} {t('clients.client')}
           </Button>
@@ -299,7 +299,7 @@ export function EventForm({
               : format(startDate, 'yyyy-MM-dd')
             }
             onChange={(e) => setStartDate(new Date(e.target.value))}
-            disabled={isSubmitting}
+            disabled={!event && isSubmitting}
           />
         </div>
 
@@ -330,7 +330,7 @@ export function EventForm({
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder={t('events.eventDescription')}
-          disabled={isSubmitting}
+          disabled={!event && isSubmitting}
           className="resize-none overflow-auto min-h-[80px] transition-height"
           style={{ height: '80px' }}
         />
@@ -358,7 +358,7 @@ export function EventForm({
               type="button"
               variant="outline"
               onClick={onCancel}
-              disabled={isSubmitting}
+              disabled={!event && isSubmitting}
             >
               {t('common.cancel')}
             </Button>
