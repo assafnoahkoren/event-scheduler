@@ -12,7 +12,9 @@ model Event {
   title       String?
   description String?
   location    String?
-  nickname    String?
+  nickname      String?
+  depositAmount Float?   @map("deposit_amount")
+  acumPaid      Boolean  @default(false) @map("acum_paid")
 
   // Client relationship (optional)
   clientId    String?  @map("client_id")
