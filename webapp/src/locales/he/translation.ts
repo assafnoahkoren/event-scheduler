@@ -140,6 +140,8 @@ export const heTranslation: TranslationType = {
     upcomingEvents: "אירועים סגורים",
     draftEvents: "מתעניינים",
     noEvents: "אין אירועים מתוכננים עדיין",
+    searchPlaceholder: "חפש אירועים...",
+    searchNoResults: "לא נמצאו אירועים",
     createEvent: "צור אירוע",
     eventType: "סוג אירוע",
     event: "אירוע",

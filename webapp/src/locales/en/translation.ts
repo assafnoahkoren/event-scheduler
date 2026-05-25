@@ -138,6 +138,8 @@ export const enTranslation = {
     upcomingEvents: "Upcoming Events",
     draftEvents: "Draft Events",
     noEvents: "No events scheduled yet",
+    searchPlaceholder: "Search events...",
+    searchNoResults: "No events found",
     createEvent: "Create Event",
     eventType: "Event Type",
     event: "Event",

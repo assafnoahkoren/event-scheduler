@@ -140,6 +140,8 @@ export const arTranslation: TranslationType = {
     upcomingEvents: "الأحداث القادمة",
     draftEvents: "الأحداث المسودة",
     noEvents: "لا توجد أحداث مجدولة بعد",
+    searchPlaceholder: "البحث عن أحداث...",
+    searchNoResults: "لم يتم العثور على أحداث",
     createEvent: "إنشاء حدث",
     eventType: "نوع الحدث",
     event: "حدث",
