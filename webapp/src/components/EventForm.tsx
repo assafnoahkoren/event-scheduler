@@ -143,7 +143,7 @@ export function EventForm({
         clientId,
         status,
       })
-    }, 250)
+    }, 1000)
 
     return () => {
       if (debounceRef.current) {
