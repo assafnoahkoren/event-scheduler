@@ -5,7 +5,13 @@ import { Prisma } from '@prisma/client'
  * Automatically applies to all models that have soft delete fields (isDeleted, deletedAt)
  * Intercepts delete operations and converts them to updates
  * Also filters out soft-deleted records from queries
+ *
+ * Models listed in MODELS_WITHOUT_SOFT_DELETE are skipped — they have no isDeleted column
+ * (e.g. immutable ledger/audit tables).
  */
+
+/** Models that intentionally have no isDeleted column — skip soft-delete logic for these. */
+const MODELS_WITHOUT_SOFT_DELETE = new Set(['StockLedgerEntry'])
 
 export function softDeleteExtension() {
   return Prisma.defineExtension((client) => {
@@ -14,6 +20,9 @@ export function softDeleteExtension() {
       query: {
         $allModels: {
           async delete({ model, args }: any) {
+            if (MODELS_WITHOUT_SOFT_DELETE.has(model)) {
+              return (client as any)[model].delete(args)
+            }
             // Instead of delete, perform an update
             return (client as any)[model].update({
               where: args.where,
@@ -25,6 +34,9 @@ export function softDeleteExtension() {
           },
 
           async deleteMany({ model, args }: any) {
+            if (MODELS_WITHOUT_SOFT_DELETE.has(model)) {
+              return (client as any)[model].deleteMany(args)
+            }
             // Instead of deleteMany, perform updateMany
             return (client as any)[model].updateMany({
               where: args.where,
@@ -35,7 +47,10 @@ export function softDeleteExtension() {
             })
           },
 
-          async findFirst({ args, query }: any) {
+          async findFirst({ model, args, query }: any) {
+            if (MODELS_WITHOUT_SOFT_DELETE.has(model)) {
+              return query(args)
+            }
             // Add filter to exclude soft deleted records
             args.where = {
               ...args.where,
@@ -44,7 +59,10 @@ export function softDeleteExtension() {
             return query(args)
           },
 
-          async findUnique({ args, query }: any) {
+          async findUnique({ model, args, query }: any) {
+            if (MODELS_WITHOUT_SOFT_DELETE.has(model)) {
+              return query(args)
+            }
             // Add filter to exclude soft deleted records
             args.where = {
               ...args.where,
@@ -53,7 +71,10 @@ export function softDeleteExtension() {
             return query(args)
           },
 
-          async findMany({ args, query }: any) {
+          async findMany({ model, args, query }: any) {
+            if (MODELS_WITHOUT_SOFT_DELETE.has(model)) {
+              return query(args)
+            }
             // Add filter to exclude soft deleted records
             if (!args.where) {
               args.where = {}
@@ -64,7 +85,10 @@ export function softDeleteExtension() {
             return query(args)
           },
 
-          async findUniqueOrThrow({ args, query }: any) {
+          async findUniqueOrThrow({ model, args, query }: any) {
+            if (MODELS_WITHOUT_SOFT_DELETE.has(model)) {
+              return query(args)
+            }
             // Add filter to exclude soft deleted records
             args.where = {
               ...args.where,
@@ -73,7 +97,10 @@ export function softDeleteExtension() {
             return query(args)
           },
 
-          async findFirstOrThrow({ args, query }: any) {
+          async findFirstOrThrow({ model, args, query }: any) {
+            if (MODELS_WITHOUT_SOFT_DELETE.has(model)) {
+              return query(args)
+            }
             // Add filter to exclude soft deleted records
             args.where = {
               ...args.where,
@@ -82,7 +109,10 @@ export function softDeleteExtension() {
             return query(args)
           },
 
-          async count({ args, query }: any) {
+          async count({ model, args, query }: any) {
+            if (MODELS_WITHOUT_SOFT_DELETE.has(model)) {
+              return query(args)
+            }
             // Add filter to exclude soft deleted records
             if (!args.where) {
               args.where = {}
@@ -93,7 +123,10 @@ export function softDeleteExtension() {
             return query(args)
           },
 
-          async aggregate({ args, query }: any) {
+          async aggregate({ model, args, query }: any) {
+            if (MODELS_WITHOUT_SOFT_DELETE.has(model)) {
+              return query(args)
+            }
             // Add filter to exclude soft deleted records
             if (!args.where) {
               args.where = {}
@@ -104,7 +137,10 @@ export function softDeleteExtension() {
             return query(args)
           },
 
-          async groupBy({ args, query }: any) {
+          async groupBy({ model, args, query }: any) {
+            if (MODELS_WITHOUT_SOFT_DELETE.has(model)) {
+              return query(args)
+            }
             // Add filter to exclude soft deleted records
             if (!args.where) {
               args.where = {}
@@ -115,7 +151,10 @@ export function softDeleteExtension() {
             return query(args)
           },
 
-          async update({ args, query }: any) {
+          async update({ model, args, query }: any) {
+            if (MODELS_WITHOUT_SOFT_DELETE.has(model)) {
+              return query(args)
+            }
             // Add filter to prevent updating soft deleted records
             args.where = {
               ...args.where,
@@ -124,7 +163,10 @@ export function softDeleteExtension() {
             return query(args)
           },
 
-          async updateMany({ args, query }: any) {
+          async updateMany({ model, args, query }: any) {
+            if (MODELS_WITHOUT_SOFT_DELETE.has(model)) {
+              return query(args)
+            }
             // Add filter to prevent updating soft deleted records
             if (!args.where) {
               args.where = {}
