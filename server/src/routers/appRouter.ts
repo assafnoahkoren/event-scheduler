@@ -17,6 +17,7 @@ import { taskRouter } from './task.router';
 import { paymentRouter } from './payment.router';
 import { userRouter } from './user.router';
 import { floorPlanRouter } from './floor-plans';
+import { stockRouter } from './stock';
 
 export const appRouter = router({
   // Auth routes
@@ -69,6 +70,9 @@ export const appRouter = router({
 
   // Floor plan feature (componentTypes, siteFloorPlans, templates, eventLayouts)
   floorPlans: floorPlanRouter,
+
+  // Stock management routes
+  stock: stockRouter,
 
   // Public routes
   ping: publicProcedure
