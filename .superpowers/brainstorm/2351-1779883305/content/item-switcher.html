@@ -1,0 +1,144 @@
+<h2>Switching Stock Items</h2>
+<p class="subtitle">Tap the progress chip (3/8) to open the item list — jump to any item, see what's done and what's pending</p>
+
+<div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:20px;align-items:flex-start;">
+
+  <!-- Phone: counting screen with tappable progress -->
+  <div style="text-align:center;">
+    <div class="label" style="margin-bottom:10px;">1. Tap the progress chip</div>
+    <div style="width:220px;background:#0d0d1a;border-radius:24px;padding:16px;border:2px solid #334155;box-shadow:0 8px 32px rgba(0,0,0,0.4);display:inline-block;">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#555;margin-bottom:12px;">
+        <span>📍 Bar A</span>
+        <!-- The tappable chip -->
+        <span style="color:#6c63ff;font-weight:600;background:#1a1a3e;padding:3px 10px;border-radius:20px;border:1px solid #6c63ff;cursor:pointer;">3 / 8 items ▾</span>
+      </div>
+
+      <div style="background:#1a1a2e;border-radius:4px;height:4px;margin-bottom:16px;">
+        <div style="background:#6c63ff;width:37%;height:4px;border-radius:4px;"></div>
+      </div>
+
+      <div style="font-size:18px;font-weight:700;margin-bottom:4px;">Beer 330ml</div>
+      <div style="font-size:11px;color:#888;margin-bottom:20px;">Expected: <span style="color:#f59e0b;font-weight:600;">48</span> units</div>
+
+      <div style="font-size:72px;font-weight:800;color:#6c63ff;line-height:1;margin-bottom:4px;">23</div>
+      <div style="font-size:11px;color:#888;margin-bottom:24px;">counted so far</div>
+
+      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:20px;">
+        <button style="width:72px;height:72px;border-radius:50%;background:#1a1a2e;border:2px solid #ef4444;color:#ef4444;font-size:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
+        <button style="width:72px;height:72px;border-radius:50%;background:#6c63ff;border:none;color:white;font-size:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+      </div>
+
+      <div style="display:flex;gap:8px;">
+        <button style="flex:1;padding:10px;background:#0d0d1a;border:1px solid #334155;border-radius:10px;color:#888;font-size:12px;">Skip</button>
+        <button style="flex:2;padding:10px;background:#6c63ff;border:none;border-radius:10px;color:white;font-size:12px;font-weight:600;">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div style="display:flex;align-items:center;font-size:28px;color:#555;padding-top:60px;">→</div>
+
+  <!-- Phone: bottom sheet open -->
+  <div style="text-align:center;">
+    <div class="label" style="margin-bottom:10px;">2. Bottom sheet — jump anywhere</div>
+    <div style="width:220px;background:#0d0d1a;border-radius:24px;overflow:hidden;border:2px solid #334155;box-shadow:0 8px 32px rgba(0,0,0,0.4);display:inline-block;position:relative;">
+
+      <!-- Dimmed background (counting screen) -->
+      <div style="padding:16px;opacity:0.3;">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#555;margin-bottom:12px;">
+          <span>📍 Bar A</span>
+          <span style="color:#6c63ff;font-weight:600;">3 / 8 items</span>
+        </div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:4px;">Beer 330ml</div>
+        <div style="font-size:72px;font-weight:800;color:#6c63ff;line-height:1;margin-bottom:4px;">23</div>
+      </div>
+
+      <!-- Bottom sheet overlay -->
+      <div style="position:absolute;bottom:0;left:0;right:0;background:#141428;border-radius:16px 16px 0 0;border-top:1px solid #334155;padding:12px;">
+        <!-- Handle -->
+        <div style="width:32px;height:3px;background:#334155;border-radius:2px;margin:0 auto 12px;"></div>
+
+        <div style="font-size:12px;font-weight:600;color:#aaa;margin-bottom:10px;">All items — Bar A recount</div>
+
+        <!-- Item list -->
+        <div style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;">
+
+          <!-- Done items -->
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#0d1a0d;border-radius:8px;border-left:3px solid #22c55e;">
+            <div>
+              <div style="font-size:12px;font-weight:500;">Coca-Cola 1.5L</div>
+              <div style="font-size:10px;color:#888;">counted: 12 · expected: 12</div>
+            </div>
+            <span style="color:#22c55e;font-size:14px;">✓</span>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#0d1a0d;border-radius:8px;border-left:3px solid #22c55e;">
+            <div>
+              <div style="font-size:12px;font-weight:500;">Vodka 1L</div>
+              <div style="font-size:10px;color:#888;">counted: 3 · expected: 5</div>
+            </div>
+            <span style="color:#22c55e;font-size:14px;">✓</span>
+          </div>
+
+          <!-- Current (active) -->
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#1a1a3e;border-radius:8px;border-left:3px solid #6c63ff;border:1px solid #6c63ff;">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#6c63ff;">Beer 330ml</div>
+              <div style="font-size:10px;color:#888;">counting: 23 / 48…</div>
+            </div>
+            <span style="color:#6c63ff;font-size:10px;font-weight:600;">NOW</span>
+          </div>
+
+          <!-- Pending items -->
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#1a1a2e;border-radius:8px;border-left:3px solid #334155;cursor:pointer;opacity:0.9;">
+            <div>
+              <div style="font-size:12px;">Orange Juice 1L</div>
+              <div style="font-size:10px;color:#888;">expected: 8</div>
+            </div>
+            <span style="color:#555;font-size:12px;">→</span>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#1a1a2e;border-radius:8px;border-left:3px solid #334155;cursor:pointer;opacity:0.9;">
+            <div>
+              <div style="font-size:12px;">Red Bull 250ml</div>
+              <div style="font-size:10px;color:#888;">expected: 24</div>
+            </div>
+            <span style="color:#555;font-size:12px;">→</span>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#1a1a2e;border-radius:8px;border-left:3px solid #334155;cursor:pointer;">
+            <div>
+              <div style="font-size:12px;">Whiskey 700ml</div>
+              <div style="font-size:10px;color:#888;">expected: 4</div>
+            </div>
+            <span style="color:#555;font-size:12px;">→</span>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#1a1a2e;border-radius:8px;border-left:3px solid #334155;cursor:pointer;">
+            <div>
+              <div style="font-size:12px;">Sparkling Water 1L</div>
+              <div style="font-size:10px;color:#888;">expected: 16</div>
+            </div>
+            <span style="color:#555;font-size:12px;">→</span>
+          </div>
+
+        </div>
+
+        <button style="width:100%;margin-top:10px;padding:10px;background:#22c55e;border:none;border-radius:10px;color:white;font-size:12px;font-weight:600;cursor:pointer;">Submit recount (when all done)</button>
+      </div>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:#888;max-width:220px;">
+      Tap any pending item to jump to it.<br>Done items show ✓ and can be re-tapped to correct.
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:20px;padding:14px;background:#0f0f1a;border:1px solid #334155;border-radius:8px;max-width:600px;margin-left:auto;margin-right:auto;">
+  <div style="font-size:13px;font-weight:600;margin-bottom:6px;">Same pattern works for all 3 flows:</div>
+  <div style="font-size:12px;color:#aaa;line-height:1.8;">
+    • <b>Recount</b>: progress chip (3/8) → item list sheet → tap to jump<br>
+    • <b>Movement</b>: "Beer 330ml ▾" label at top → item picker sheet<br>
+    • <b>Arrival</b>: usually single item per order, so no switching needed
+  </div>
+</div>

@@ -32,6 +32,13 @@ model Site {
   floorPlans  SiteFloorPlan[]
   // organizationPermissions OrganizationPermission[] // DEFERRED: Deep permissions for later
 
+  // Stock / Inventory
+  stockItems     StockItem[]
+  stockLocations StockLocation[]
+  purchaseOrders PurchaseOrder[]
+  stockMovements StockMovement[]
+  stockRecounts  StockRecount[]
+
   @@index([ownerId])
   @@index([organizationId])
   @@index([isDeleted])

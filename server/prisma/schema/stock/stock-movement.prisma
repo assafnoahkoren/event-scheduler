@@ -1,0 +1,32 @@
+model StockMovement {
+  id             String        @id @default(uuid())
+
+  siteId         String        @map("site_id")
+  site           Site          @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  itemId         String        @map("item_id")
+  item           StockItem     @relation(fields: [itemId], references: [id])
+
+  fromLocationId String        @map("from_location_id")
+  fromLocation   StockLocation @relation("MovementFrom", fields: [fromLocationId], references: [id])
+
+  toLocationId   String        @map("to_location_id")
+  toLocation     StockLocation @relation("MovementTo", fields: [toLocationId], references: [id])
+
+  quantity       Float
+  movedAt        DateTime      @map("moved_at")
+  notes          String?
+
+  isDeleted   Boolean  @default(false) @map("is_deleted")
+  deletedAt   DateTime? @map("deleted_at")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([siteId])
+  @@index([itemId])
+  @@index([fromLocationId])
+  @@index([toLocationId])
+  @@index([isDeleted])
+  @@map("stock_movements")
+}

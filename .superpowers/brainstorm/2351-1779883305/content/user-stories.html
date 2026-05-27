@@ -1,0 +1,101 @@
+<h2>User Stories — On the Job, Mobile</h2>
+<p class="subtitle">Four roles, four contexts. Which ones match your team, and are any missing?</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;">
+
+  <!-- Story 1: Receiving -->
+  <div style="background:#1a1a2e;border-radius:10px;padding:16px;border-left:4px solid #22c55e;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <span style="font-size:22px;">🚚</span>
+      <div>
+        <div style="font-size:13px;font-weight:600;">Receiving a delivery</div>
+        <div style="font-size:11px;color:#888;">Warehouse worker, truck just arrived</div>
+      </div>
+    </div>
+    <ol style="margin:0;padding-left:16px;font-size:12px;line-height:1.8;color:#ccc;">
+      <li>Open app → see open purchase orders</li>
+      <li>Tap the relevant order</li>
+      <li>Enter how many actually arrived (may be less than ordered)</li>
+      <li>Confirm which location it goes to</li>
+      <li>Done — order auto-updates to PARTIAL or COMPLETE</li>
+    </ol>
+    <div style="margin-top:10px;padding:8px;background:#0d1a0d;border-radius:6px;font-size:11px;color:#86efac;">
+      ⚡ Goal: under 30 seconds, one hand, no typing
+    </div>
+  </div>
+
+  <!-- Story 2: Movement -->
+  <div style="background:#1a1a2e;border-radius:10px;padding:16px;border-left:4px solid #f59e0b;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <span style="font-size:22px;">🔄</span>
+      <div>
+        <div style="font-size:13px;font-weight:600;">Moving stock to the bar</div>
+        <div style="font-size:11px;color:#888;">Setup worker, pre-event</div>
+      </div>
+    </div>
+    <ol style="margin:0;padding-left:16px;font-size:12px;line-height:1.8;color:#ccc;">
+      <li>Tap "Move Stock"</li>
+      <li>Select item (e.g. Beer 330ml)</li>
+      <li>Use +/− stepper to enter quantity</li>
+      <li>Confirm From → To locations</li>
+      <li>Done — ledger updated</li>
+    </ol>
+    <div style="margin-top:10px;padding:8px;background:#1a1200;border-radius:6px;font-size:11px;color:#fcd34d;">
+      ⚡ Goal: log while carrying the crates, not after
+    </div>
+  </div>
+
+  <!-- Story 3: Recount -->
+  <div style="background:#1a1a2e;border-radius:10px;padding:16px;border-left:4px solid #ef4444;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <span style="font-size:22px;">📋</span>
+      <div>
+        <div style="font-size:13px;font-weight:600;">Post-event recount</div>
+        <div style="font-size:11px;color:#888;">Bar manager, after event ends</div>
+      </div>
+    </div>
+    <ol style="margin:0;padding-left:16px;font-size:12px;line-height:1.8;color:#ccc;">
+      <li>Tap "Recount" → select location (Bar A)</li>
+      <li>App shows each item with expected count</li>
+      <li>Enter actual count per item (stepper)</li>
+      <li>Skip items that weren't touched</li>
+      <li>Submit — system records all deltas at once</li>
+    </ol>
+    <div style="margin-top:10px;padding:8px;background:#1a0505;border-radius:6px;font-size:11px;color:#fca5a5;">
+      ⚡ Goal: works like a checklist, item by item, no thinking required
+    </div>
+  </div>
+
+  <!-- Story 4: Quick check -->
+  <div style="background:#1a1a2e;border-radius:10px;padding:16px;border-left:4px solid #6c63ff;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <span style="font-size:22px;">👁️</span>
+      <div>
+        <div style="font-size:13px;font-weight:600;">Checking stock before ordering</div>
+        <div style="font-size:11px;color:#888;">Event manager, planning next event</div>
+      </div>
+    </div>
+    <ol style="margin:0;padding-left:16px;font-size:12px;line-height:1.8;color:#ccc;">
+      <li>Open Stock → Levels</li>
+      <li>See totals per item across all locations</li>
+      <li>Identify what needs replenishing</li>
+      <li>Tap item → Create purchase order</li>
+    </ol>
+    <div style="margin-top:10px;padding:8px;background:#0a0818;border-radius:6px;font-size:11px;color:#a5b4fc;">
+      ⚡ Goal: immediate answer to "do we have enough X?"
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:20px;padding:14px;background:#0f0f1a;border:1px solid #334155;border-radius:8px;">
+  <div style="font-size:13px;font-weight:600;margin-bottom:8px;">📱 Mobile-first UX principles for all flows:</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;color:#aaa;">
+    <div>✅ Large +/− steppers for quantities (no keyboard)</div>
+    <div>✅ Context-aware: "I'm at Bar A" pre-selects location</div>
+    <div>✅ Bottom sheet drawers, not new pages</div>
+    <div>✅ Batch submit for recounts (all items at once)</div>
+    <div>✅ "Expected vs counted" shown side by side</div>
+    <div>✅ Quick actions prominent on home screen</div>
+  </div>
+</div>

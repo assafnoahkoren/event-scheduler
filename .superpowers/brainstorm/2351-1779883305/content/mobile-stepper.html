@@ -1,0 +1,146 @@
+<h2>Mobile Stepper UX</h2>
+<p class="subtitle">Tap + as you count. No keyboard, no typing. Which flow feels most natural?</p>
+
+<div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
+
+  <!-- Phone A: Recount flow -->
+  <div style="text-align:center;">
+    <div class="label" style="margin-bottom:10px;">Recount — item by item</div>
+    <div style="width:220px;background:#0d0d1a;border-radius:24px;padding:16px;border:2px solid #334155;box-shadow:0 8px 32px rgba(0,0,0,0.4);display:inline-block;">
+      <!-- Status bar -->
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#555;margin-bottom:12px;">
+        <span>📍 Bar A</span>
+        <span style="color:#6c63ff;font-weight:600;">3 / 8 items</span>
+      </div>
+
+      <!-- Progress bar -->
+      <div style="background:#1a1a2e;border-radius:4px;height:4px;margin-bottom:16px;">
+        <div style="background:#6c63ff;width:37%;height:4px;border-radius:4px;"></div>
+      </div>
+
+      <!-- Item name -->
+      <div style="font-size:18px;font-weight:700;margin-bottom:4px;">Beer 330ml</div>
+      <div style="font-size:11px;color:#888;margin-bottom:20px;">Expected: <span style="color:#f59e0b;font-weight:600;">48</span> units</div>
+
+      <!-- Big counter -->
+      <div style="font-size:72px;font-weight:800;color:#6c63ff;line-height:1;margin-bottom:4px;">23</div>
+      <div style="font-size:11px;color:#888;margin-bottom:24px;">counted so far</div>
+
+      <!-- +/- buttons -->
+      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:20px;">
+        <button style="width:72px;height:72px;border-radius:50%;background:#1a1a2e;border:2px solid #ef4444;color:#ef4444;font-size:32px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
+        <button style="width:72px;height:72px;border-radius:50%;background:#6c63ff;border:none;color:white;font-size:32px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+      </div>
+
+      <!-- Delta hint -->
+      <div style="font-size:11px;color:#888;margin-bottom:16px;padding:6px;background:#1a1a2e;border-radius:6px;">
+        ▼ 25 below expected — used at event
+      </div>
+
+      <!-- Next / Skip -->
+      <div style="display:flex;gap:8px;">
+        <button style="flex:1;padding:10px;background:#0d0d1a;border:1px solid #334155;border-radius:10px;color:#888;font-size:12px;cursor:pointer;">Skip</button>
+        <button style="flex:2;padding:10px;background:#6c63ff;border:none;border-radius:10px;color:white;font-size:12px;font-weight:600;cursor:pointer;">Next →</button>
+      </div>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:#888;max-width:220px;">
+      Tap + for each unit you count.<br>Delta shown live vs. expected.
+    </div>
+  </div>
+
+  <!-- Phone B: Arrival flow -->
+  <div style="text-align:center;">
+    <div class="label" style="margin-bottom:10px;">Arrival — from order</div>
+    <div style="width:220px;background:#0d0d1a;border-radius:24px;padding:16px;border:2px solid #334155;box-shadow:0 8px 32px rgba(0,0,0,0.4);display:inline-block;">
+      <!-- Order header -->
+      <div style="background:#0d1a0d;border-radius:8px;padding:8px 10px;margin-bottom:16px;border-left:3px solid #22c55e;">
+        <div style="font-size:10px;color:#888;">Purchase Order</div>
+        <div style="font-size:13px;font-weight:600;color:#22c55e;">Coke order · 50 crates</div>
+        <div style="font-size:10px;color:#888;">Supplier: Maccabi Beverages</div>
+      </div>
+
+      <!-- Item -->
+      <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Coca-Cola 1.5L</div>
+      <div style="font-size:11px;color:#888;margin-bottom:20px;">
+        Ordered: <b style="color:white;">50</b> &nbsp;·&nbsp; Already received: <b style="color:#22c55e;">0</b>
+      </div>
+
+      <!-- Big counter -->
+      <div style="font-size:72px;font-weight:800;color:#22c55e;line-height:1;margin-bottom:4px;">40</div>
+      <div style="font-size:11px;color:#888;margin-bottom:24px;">arriving now</div>
+
+      <!-- +/- buttons -->
+      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:20px;">
+        <button style="width:72px;height:72px;border-radius:50%;background:#1a1a2e;border:2px solid #ef4444;color:#ef4444;font-size:32px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
+        <button style="width:72px;height:72px;border-radius:50%;background:#22c55e;border:none;color:white;font-size:32px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+      </div>
+
+      <!-- Location -->
+      <div style="background:#1a1a2e;border-radius:8px;padding:8px 10px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:11px;color:#888;">Place at</span>
+        <span style="font-size:12px;font-weight:600;">🏭 Warehouse ▾</span>
+      </div>
+
+      <!-- Status note -->
+      <div style="font-size:11px;color:#f59e0b;margin-bottom:14px;padding:6px;background:#1a1200;border-radius:6px;">
+        ⚠ 10 still outstanding → order stays PARTIAL
+      </div>
+
+      <!-- Confirm -->
+      <button style="width:100%;padding:12px;background:#22c55e;border:none;border-radius:10px;color:white;font-size:13px;font-weight:600;cursor:pointer;">Confirm Arrival</button>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:#888;max-width:220px;">
+      Tap + per crate as it's unloaded.<br>Order status updates automatically.
+    </div>
+  </div>
+
+  <!-- Phone C: Movement flow -->
+  <div style="text-align:center;">
+    <div class="label" style="margin-bottom:10px;">Movement — warehouse → bar</div>
+    <div style="width:220px;background:#0d0d1a;border-radius:24px;padding:16px;border:2px solid #334155;box-shadow:0 8px 32px rgba(0,0,0,0.4);display:inline-block;">
+      <!-- Item selector -->
+      <div style="background:#1a1a2e;border-radius:8px;padding:8px 10px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:11px;color:#888;">Moving</span>
+        <span style="font-size:12px;font-weight:600;">Beer 330ml ▾</span>
+      </div>
+
+      <!-- From → To -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
+        <div style="flex:1;background:#1a1a2e;border-radius:8px;padding:8px;text-align:center;">
+          <div style="font-size:10px;color:#888;margin-bottom:2px;">From</div>
+          <div style="font-size:12px;font-weight:600;">🏭 Warehouse</div>
+          <div style="font-size:10px;color:#6c63ff;">120 available</div>
+        </div>
+        <span style="font-size:18px;color:#888;">→</span>
+        <div style="flex:1;background:#1a1a2e;border-radius:8px;padding:8px;text-align:center;">
+          <div style="font-size:10px;color:#888;margin-bottom:2px;">To</div>
+          <div style="font-size:12px;font-weight:600;">🍺 Bar A ▾</div>
+          <div style="font-size:10px;color:#22c55e;">48 there now</div>
+        </div>
+      </div>
+
+      <!-- Big counter -->
+      <div style="font-size:72px;font-weight:800;color:#f59e0b;line-height:1;margin-bottom:4px;">24</div>
+      <div style="font-size:11px;color:#888;margin-bottom:24px;">units to move</div>
+
+      <!-- +/- buttons -->
+      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:20px;">
+        <button style="width:72px;height:72px;border-radius:50%;background:#1a1a2e;border:2px solid #ef4444;color:#ef4444;font-size:32px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
+        <button style="width:72px;height:72px;border-radius:50%;background:#f59e0b;border:none;color:white;font-size:32px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+      </div>
+
+      <!-- After preview -->
+      <div style="font-size:11px;color:#888;margin-bottom:14px;padding:6px;background:#1a1a2e;border-radius:6px;display:flex;justify-content:space-around;">
+        <span>Warehouse: <b style="color:white;">96</b></span>
+        <span>Bar A: <b style="color:white;">72</b></span>
+      </div>
+
+      <!-- Confirm -->
+      <button style="width:100%;padding:12px;background:#f59e0b;border:none;border-radius:10px;color:white;font-size:13px;font-weight:600;cursor:pointer;">Log Movement</button>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:#888;max-width:220px;">
+      Preview shows after-state before confirming.<br>Can't exceed available stock.
+    </div>
+  </div>
+
+</div>

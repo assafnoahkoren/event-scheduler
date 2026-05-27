@@ -1,0 +1,28 @@
+model StockLedgerEntry {
+  id            String           @id @default(uuid())
+
+  itemId        String           @map("item_id")
+  item          StockItem        @relation(fields: [itemId], references: [id])
+
+  locationId    String           @map("location_id")
+  location      StockLocation    @relation(fields: [locationId], references: [id])
+
+  quantityDelta Float            @map("quantity_delta")
+  operationType LedgerEntryType  @map("operation_type")
+  referenceId   String           @map("reference_id")
+
+  createdAt     DateTime         @default(now()) @map("created_at")
+
+  @@index([itemId, locationId])
+  @@index([locationId])
+  @@index([itemId])
+  @@map("stock_ledger_entries")
+}
+
+enum LedgerEntryType {
+  ARRIVAL
+  MOVEMENT_IN
+  MOVEMENT_OUT
+  INITIAL_COUNT
+  RECOUNT_ADJUSTMENT
+}

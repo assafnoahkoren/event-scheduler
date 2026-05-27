@@ -1,0 +1,130 @@
+<h2>UI Structure</h2>
+<p class="subtitle">Stock gets its own section in the sidebar. Which layout works better for the Stock Levels dashboard?</p>
+
+<div class="split" style="margin-top:24px;gap:20px;">
+
+  <!-- Option A: Matrix table -->
+  <div class="option" data-choice="a" onclick="toggleSelect(this)" style="cursor:pointer;border-radius:12px;padding:0;overflow:hidden;border:2px solid transparent;">
+    <div style="background:#1a1a2e;padding:10px 14px;border-bottom:1px solid #333;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="letter" style="width:24px;height:24px;min-width:24px;font-size:12px;">A</div>
+        <b style="font-size:13px;">Matrix Table</b>
+        <span style="font-size:11px;color:#888;margin-left:auto;">items × locations</span>
+      </div>
+    </div>
+    <div class="mockup-body" style="padding:12px;background:#111;">
+      <div class="mock-nav" style="font-size:11px;margin-bottom:10px;padding:6px 10px;">📦 Stock &nbsp;›&nbsp; <b>Levels</b> &nbsp;|&nbsp; Orders &nbsp;|&nbsp; Movements &nbsp;|&nbsp; Recounts</div>
+
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:11px;">
+          <thead>
+            <tr style="background:#1a1a2e;">
+              <th style="text-align:left;padding:6px 8px;color:#888;font-weight:500;">Item</th>
+              <th style="padding:6px 8px;color:#6c63ff;font-weight:500;text-align:center;">🏭 Warehouse</th>
+              <th style="padding:6px 8px;color:#22c55e;font-weight:500;text-align:center;">🍺 Bar A</th>
+              <th style="padding:6px 8px;color:#f59e0b;font-weight:500;text-align:center;">🍺 Bar B</th>
+              <th style="padding:6px 8px;color:#aaa;font-weight:500;text-align:center;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-top:1px solid #222;">
+              <td style="padding:6px 8px;">Coca-Cola 1.5L</td>
+              <td style="text-align:center;padding:6px 8px;color:#6c63ff;font-weight:600;">40</td>
+              <td style="text-align:center;padding:6px 8px;color:#22c55e;font-weight:600;">12</td>
+              <td style="text-align:center;padding:6px 8px;color:#f59e0b;font-weight:600;">5</td>
+              <td style="text-align:center;padding:6px 8px;color:#888;">57</td>
+            </tr>
+            <tr style="border-top:1px solid #222;background:#0d0d1a;">
+              <td style="padding:6px 8px;">Vodka 1L</td>
+              <td style="text-align:center;padding:6px 8px;color:#6c63ff;font-weight:600;">8</td>
+              <td style="text-align:center;padding:6px 8px;color:#22c55e;font-weight:600;">3</td>
+              <td style="text-align:center;padding:6px 8px;color:#f59e0b;font-weight:600;">1</td>
+              <td style="text-align:center;padding:6px 8px;color:#888;">12</td>
+            </tr>
+            <tr style="border-top:1px solid #222;">
+              <td style="padding:6px 8px;">Beer 330ml</td>
+              <td style="text-align:center;padding:6px 8px;color:#6c63ff;font-weight:600;">120</td>
+              <td style="text-align:center;padding:6px 8px;color:#22c55e;font-weight:600;">48</td>
+              <td style="text-align:center;padding:6px 8px;color:#f59e0b;font-weight:600;">24</td>
+              <td style="text-align:center;padding:6px 8px;color:#888;">192</td>
+            </tr>
+            <tr style="border-top:1px solid #222;background:#0d0d1a;">
+              <td style="padding:6px 8px;">Orange Juice 1L</td>
+              <td style="text-align:center;padding:6px 8px;color:#6c63ff;font-weight:600;">30</td>
+              <td style="text-align:center;padding:6px 8px;color:#ef4444;font-weight:600;">2</td>
+              <td style="text-align:center;padding:6px 8px;color:#f59e0b;font-weight:600;">0</td>
+              <td style="text-align:center;padding:6px 8px;color:#888;">32</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:10px;display:flex;gap:8px;">
+        <button class="mock-button" style="font-size:10px;padding:4px 10px;">+ Record Movement</button>
+        <button class="mock-button" style="font-size:10px;padding:4px 10px;">+ Recount</button>
+        <button class="mock-button" style="font-size:10px;padding:4px 10px;">+ New Order</button>
+      </div>
+    </div>
+    <div style="padding:8px 14px;background:#1a1a2e;font-size:11px;color:#888;">
+      ✅ Best for comparing stock across locations at a glance
+    </div>
+  </div>
+
+  <!-- Option B: Location cards -->
+  <div class="option" data-choice="b" onclick="toggleSelect(this)" style="cursor:pointer;border-radius:12px;padding:0;overflow:hidden;border:2px solid transparent;">
+    <div style="background:#1a1a2e;padding:10px 14px;border-bottom:1px solid #333;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="letter" style="width:24px;height:24px;min-width:24px;font-size:12px;">B</div>
+        <b style="font-size:13px;">Location Cards</b>
+        <span style="font-size:11px;color:#888;margin-left:auto;">one card per location</span>
+      </div>
+    </div>
+    <div class="mockup-body" style="padding:12px;background:#111;">
+      <div class="mock-nav" style="font-size:11px;margin-bottom:10px;padding:6px 10px;">📦 Stock &nbsp;›&nbsp; <b>Levels</b> &nbsp;|&nbsp; Orders &nbsp;|&nbsp; Movements &nbsp;|&nbsp; Recounts</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <!-- Warehouse card -->
+        <div style="background:#1a1a2e;border-radius:8px;padding:10px;border-left:3px solid #6c63ff;">
+          <div style="font-size:11px;font-weight:600;color:#6c63ff;margin-bottom:8px;">🏭 Warehouse</div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #222;"><span>Coca-Cola 1.5L</span><b>40</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #222;"><span>Vodka 1L</span><b>8</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #222;"><span>Beer 330ml</span><b>120</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;"><span>OJ 1L</span><b>30</b></div>
+          <button class="mock-button" style="font-size:10px;padding:3px 8px;margin-top:8px;width:100%;">+ Recount</button>
+        </div>
+        <!-- Bar A card -->
+        <div style="background:#1a1a2e;border-radius:8px;padding:10px;border-left:3px solid #22c55e;">
+          <div style="font-size:11px;font-weight:600;color:#22c55e;margin-bottom:8px;">🍺 Bar A</div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #222;"><span>Coca-Cola 1.5L</span><b>12</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #222;"><span>Vodka 1L</span><b>3</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #222;"><span>Beer 330ml</span><b>48</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;color:#ef4444;"><span>OJ 1L</span><b>2</b></div>
+          <button class="mock-button" style="font-size:10px;padding:3px 8px;margin-top:8px;width:100%;">+ Recount</button>
+        </div>
+        <!-- Bar B card -->
+        <div style="background:#1a1a2e;border-radius:8px;padding:10px;border-left:3px solid #f59e0b;">
+          <div style="font-size:11px;font-weight:600;color:#f59e0b;margin-bottom:8px;">🍺 Bar B</div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #222;"><span>Coca-Cola 1.5L</span><b>5</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #222;"><span>Vodka 1L</span><b>1</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #222;"><span>Beer 330ml</span><b>24</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;"><span>OJ 1L</span><b>0</b></div>
+          <button class="mock-button" style="font-size:10px;padding:3px 8px;margin-top:8px;width:100%;">+ Recount</button>
+        </div>
+        <!-- Totals mini card -->
+        <div style="background:#0d0d1a;border-radius:8px;padding:10px;border:1px dashed #333;">
+          <div style="font-size:11px;font-weight:600;color:#888;margin-bottom:8px;">Σ All Locations</div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #222;"><span>Coca-Cola 1.5L</span><b>57</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #222;"><span>Vodka 1L</span><b>12</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #222;"><span>Beer 330ml</span><b>192</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;"><span>OJ 1L</span><b>32</b></div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:8px 14px;background:#1a1a2e;font-size:11px;color:#888;">
+      ✅ Best when you're managing one location at a time (e.g., standing at a bar)
+    </div>
+  </div>
+
+</div>
+
+<p style="margin-top:16px;font-size:13px;color:#888;">Both options have the same data. Click to select your preference, or let me know if you want a different approach.</p>

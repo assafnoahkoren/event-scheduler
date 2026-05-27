@@ -1,0 +1,110 @@
+<h2>Data Model — Inventory System</h2>
+<p class="subtitle">Six tables: two catalog tables, three operation tables, one ledger for balance computation</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;">
+
+  <!-- Catalog -->
+  <div>
+    <div class="label" style="margin-bottom:8px;">📦 Catalog</div>
+
+    <div style="background:var(--card-bg,#1e1e2e);border:1px solid #6c63ff;border-radius:10px;padding:16px;margin-bottom:12px;">
+      <h3 style="margin:0 0 8px;color:#6c63ff;">StockItem</h3>
+      <p style="margin:0 0 8px;font-size:13px;color:#aaa;">What you stock — Coca-Cola 1.5L, Vodka 1L…</p>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <tr><td style="color:#6c63ff;padding:2px 8px 2px 0;">id</td><td style="color:#888;">uuid PK</td></tr>
+        <tr><td style="color:#6c63ff;padding:2px 8px 2px 0;">siteId</td><td style="color:#888;">FK → Site</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">name</td><td style="color:#888;">string</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">description</td><td style="color:#888;">string?</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">unit</td><td style="color:#888;">"bottle" | "crate" | "can" | "liter" | …</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">isActive, isDeleted</td><td style="color:#888;">soft delete</td></tr>
+      </table>
+    </div>
+
+    <div style="background:var(--card-bg,#1e1e2e);border:1px solid #6c63ff;border-radius:10px;padding:16px;">
+      <h3 style="margin:0 0 8px;color:#6c63ff;">StockLocation</h3>
+      <p style="margin:0 0 8px;font-size:13px;color:#aaa;">Where stock lives — warehouse, bar A, external bar…</p>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <tr><td style="color:#6c63ff;padding:2px 8px 2px 0;">id</td><td style="color:#888;">uuid PK</td></tr>
+        <tr><td style="color:#6c63ff;padding:2px 8px 2px 0;">siteId</td><td style="color:#888;">FK → Site</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">name</td><td style="color:#888;">string</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">description</td><td style="color:#888;">string?</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">isActive, isDeleted</td><td style="color:#888;">soft delete</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Operations -->
+  <div>
+    <div class="label" style="margin-bottom:8px;">⚡ Operations</div>
+
+    <div style="background:var(--card-bg,#1e1e2e);border:1px solid #22c55e;border-radius:10px;padding:14px;margin-bottom:10px;">
+      <h3 style="margin:0 0 6px;color:#22c55e;font-size:14px;">PurchaseOrder</h3>
+      <p style="margin:0 0 6px;font-size:12px;color:#aaa;">"We ordered 50 crates of Coke" — tracks partial fulfilment</p>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <tr><td style="padding:2px 8px 2px 0;">itemId</td><td style="color:#888;">FK → StockItem</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">orderedQuantity</td><td style="color:#888;">float</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">status</td><td style="color:#888;">OPEN | PARTIAL | COMPLETE | CANCELLED</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">supplierName, notes</td><td style="color:#888;">string?</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">orderDate, expectedDate</td><td style="color:#888;">datetime</td></tr>
+      </table>
+    </div>
+
+    <div style="background:var(--card-bg,#1e1e2e);border:1px solid #22c55e;border-radius:10px;padding:14px;margin-bottom:10px;">
+      <h3 style="margin:0 0 6px;color:#22c55e;font-size:14px;">StockArrival</h3>
+      <p style="margin:0 0 6px;font-size:12px;color:#aaa;">"40 of the 50 arrived → placed at warehouse"</p>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <tr><td style="padding:2px 8px 2px 0;">purchaseOrderId</td><td style="color:#888;">FK → PurchaseOrder</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">locationId</td><td style="color:#888;">FK → StockLocation</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">quantity</td><td style="color:#888;">float</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">arrivedAt, notes</td><td style="color:#888;">datetime, string?</td></tr>
+      </table>
+    </div>
+
+    <div style="background:var(--card-bg,#1e1e2e);border:1px solid #f59e0b;border-radius:10px;padding:14px;margin-bottom:10px;">
+      <h3 style="margin:0 0 6px;color:#f59e0b;font-size:14px;">StockMovement</h3>
+      <p style="margin:0 0 6px;font-size:12px;color:#aaa;">"Moved 20 crates from warehouse → bar"</p>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <tr><td style="padding:2px 8px 2px 0;">itemId</td><td style="color:#888;">FK → StockItem</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">fromLocationId</td><td style="color:#888;">FK → StockLocation</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">toLocationId</td><td style="color:#888;">FK → StockLocation</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">quantity, movedAt, notes</td><td style="color:#888;"></td></tr>
+      </table>
+    </div>
+
+    <div style="background:var(--card-bg,#1e1e2e);border:1px solid #ef4444;border-radius:10px;padding:14px;">
+      <h3 style="margin:0 0 6px;color:#ef4444;font-size:14px;">StockRecount</h3>
+      <p style="margin:0 0 6px;font-size:12px;color:#aaa;">"Counted 30 at bar after event — system stores the delta"</p>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <tr><td style="padding:2px 8px 2px 0;">itemId, locationId</td><td style="color:#888;">FKs</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">countedQuantity</td><td style="color:#888;">float — what you physically counted</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">previousQuantity</td><td style="color:#888;">float — what system expected (stored)</td></tr>
+        <tr><td style="padding:2px 8px 2px 0;">countedAt, notes</td><td style="color:#888;"></td></tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Ledger -->
+<div style="margin-top:16px;background:var(--card-bg,#1e1e2e);border:2px solid #a855f7;border-radius:10px;padding:16px;">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+    <h3 style="margin:0;color:#a855f7;">StockLedgerEntry</h3>
+    <span style="font-size:12px;color:#888;">— the single source of truth for current balance</span>
+  </div>
+  <p style="margin:0 0 10px;font-size:13px;color:#aaa;">Every operation writes here atomically. <code style="color:#a855f7;">SUM(quantityDelta)</code> per (item, location) = current stock.</p>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:12px;">
+    <span><span style="color:#a855f7;">itemId</span> FK → StockItem</span>
+    <span><span style="color:#a855f7;">locationId</span> FK → StockLocation</span>
+    <span><b>quantityDelta</b> float (+ or −)</span>
+    <span>operationType: <code>ARRIVAL | MOVEMENT_IN | MOVEMENT_OUT | RECOUNT_ADJUSTMENT</code></span>
+    <span>referenceId (links back to the source row)</span>
+  </div>
+  <div style="margin-top:12px;padding:10px;background:#12121c;border-radius:6px;font-size:12px;color:#aaa;">
+    <b style="color:#a855f7;">How balance is computed (Prisma):</b><br>
+    <code>prisma.stockLedgerEntry.groupBy({ by: ['itemId','locationId'], _sum: { quantityDelta: true } })</code>
+  </div>
+</div>
+
+<div style="margin-top:16px;padding:12px;background:#0f1923;border:1px solid #334155;border-radius:8px;font-size:13px;">
+  <b>Flow example:</b> Order 50 crates → 40 arrive at warehouse (+40 ledger entry) → 20 moved to bar (−20 warehouse, +20 bar) → recount bar = 17 (−3 adjustment entry). <b>Result:</b> warehouse has 20, bar has 17.
+</div>
