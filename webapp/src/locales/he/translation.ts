@@ -630,5 +630,59 @@ export const heTranslation: TranslationType = {
     templateNamePlaceholder: "הזן שם תבנית",
     noTemplates: "אין תבניות עדיין",
     noTemplatesDescription: "צור תבנית לעיצוב פריסות אירועים"
+  },
+  stock: {
+    title: 'מלאי',
+    levels: 'רמות מלאי',
+    orders: 'הזמנות רכש',
+    movements: 'תנועות',
+    recounts: 'ספירות מחדש',
+    settings: 'הגדרות מלאי',
+    items: 'פריטי מלאי',
+    locations: 'מיקומים',
+    actions: {
+      recordArrival: 'רשום קבלה',
+      moveStock: 'העבר מלאי',
+      recount: 'ספור מחדש',
+      newOrder: 'הזמנה חדשה',
+      newItem: 'פריט חדש',
+      newLocation: 'מיקום חדש',
+    },
+    item: {
+      name: 'שם פריט',
+      unit: 'יחידה',
+      description: 'תיאור',
+    },
+    location: {
+      name: 'שם מיקום',
+    },
+    order: {
+      orderedQuantity: 'כמות שהוזמנה',
+      supplier: 'ספק',
+      orderDate: 'תאריך הזמנה',
+      expectedDelivery: 'משלוח צפוי',
+      status: {
+        OPEN: 'פתוח',
+        PARTIAL: 'חלקי',
+        COMPLETE: 'הושלם',
+        CANCELLED: 'בוטל',
+      },
+    },
+    arrival: {
+      quantity: 'כמות שהתקבלה',
+      placedAt: 'הוצב ב',
+    },
+    movement: {
+      from: 'מ',
+      to: 'אל',
+      quantity: 'כמות',
+    },
+    recount: {
+      expected: 'צפוי',
+      counted: 'נספר',
+      delta: 'הפרש',
+      initialCount: 'ספירה ראשונית',
+      progressLabel: '{{done}} / {{total}} פריטים',
+    },
   }
 } as const

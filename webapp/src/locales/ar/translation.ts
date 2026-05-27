@@ -630,5 +630,59 @@ export const arTranslation: TranslationType = {
     templateNamePlaceholder: "أدخل اسم القالب",
     noTemplates: "لا توجد قوالب بعد",
     noTemplatesDescription: "أنشئ قالباً لتصميم تخطيطات الأحداث"
+  },
+  stock: {
+    title: 'المخزون',
+    levels: 'مستويات المخزون',
+    orders: 'أوامر الشراء',
+    movements: 'الحركات',
+    recounts: 'إعادة العد',
+    settings: 'إعدادات المخزون',
+    items: 'عناصر المخزون',
+    locations: 'المواقع',
+    actions: {
+      recordArrival: 'تسجيل وصول',
+      moveStock: 'نقل المخزون',
+      recount: 'إعادة العد',
+      newOrder: 'طلب جديد',
+      newItem: 'عنصر جديد',
+      newLocation: 'موقع جديد',
+    },
+    item: {
+      name: 'اسم العنصر',
+      unit: 'الوحدة',
+      description: 'الوصف',
+    },
+    location: {
+      name: 'اسم الموقع',
+    },
+    order: {
+      orderedQuantity: 'الكمية المطلوبة',
+      supplier: 'المورد',
+      orderDate: 'تاريخ الطلب',
+      expectedDelivery: 'التسليم المتوقع',
+      status: {
+        OPEN: 'مفتوح',
+        PARTIAL: 'جزئي',
+        COMPLETE: 'مكتمل',
+        CANCELLED: 'ملغى',
+      },
+    },
+    arrival: {
+      quantity: 'الكمية الواصلة',
+      placedAt: 'وُضع في',
+    },
+    movement: {
+      from: 'من',
+      to: 'إلى',
+      quantity: 'الكمية',
+    },
+    recount: {
+      expected: 'متوقع',
+      counted: 'معدود',
+      delta: 'الفرق',
+      initialCount: 'العد الأولي',
+      progressLabel: '{{done}} / {{total}} عناصر',
+    },
   }
 } as const
