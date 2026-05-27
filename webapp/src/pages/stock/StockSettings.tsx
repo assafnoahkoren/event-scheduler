@@ -107,7 +107,7 @@ export function StockSettings() {
               <Input value={newItemUnit} onChange={(e) => setNewItemUnit(e.target.value)} placeholder="e.g. bottle, crate, can" />
             </div>
             <Button onClick={handleCreateItem} disabled={!newItemName || !newItemUnit || createItem.isPending} className="w-full">
-              {createItem.isPending ? 'Saving…' : 'Add Item'}
+              {createItem.isPending ? t('stock.common.saving') : t('stock.common.addItem')}
             </Button>
           </div>
         </SheetContent>
@@ -123,7 +123,7 @@ export function StockSettings() {
               <Input value={newLocationName} onChange={(e) => setNewLocationName(e.target.value)} placeholder="e.g. Main Warehouse, Bar A" />
             </div>
             <Button onClick={handleCreateLocation} disabled={!newLocationName || createLocation.isPending} className="w-full">
-              {createLocation.isPending ? 'Saving…' : 'Add Location'}
+              {createLocation.isPending ? t('stock.common.saving') : t('stock.common.addLocation')}
             </Button>
           </div>
         </SheetContent>

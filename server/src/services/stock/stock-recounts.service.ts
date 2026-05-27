@@ -44,17 +44,25 @@ class StockRecountsService {
       throw new TRPCError({ code: 'FORBIDDEN', message: 'Insufficient permissions' })
     }
 
-    const previousQuantity = await this.getBalance(input.itemId, input.locationId)
-    const hasHistory = await this.hasAnyLedgerEntries(input.itemId, input.locationId)
-    const adjustmentDelta = input.countedQuantity - previousQuantity
-
-    // INITIAL_COUNT when no prior history, RECOUNT_ADJUSTMENT otherwise
-    const operationType = !hasHistory ? 'INITIAL_COUNT' : 'RECOUNT_ADJUSTMENT'
-
     const recountId = uuidv4()
 
-    await prisma.$transaction([
-      prisma.stockRecount.create({
+    return prisma.$transaction(async (tx) => {
+      // Read current balance and history INSIDE the transaction
+      const ledgerResult = await tx.stockLedgerEntry.aggregate({
+        where: { itemId: input.itemId, locationId: input.locationId },
+        _sum: { quantityDelta: true },
+      })
+      const previousQuantity = ledgerResult._sum.quantityDelta ?? 0
+
+      const historyCount = await tx.stockLedgerEntry.count({
+        where: { itemId: input.itemId, locationId: input.locationId },
+      })
+      const hasHistory = historyCount > 0
+
+      const adjustmentDelta = input.countedQuantity - previousQuantity
+      const operationType = !hasHistory ? 'INITIAL_COUNT' : 'RECOUNT_ADJUSTMENT'
+
+      const recount = await tx.stockRecount.create({
         data: {
           id: recountId,
           siteId: input.siteId,
@@ -65,8 +73,9 @@ class StockRecountsService {
           countedAt: new Date(input.countedAt),
           notes: input.notes,
         },
-      }),
-      prisma.stockLedgerEntry.create({
+      })
+
+      await tx.stockLedgerEntry.create({
         data: {
           itemId: input.itemId,
           locationId: input.locationId,
@@ -74,12 +83,12 @@ class StockRecountsService {
           operationType,
           referenceId: recountId,
         },
-      }),
-    ])
+      })
 
-    return prisma.stockRecount.findUnique({
-      where: { id: recountId },
-      include: { item: true, location: true },
+      return tx.stockRecount.findUnique({
+        where: { id: recount.id },
+        include: { item: true, location: true },
+      })
     })
   }
 

@@ -112,12 +112,12 @@ export function RecountFlow({ siteId, onClose }: RecountFlowProps) {
       <Dialog open onOpenChange={onClose}>
         <DialogContent className="max-w-sm text-center">
           <DialogHeader>
-            <DialogTitle>Recount saved ✓</DialogTitle>
+            <DialogTitle>{t('stock.common.recountSaved')} ✓</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground mb-4">
             {doneCount} item{doneCount !== 1 ? 's' : ''} updated at {selectedLocation?.name}.
           </p>
-          <Button onClick={onClose}>Done</Button>
+          <Button onClick={onClose}>{t('stock.common.done')}</Button>
         </DialogContent>
       </Dialog>
     )
@@ -128,8 +128,8 @@ export function RecountFlow({ siteId, onClose }: RecountFlowProps) {
     return (
       <Dialog open onOpenChange={onClose}>
         <DialogContent className="max-w-sm">
-          <p className="text-muted-foreground text-sm">No active stock items at this location.</p>
-          <Button variant="outline" onClick={onClose} className="mt-4">Close</Button>
+          <p className="text-muted-foreground text-sm">{t('stock.common.noItemsAtLocation')}</p>
+          <Button variant="outline" onClick={onClose} className="mt-4">{t('stock.common.close')}</Button>
         </DialogContent>
       </Dialog>
     )
@@ -182,10 +182,10 @@ export function RecountFlow({ siteId, onClose }: RecountFlowProps) {
           {/* Delta */}
           <div className="mx-4 mb-4 px-3 py-2 bg-muted rounded-lg text-center text-sm">
             {delta === 0 ? (
-              <span className="text-muted-foreground">No change</span>
+              <span className="text-muted-foreground">{t('stock.common.noChange')}</span>
             ) : (
               <span className={delta < 0 ? 'text-destructive font-semibold' : 'text-green-600 font-semibold'}>
-                {delta > 0 ? '+' : ''}{delta} vs expected
+                {delta > 0 ? '+' : ''}{delta} {t('stock.common.vsExpected')}
               </span>
             )}
           </div>
@@ -193,14 +193,14 @@ export function RecountFlow({ siteId, onClose }: RecountFlowProps) {
           {/* Navigation */}
           <div className="flex gap-2 px-4 pb-4">
             <Button variant="outline" size="sm" onClick={handleBack} disabled={currentIndex === 0}>
-              ← Back
+              ← {t('stock.common.back')}
             </Button>
             <Button variant="outline" size="sm" onClick={handleNext} disabled={currentIndex === items.length - 1} className="flex-1">
-              Skip
+              {t('stock.common.skip')}
             </Button>
             {currentIndex < items.length - 1 ? (
               <Button size="sm" onClick={handleNext} className="flex-1">
-                Next →
+                {t('stock.common.next')} →
               </Button>
             ) : (
               <Button
@@ -209,7 +209,7 @@ export function RecountFlow({ siteId, onClose }: RecountFlowProps) {
                 disabled={doneCount === 0 || createRecount.isPending}
                 className="flex-1 bg-green-600 hover:bg-green-700"
               >
-                {createRecount.isPending ? 'Saving…' : 'Submit'}
+                {createRecount.isPending ? t('stock.common.saving') : t('stock.common.submit')}
               </Button>
             )}
           </div>

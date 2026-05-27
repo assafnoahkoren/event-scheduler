@@ -164,7 +164,7 @@ export function MoveStockSheet({ siteId, open, onOpenChange }: MoveStockSheetPro
           }
           className="bg-amber-500 hover:bg-amber-600 text-white"
         >
-          {createMovement.isPending ? 'Saving…' : 'Log Movement'}
+          {createMovement.isPending ? t('stock.common.saving') : t('stock.common.logMovement')}
         </Button>
       </SheetContent>
     </Sheet>

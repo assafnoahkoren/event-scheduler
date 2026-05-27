@@ -149,7 +149,7 @@ export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrival
               disabled={!locationId || quantity <= 0 || createArrival.isPending}
               className="bg-green-600 hover:bg-green-700 text-white"
             >
-              {createArrival.isPending ? 'Saving…' : 'Confirm Arrival'}
+              {createArrival.isPending ? t('stock.common.saving') : t('stock.common.confirmArrival')}
             </Button>
           </>
         )}

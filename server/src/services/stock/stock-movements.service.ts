@@ -51,19 +51,24 @@ class StockMovementsService {
       throw new TRPCError({ code: 'BAD_REQUEST', message: 'From and To locations must differ' })
     }
 
-    // Validate sufficient stock at source location
-    const available = await this.getBalance(input.itemId, input.fromLocationId)
-    if (available < input.quantity) {
-      throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: `Insufficient stock: ${available} available, ${input.quantity} requested`,
-      })
-    }
-
     const movementId = uuidv4()
 
-    await prisma.$transaction([
-      prisma.stockMovement.create({
+    return prisma.$transaction(async (tx) => {
+      // Read balance INSIDE the transaction to prevent TOCTOU
+      const ledgerResult = await tx.stockLedgerEntry.aggregate({
+        where: { itemId: input.itemId, locationId: input.fromLocationId },
+        _sum: { quantityDelta: true },
+      })
+      const available = ledgerResult._sum.quantityDelta ?? 0
+
+      if (available < input.quantity) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `Insufficient stock: ${available} available, ${input.quantity} requested`,
+        })
+      }
+
+      await tx.stockMovement.create({
         data: {
           id: movementId,
           siteId: input.siteId,
@@ -74,8 +79,9 @@ class StockMovementsService {
           movedAt: new Date(input.movedAt),
           notes: input.notes,
         },
-      }),
-      prisma.stockLedgerEntry.create({
+      })
+
+      await tx.stockLedgerEntry.create({
         data: {
           itemId: input.itemId,
           locationId: input.fromLocationId,
@@ -83,8 +89,9 @@ class StockMovementsService {
           operationType: 'MOVEMENT_OUT',
           referenceId: movementId,
         },
-      }),
-      prisma.stockLedgerEntry.create({
+      })
+
+      await tx.stockLedgerEntry.create({
         data: {
           itemId: input.itemId,
           locationId: input.toLocationId,
@@ -92,12 +99,12 @@ class StockMovementsService {
           operationType: 'MOVEMENT_IN',
           referenceId: movementId,
         },
-      }),
-    ])
+      })
 
-    return prisma.stockMovement.findUnique({
-      where: { id: movementId },
-      include: { item: true, fromLocation: true, toLocation: true },
+      return tx.stockMovement.findUnique({
+        where: { id: movementId },
+        include: { item: true, fromLocation: true, toLocation: true },
+      })
     })
   }
 

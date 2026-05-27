@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { PurchaseOrderStatus } from '@prisma/client'
 import { prisma } from '../../db'
 import { TRPCError } from '@trpc/server'
 
@@ -25,13 +26,13 @@ class PurchaseOrdersService {
     return siteUser
   }
 
-  async list(userId: string, siteId: string, status?: string) {
+  async list(userId: string, siteId: string, status?: PurchaseOrderStatus) {
     await this.assertSiteAccess(userId, siteId)
     return prisma.purchaseOrder.findMany({
       where: {
         siteId,
         isDeleted: false,
-        ...(status ? { status: status as any } : {}),
+        ...(status ? { status } : {}),
       },
       include: { item: true, arrivals: { where: { isDeleted: false } } },
       orderBy: { orderDate: 'desc' },

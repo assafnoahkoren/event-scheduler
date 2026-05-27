@@ -140,7 +140,7 @@ export function PurchaseOrdersPage() {
               disabled={createOrder.isPending || !form.itemId || !form.orderedQuantity || !form.orderDate}
               className="w-full"
             >
-              {createOrder.isPending ? 'Saving…' : 'Create Order'}
+              {createOrder.isPending ? t('stock.common.saving') : t('stock.common.createOrder')}
             </Button>
           </div>
         </SheetContent>
