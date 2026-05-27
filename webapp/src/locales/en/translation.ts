@@ -694,6 +694,8 @@ export const enTranslation = {
       supplierLabel: 'Supplier: {{name}}',
       summary: 'Ordered: {{ordered}} · Received: {{received}}',
       empty: 'No purchase orders yet.',
+      lines: 'Items',
+      addLine: 'Add Item',
       status: {
         OPEN: 'Open',
         PARTIAL: 'Partial',
@@ -704,6 +706,9 @@ export const enTranslation = {
     arrival: {
       quantity: 'Quantity Arrived',
       placedAt: 'Placed At',
+      selectLine: 'Item to receive',
+      selectLinePlaceholder: 'Select order item…',
+      outstanding: '{{count}} {{unit}} outstanding',
       orderSummary: 'Ordered: {{ordered}} · Received: {{received}} · Outstanding: {{outstanding}}',
       staysPartial: '⚠ {{count}} still outstanding → order stays PARTIAL',
       markedComplete: '✓ Order will be marked COMPLETE',

@@ -16,7 +16,7 @@ model StockItem {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
-  purchaseOrders PurchaseOrder[]
+  purchaseOrderLines PurchaseOrderLine[]
   movements      StockMovement[]
   recounts       StockRecount[]
   ledgerEntries  StockLedgerEntry[]

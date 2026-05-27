@@ -1,23 +1,23 @@
 model StockArrival {
-  id              String        @id @default(uuid())
+  id                  String              @id @default(uuid())
 
-  purchaseOrderId String        @map("purchase_order_id")
-  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  purchaseOrderLineId String              @map("purchase_order_line_id")
+  purchaseOrderLine   PurchaseOrderLine   @relation(fields: [purchaseOrderLineId], references: [id], onDelete: Cascade)
 
-  locationId      String        @map("location_id")
-  location        StockLocation @relation(fields: [locationId], references: [id])
+  locationId          String              @map("location_id")
+  location            StockLocation       @relation(fields: [locationId], references: [id])
 
-  quantity        Float
-  arrivedAt       DateTime      @map("arrived_at")
-  notes           String?
+  quantity            Float
+  arrivedAt           DateTime            @map("arrived_at")
+  notes               String?
 
-  isDeleted   Boolean  @default(false) @map("is_deleted")
+  isDeleted   Boolean   @default(false) @map("is_deleted")
   deletedAt   DateTime? @map("deleted_at")
 
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  @@index([purchaseOrderId])
+  @@index([purchaseOrderLineId])
   @@index([locationId])
   @@index([isDeleted])
   @@map("stock_arrivals")

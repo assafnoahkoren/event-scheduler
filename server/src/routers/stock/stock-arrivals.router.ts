@@ -11,8 +11,8 @@ export const stockArrivalsRouter = router({
     .mutation(({ ctx, input }) => stockArrivalsService.create(ctx.user.id, input)),
 
   list: protectedProcedure
-    .input(z.object({ purchaseOrderId: z.string().uuid() }))
+    .input(z.object({ purchaseOrderLineId: z.string().uuid() }))
     .query(({ ctx, input }) =>
-      stockArrivalsService.list(ctx.user.id, input.purchaseOrderId)
+      stockArrivalsService.list(ctx.user.id, input.purchaseOrderLineId)
     ),
 })

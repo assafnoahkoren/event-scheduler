@@ -696,6 +696,8 @@ export const arTranslation: TranslationType = {
       supplierLabel: 'المورد: {{name}}',
       summary: 'مطلوب: {{ordered}} · مستلم: {{received}}',
       empty: 'لا توجد أوامر شراء بعد.',
+      lines: 'العناصر',
+      addLine: 'إضافة عنصر',
       status: {
         OPEN: 'مفتوح',
         PARTIAL: 'جزئي',
@@ -706,6 +708,9 @@ export const arTranslation: TranslationType = {
     arrival: {
       quantity: 'الكمية الواصلة',
       placedAt: 'وُضع في',
+      selectLine: 'العنصر المستلَم',
+      selectLinePlaceholder: 'اختر عنصراً من الطلب…',
+      outstanding: '{{count}} {{unit}} متبقية',
       orderSummary: 'مطلوب: {{ordered}} · مستلم: {{received}} · متبقي: {{outstanding}}',
       staysPartial: '⚠ {{count}} لا يزال معلقاً → يبقى الطلب جزئياً',
       markedComplete: '✓ سيتم تحديد الطلب كمكتمل',

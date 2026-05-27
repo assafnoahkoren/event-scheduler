@@ -5,12 +5,18 @@ import { TRPCError } from '@trpc/server'
 
 export const createPurchaseOrderSchema = z.object({
   siteId: z.string().uuid(),
-  itemId: z.string().uuid(),
-  orderedQuantity: z.number().positive(),
   supplierName: z.string().optional(),
   notes: z.string().optional(),
   orderDate: z.string().datetime(),
   expectedDeliveryDate: z.string().datetime().optional(),
+  lines: z
+    .array(
+      z.object({
+        itemId: z.string().uuid(),
+        orderedQuantity: z.number().positive(),
+      })
+    )
+    .min(1, 'At least one line item is required'),
 })
 
 export type CreatePurchaseOrderInput = z.infer<typeof createPurchaseOrderSchema>
@@ -34,7 +40,16 @@ class PurchaseOrdersService {
         isDeleted: false,
         ...(status ? { status } : {}),
       },
-      include: { item: true, arrivals: { where: { isDeleted: false } } },
+      include: {
+        orderLines: {
+          where: { isDeleted: false },
+          include: {
+            item: true,
+            arrivals: { where: { isDeleted: false } },
+          },
+          orderBy: { createdAt: 'asc' },
+        },
+      },
       orderBy: { orderDate: 'desc' },
     })
   }
@@ -43,11 +58,17 @@ class PurchaseOrdersService {
     const order = await prisma.purchaseOrder.findFirst({
       where: { id, isDeleted: false },
       include: {
-        item: true,
-        arrivals: {
+        orderLines: {
           where: { isDeleted: false },
-          include: { location: true },
-          orderBy: { arrivedAt: 'desc' },
+          include: {
+            item: true,
+            arrivals: {
+              where: { isDeleted: false },
+              include: { location: true },
+              orderBy: { arrivedAt: 'desc' },
+            },
+          },
+          orderBy: { createdAt: 'asc' },
         },
         site: { include: { siteUsers: { where: { userId } } } },
       },
@@ -63,15 +84,29 @@ class PurchaseOrdersService {
     if (siteUser.role === 'VIEWER') {
       throw new TRPCError({ code: 'FORBIDDEN', message: 'Insufficient permissions' })
     }
-    return prisma.purchaseOrder.create({
-      data: {
-        ...input,
-        orderDate: new Date(input.orderDate),
-        expectedDeliveryDate: input.expectedDeliveryDate
-          ? new Date(input.expectedDeliveryDate)
-          : undefined,
-      },
-      include: { item: true },
+
+    const { lines, orderDate, expectedDeliveryDate, ...orderFields } = input
+
+    return prisma.$transaction(async (tx) => {
+      const order = await tx.purchaseOrder.create({
+        data: {
+          ...orderFields,
+          orderDate: new Date(orderDate),
+          expectedDeliveryDate: expectedDeliveryDate ? new Date(expectedDeliveryDate) : undefined,
+          orderLines: {
+            create: lines.map((line) => ({
+              itemId: line.itemId,
+              orderedQuantity: line.orderedQuantity,
+            })),
+          },
+        },
+        include: {
+          orderLines: {
+            include: { item: true },
+          },
+        },
+      })
+      return order
     })
   }
 

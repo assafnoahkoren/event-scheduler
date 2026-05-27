@@ -20,11 +20,11 @@ interface RecordArrivalSheetProps {
 
 export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrivalSheetProps) {
   const { t } = useTranslation()
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
+  const [selectedLineId, setSelectedLineId] = useState<string | null>(null)
   const [locationId, setLocationId] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(0)
 
-  const { data: orders } = trpc.stock.purchaseOrders.list.useQuery(
+  const { data: openOrders } = trpc.stock.purchaseOrders.list.useQuery(
     { siteId, status: 'OPEN' },
     { enabled: open }
   )
@@ -37,22 +37,24 @@ export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrival
     { enabled: open }
   )
 
-  const selectedOrder = [...(orders ?? []), ...(partialOrders ?? [])].find(
-    (o) => o.id === selectedOrderId
+  // Flatten all orders → lines, keeping a reference to the parent order
+  const allLines = [...(openOrders ?? []), ...(partialOrders ?? [])].flatMap((order) =>
+    order.orderLines
+      .filter((l) => l.status !== 'COMPLETE')
+      .map((line) => ({ ...line, order }))
   )
 
-  const alreadyReceived = selectedOrder?.arrivals.reduce((s, a) => s + a.quantity, 0) ?? 0
-  const remaining = selectedOrder ? selectedOrder.orderedQuantity - alreadyReceived : 0
+  const selectedLine = allLines.find((l) => l.id === selectedLineId) ?? null
+  const alreadyReceived = selectedLine?.arrivals.reduce((s, a) => s + a.quantity, 0) ?? 0
+  const remaining = selectedLine ? selectedLine.orderedQuantity - alreadyReceived : 0
 
   const createArrival = trpc.stock.arrivals.create.useMutation()
   const utils = trpc.useUtils()
 
-  const allOrders = [...(orders ?? []), ...(partialOrders ?? [])]
-
   const handleConfirm = async () => {
-    if (!selectedOrderId || !locationId || quantity <= 0) return
+    if (!selectedLineId || !locationId || quantity <= 0) return
     await createArrival.mutateAsync({
-      purchaseOrderId: selectedOrderId,
+      purchaseOrderLineId: selectedLineId,
       locationId,
       quantity,
       arrivedAt: new Date().toISOString(),
@@ -60,14 +62,14 @@ export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrival
     await utils.stock.purchaseOrders.list.invalidate({ siteId })
     await utils.stock.levels.list.invalidate({ siteId })
     onOpenChange(false)
-    setSelectedOrderId(null)
+    setSelectedLineId(null)
     setLocationId(null)
     setQuantity(0)
   }
 
-  const newStatus =
-    selectedOrder && quantity > 0
-      ? alreadyReceived + quantity >= selectedOrder.orderedQuantity
+  const newLineStatus =
+    selectedLine && quantity > 0
+      ? alreadyReceived + quantity >= selectedLine.orderedQuantity
         ? 'COMPLETE'
         : 'PARTIAL'
       : null
@@ -79,32 +81,47 @@ export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrival
           <SheetTitle>{t('stock.actions.recordArrival')}</SheetTitle>
         </SheetHeader>
 
-        {/* Order selector */}
+        {/* Line selector */}
         <div>
-          <p className="text-sm font-medium mb-2">{t('stock.orders')}</p>
-          <Select onValueChange={setSelectedOrderId}>
+          <p className="text-sm font-medium mb-2">{t('stock.arrival.selectLine')}</p>
+          <Select onValueChange={setSelectedLineId}>
             <SelectTrigger>
-              <SelectValue placeholder={t('stock.common.selectOrder')} />
+              <SelectValue placeholder={t('stock.arrival.selectLinePlaceholder')} />
             </SelectTrigger>
             <SelectContent>
-              {allOrders.map((order) => (
-                <SelectItem key={order.id} value={order.id}>
-                  {order.item.name} — {order.orderedQuantity} {order.item.unit} ({order.status})
-                </SelectItem>
-              ))}
+              {allLines.map((line) => {
+                const received = line.arrivals.reduce((s, a) => s + a.quantity, 0)
+                const outstanding = line.orderedQuantity - received
+                const orderLabel = line.order.supplierName
+                  ? `${line.order.supplierName} — `
+                  : ''
+                return (
+                  <SelectItem key={line.id} value={line.id}>
+                    {orderLabel}{line.item.name}
+                    {' '}({t('stock.arrival.outstanding', { count: outstanding, unit: line.item.unit })})
+                  </SelectItem>
+                )
+              })}
             </SelectContent>
           </Select>
         </div>
 
-        {selectedOrder && (
+        {selectedLine && (
           <>
+            {/* Summary card */}
             <div className="bg-muted rounded-lg p-3 text-sm">
-              <p className="font-medium">{selectedOrder.item.name}</p>
-              {selectedOrder.supplierName && (
-                <p className="text-muted-foreground">{t('stock.order.supplierLabel', { name: selectedOrder.supplierName })}</p>
+              <p className="font-medium">{selectedLine.item.name}</p>
+              {selectedLine.order.supplierName && (
+                <p className="text-muted-foreground">
+                  {t('stock.order.supplierLabel', { name: selectedLine.order.supplierName })}
+                </p>
               )}
               <p className="text-muted-foreground">
-                {t('stock.arrival.orderSummary', { ordered: selectedOrder.orderedQuantity, received: alreadyReceived, outstanding: remaining })}
+                {t('stock.arrival.orderSummary', {
+                  ordered: selectedLine.orderedQuantity,
+                  received: alreadyReceived,
+                  outstanding: remaining,
+                })}
               </p>
             </div>
 
@@ -134,9 +151,11 @@ export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrival
             />
 
             {/* Status preview */}
-            {quantity > 0 && newStatus && (
+            {quantity > 0 && newLineStatus && (
               <div className={`text-sm text-center px-3 py-2 rounded-lg ${
-                newStatus === 'COMPLETE' ? 'bg-green-500/10 text-green-600' : 'bg-amber-500/10 text-amber-600'
+                newLineStatus === 'COMPLETE'
+                  ? 'bg-green-500/10 text-green-600'
+                  : 'bg-amber-500/10 text-amber-600'
               }`}>
                 {remaining - quantity > 0
                   ? t('stock.arrival.staysPartial', { count: remaining - quantity })

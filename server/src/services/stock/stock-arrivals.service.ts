@@ -1,10 +1,11 @@
 import { z } from 'zod'
 import { v4 as uuidv4 } from 'uuid'
+import { PurchaseOrderStatus } from '@prisma/client'
 import { prisma } from '../../db'
 import { TRPCError } from '@trpc/server'
 
 export const createStockArrivalSchema = z.object({
-  purchaseOrderId: z.string().uuid(),
+  purchaseOrderLineId: z.string().uuid(),
   locationId: z.string().uuid(),
   quantity: z.number().positive(),
   arrivedAt: z.string().datetime(),
@@ -13,78 +14,113 @@ export const createStockArrivalSchema = z.object({
 
 export type CreateStockArrivalInput = z.infer<typeof createStockArrivalSchema>
 
+/** Derive order-level status from line statuses. */
+function deriveOrderStatus(lineStatuses: PurchaseOrderStatus[]): PurchaseOrderStatus {
+  if (lineStatuses.every((s) => s === 'COMPLETE')) return 'COMPLETE'
+  if (lineStatuses.some((s) => s === 'PARTIAL' || s === 'COMPLETE')) return 'PARTIAL'
+  return 'OPEN'
+}
+
 class StockArrivalsService {
   async create(userId: string, input: CreateStockArrivalInput) {
-    // Load PO with access check + existing arrivals for status computation
-    const order = await prisma.purchaseOrder.findFirst({
-      where: { id: input.purchaseOrderId, isDeleted: false },
-      include: {
-        site: { include: { siteUsers: { where: { userId } } } },
-        arrivals: { where: { isDeleted: false } },
-      },
-    })
+    return prisma.$transaction(async (tx) => {
+      // Load the line + its order (for access check) + its existing arrivals
+      const line = await tx.purchaseOrderLine.findFirst({
+        where: { id: input.purchaseOrderLineId, isDeleted: false },
+        include: {
+          purchaseOrder: {
+            include: { site: { include: { siteUsers: { where: { userId } } } } },
+          },
+          arrivals: { where: { isDeleted: false } },
+        },
+      })
 
-    if (!order || order.site.siteUsers.length === 0) {
-      throw new TRPCError({ code: 'NOT_FOUND', message: 'Purchase order not found' })
-    }
+      if (!line || line.purchaseOrder.site.siteUsers.length === 0) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Purchase order line not found' })
+      }
 
-    const siteUser = order.site.siteUsers[0]
-    if (siteUser.role === 'VIEWER') {
-      throw new TRPCError({ code: 'FORBIDDEN', message: 'Insufficient permissions' })
-    }
+      const siteUser = line.purchaseOrder.site.siteUsers[0]
+      if (siteUser.role === 'VIEWER') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Insufficient permissions' })
+      }
 
-    if (order.status === 'CANCELLED') {
-      throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cannot add arrival to a cancelled order' })
-    }
+      if (line.purchaseOrder.status === 'CANCELLED') {
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cannot add arrival to a cancelled order' })
+      }
 
-    // Compute new PO status based on cumulative arrivals
-    const previousTotal = order.arrivals.reduce((sum, a) => sum + a.quantity, 0)
-    const newTotal = previousTotal + input.quantity
-    const newStatus =
-      newTotal >= order.orderedQuantity ? 'COMPLETE' : newTotal > 0 ? 'PARTIAL' : 'OPEN'
+      // Compute new line status
+      const prevLineTotal = line.arrivals.reduce((sum, a) => sum + a.quantity, 0)
+      const newLineTotal = prevLineTotal + input.quantity
+      const newLineStatus: PurchaseOrderStatus =
+        newLineTotal >= line.orderedQuantity ? 'COMPLETE' : 'PARTIAL'
 
-    // Pre-generate UUID so we can reference it in the ledger entry atomically
-    const arrivalId = uuidv4()
+      // Pre-generate arrival ID so ledger entry can reference it atomically
+      const arrivalId = uuidv4()
 
-    const [arrival] = await prisma.$transaction([
-      prisma.stockArrival.create({
+      // Write arrival + ledger entry + update line status
+      await tx.stockArrival.create({
         data: {
           id: arrivalId,
-          purchaseOrderId: input.purchaseOrderId,
+          purchaseOrderLineId: input.purchaseOrderLineId,
           locationId: input.locationId,
           quantity: input.quantity,
           arrivedAt: new Date(input.arrivedAt),
           notes: input.notes,
         },
-      }),
-      prisma.stockLedgerEntry.create({
+      })
+
+      await tx.stockLedgerEntry.create({
         data: {
-          itemId: order.itemId,
+          itemId: line.itemId,
           locationId: input.locationId,
           quantityDelta: input.quantity,
           operationType: 'ARRIVAL',
           referenceId: arrivalId,
         },
-      }),
-      prisma.purchaseOrder.update({
-        where: { id: input.purchaseOrderId },
-        data: { status: newStatus },
-      }),
-    ])
+      })
 
-    return arrival
+      await tx.purchaseOrderLine.update({
+        where: { id: input.purchaseOrderLineId },
+        data: { status: newLineStatus },
+      })
+
+      // Recompute order-level status from all non-deleted lines
+      const allLines = await tx.purchaseOrderLine.findMany({
+        where: { purchaseOrderId: line.purchaseOrderId, isDeleted: false },
+        select: { id: true, status: true },
+      })
+
+      const lineStatuses = allLines.map((l) =>
+        l.id === input.purchaseOrderLineId ? newLineStatus : l.status
+      )
+      const newOrderStatus = deriveOrderStatus(lineStatuses)
+
+      await tx.purchaseOrder.update({
+        where: { id: line.purchaseOrderId },
+        data: { status: newOrderStatus },
+      })
+
+      return tx.stockArrival.findUniqueOrThrow({
+        where: { id: arrivalId },
+        include: { location: true, purchaseOrderLine: { include: { item: true } } },
+      })
+    })
   }
 
-  async list(userId: string, purchaseOrderId: string) {
-    const order = await prisma.purchaseOrder.findFirst({
-      where: { id: purchaseOrderId, isDeleted: false },
-      include: { site: { include: { siteUsers: { where: { userId } } } } },
+  async list(userId: string, purchaseOrderLineId: string) {
+    const line = await prisma.purchaseOrderLine.findFirst({
+      where: { id: purchaseOrderLineId, isDeleted: false },
+      include: {
+        purchaseOrder: {
+          include: { site: { include: { siteUsers: { where: { userId } } } } },
+        },
+      },
     })
-    if (!order || order.site.siteUsers.length === 0) {
-      throw new TRPCError({ code: 'NOT_FOUND', message: 'Purchase order not found' })
+    if (!line || line.purchaseOrder.site.siteUsers.length === 0) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Purchase order line not found' })
     }
     return prisma.stockArrival.findMany({
-      where: { purchaseOrderId, isDeleted: false },
+      where: { purchaseOrderLineId, isDeleted: false },
       include: { location: true },
       orderBy: { arrivedAt: 'desc' },
     })

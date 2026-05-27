@@ -696,6 +696,8 @@ export const heTranslation: TranslationType = {
       supplierLabel: 'ספק: {{name}}',
       summary: 'הוזמן: {{ordered}} · התקבל: {{received}}',
       empty: 'אין הזמנות רכש עדיין.',
+      lines: 'פריטים',
+      addLine: 'הוסף פריט',
       status: {
         OPEN: 'פתוח',
         PARTIAL: 'חלקי',
@@ -706,6 +708,9 @@ export const heTranslation: TranslationType = {
     arrival: {
       quantity: 'כמות שהתקבלה',
       placedAt: 'הוצב ב',
+      selectLine: 'פריט לקבלה',
+      selectLinePlaceholder: 'בחר פריט מהזמנה…',
+      outstanding: '{{count}} {{unit}} בהמתנה',
       orderSummary: 'הוזמן: {{ordered}} · התקבל: {{received}} · יתרה: {{outstanding}}',
       staysPartial: '⚠ {{count}} עדיין בהמתנה → ההזמנה נשארת חלקית',
       markedComplete: '✓ ההזמנה תסומן כהושלמה',
