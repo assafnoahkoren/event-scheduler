@@ -60,8 +60,8 @@ export function ItemListSheet({
                     : 'border-border hover:bg-muted/50'
                 )}
                 onClick={() => {
-                  onSelectItem(entry.itemId)
                   onOpenChange(false)
+                  onSelectItem(entry.itemId)
                 }}
               >
                 <div>
