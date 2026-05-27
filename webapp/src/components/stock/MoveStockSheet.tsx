@@ -78,7 +78,7 @@ export function MoveStockSheet({ siteId, open, onOpenChange }: MoveStockSheetPro
           <p className="text-sm font-medium mb-2">{t('stock.item.name')}</p>
           <Select onValueChange={setItemId}>
             <SelectTrigger>
-              <SelectValue placeholder="Select item…" />
+              <SelectValue placeholder={t('stock.common.selectItem')} />
             </SelectTrigger>
             <SelectContent>
               {items?.map((item) => (
@@ -96,7 +96,7 @@ export function MoveStockSheet({ siteId, open, onOpenChange }: MoveStockSheetPro
             <p className="text-sm font-medium mb-2">{t('stock.movement.from')}</p>
             <Select onValueChange={setFromLocationId}>
               <SelectTrigger>
-                <SelectValue placeholder="From…" />
+                <SelectValue placeholder={t('stock.common.fromPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
                 {locations
@@ -115,7 +115,7 @@ export function MoveStockSheet({ siteId, open, onOpenChange }: MoveStockSheetPro
             <p className="text-sm font-medium mb-2">{t('stock.movement.to')}</p>
             <Select onValueChange={setToLocationId}>
               <SelectTrigger>
-                <SelectValue placeholder="To…" />
+                <SelectValue placeholder={t('stock.common.toPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
                 {locations
@@ -146,7 +146,7 @@ export function MoveStockSheet({ siteId, open, onOpenChange }: MoveStockSheetPro
             insufficientStock ? 'bg-destructive/10 text-destructive' : 'bg-muted'
           }`}>
             {insufficientStock ? (
-              <span>Not enough stock at source ({fromBalance} available)</span>
+              <span>{t('stock.movement.insufficientStock', { available: fromBalance })}</span>
             ) : (
               <>
                 <span>{locations.find(l => l.id === fromLocationId)?.name}: <b>{afterFrom}</b></span>

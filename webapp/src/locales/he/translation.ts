@@ -643,6 +643,7 @@ export const heTranslation: TranslationType = {
     common: {
       noChange: 'ללא שינוי',
       saving: 'שומר…',
+      loading: 'טוען…',
       done: 'סיום',
       skip: 'דלג',
       back: 'חזור',
@@ -656,7 +657,15 @@ export const heTranslation: TranslationType = {
       addLocation: 'הוסף מיקום',
       recountSaved: 'הספירה נשמרה',
       noItemsAtLocation: 'אין פריטי מלאי פעילים במיקום זה.',
+      noItemsYet: 'אין פריטים עדיין.',
       vsExpected: 'לעומת הצפוי',
+      selectItem: 'בחר פריט…',
+      selectLocation: 'בחר מיקום…',
+      selectOrder: 'בחר הזמנת רכש…',
+      fromPlaceholder: 'מ…',
+      toPlaceholder: 'אל…',
+      decrease: 'הפחת',
+      increase: 'הגדל',
     },
     actions: {
       recordArrival: 'רשום קבלה',
@@ -670,15 +679,23 @@ export const heTranslation: TranslationType = {
       name: 'שם פריט',
       unit: 'יחידה',
       description: 'תיאור',
+      namePlaceholder: 'לדוגמה: קוקה קולה 1.5 ליטר',
+      unitPlaceholder: 'לדוגמה: בקבוק, ארגז, פחית',
     },
     location: {
       name: 'שם מיקום',
+      namePlaceholder: 'לדוגמה: מחסן ראשי, בר א׳',
     },
     order: {
       orderedQuantity: 'כמות שהוזמנה',
       supplier: 'ספק',
       orderDate: 'תאריך הזמנה',
       expectedDelivery: 'משלוח צפוי',
+      quantityPlaceholder: 'לדוגמה: 50',
+      supplierPlaceholder: 'שם ספק (אופציונלי)',
+      supplierLabel: 'ספק: {{name}}',
+      summary: 'הוזמן: {{ordered}} · התקבל: {{received}}',
+      empty: 'אין הזמנות רכש עדיין.',
       status: {
         OPEN: 'פתוח',
         PARTIAL: 'חלקי',
@@ -689,11 +706,15 @@ export const heTranslation: TranslationType = {
     arrival: {
       quantity: 'כמות שהתקבלה',
       placedAt: 'הוצב ב',
+      orderSummary: 'הוזמן: {{ordered}} · התקבל: {{received}} · יתרה: {{outstanding}}',
+      staysPartial: '⚠ {{count}} עדיין בהמתנה → ההזמנה נשארת חלקית',
+      markedComplete: '✓ ההזמנה תסומן כהושלמה',
     },
     movement: {
       from: 'מ',
       to: 'אל',
       quantity: 'כמות',
+      insufficientStock: 'אין מספיק מלאי במקור (זמין: {{available}})',
     },
     recount: {
       expected: 'צפוי',
@@ -701,6 +722,9 @@ export const heTranslation: TranslationType = {
       delta: 'הפרש',
       initialCount: 'ספירה ראשונית',
       progressLabel: '{{done}} / {{total}} פריטים',
+      nowLabel: 'עכשיו',
+      savedSummary: '{{count}} פריטים עודכנו ב{{location}}.',
+      submitEarly: 'שלח {{count}} פריטים שנספרו עכשיו',
     },
   }
 } as const

@@ -84,7 +84,7 @@ export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrival
           <p className="text-sm font-medium mb-2">{t('stock.orders')}</p>
           <Select onValueChange={setSelectedOrderId}>
             <SelectTrigger>
-              <SelectValue placeholder="Select purchase order…" />
+              <SelectValue placeholder={t('stock.common.selectOrder')} />
             </SelectTrigger>
             <SelectContent>
               {allOrders.map((order) => (
@@ -101,10 +101,10 @@ export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrival
             <div className="bg-muted rounded-lg p-3 text-sm">
               <p className="font-medium">{selectedOrder.item.name}</p>
               {selectedOrder.supplierName && (
-                <p className="text-muted-foreground">Supplier: {selectedOrder.supplierName}</p>
+                <p className="text-muted-foreground">{t('stock.order.supplierLabel', { name: selectedOrder.supplierName })}</p>
               )}
               <p className="text-muted-foreground">
-                Ordered: {selectedOrder.orderedQuantity} · Received: {alreadyReceived} · Outstanding: {remaining}
+                {t('stock.arrival.orderSummary', { ordered: selectedOrder.orderedQuantity, received: alreadyReceived, outstanding: remaining })}
               </p>
             </div>
 
@@ -113,7 +113,7 @@ export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrival
               <p className="text-sm font-medium mb-2">{t('stock.arrival.placedAt')}</p>
               <Select onValueChange={setLocationId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select location…" />
+                  <SelectValue placeholder={t('stock.common.selectLocation')} />
                 </SelectTrigger>
                 <SelectContent>
                   {locations?.map((loc) => (
@@ -139,8 +139,8 @@ export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrival
                 newStatus === 'COMPLETE' ? 'bg-green-500/10 text-green-600' : 'bg-amber-500/10 text-amber-600'
               }`}>
                 {remaining - quantity > 0
-                  ? `⚠ ${remaining - quantity} still outstanding → order stays PARTIAL`
-                  : '✓ Order will be marked COMPLETE'}
+                  ? t('stock.arrival.staysPartial', { count: remaining - quantity })
+                  : t('stock.arrival.markedComplete')}
               </div>
             )}
 

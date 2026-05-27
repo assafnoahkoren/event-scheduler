@@ -643,6 +643,7 @@ export const arTranslation: TranslationType = {
     common: {
       noChange: 'لا تغيير',
       saving: 'جاري الحفظ…',
+      loading: 'جاري التحميل…',
       done: 'تم',
       skip: 'تخطي',
       back: 'رجوع',
@@ -656,7 +657,15 @@ export const arTranslation: TranslationType = {
       addLocation: 'إضافة موقع',
       recountSaved: 'تم حفظ إعادة العد',
       noItemsAtLocation: 'لا توجد عناصر مخزون نشطة في هذا الموقع.',
+      noItemsYet: 'لا توجد عناصر بعد.',
       vsExpected: 'مقارنة بالمتوقع',
+      selectItem: 'اختر عنصراً…',
+      selectLocation: 'اختر موقعاً…',
+      selectOrder: 'اختر أمر شراء…',
+      fromPlaceholder: 'من…',
+      toPlaceholder: 'إلى…',
+      decrease: 'تقليل',
+      increase: 'زيادة',
     },
     actions: {
       recordArrival: 'تسجيل وصول',
@@ -670,15 +679,23 @@ export const arTranslation: TranslationType = {
       name: 'اسم العنصر',
       unit: 'الوحدة',
       description: 'الوصف',
+      namePlaceholder: 'مثال: كوكا كولا 1.5 لتر',
+      unitPlaceholder: 'مثال: زجاجة، صندوق، علبة',
     },
     location: {
       name: 'اسم الموقع',
+      namePlaceholder: 'مثال: المستودع الرئيسي، بار أ',
     },
     order: {
       orderedQuantity: 'الكمية المطلوبة',
       supplier: 'المورد',
       orderDate: 'تاريخ الطلب',
       expectedDelivery: 'التسليم المتوقع',
+      quantityPlaceholder: 'مثال: 50',
+      supplierPlaceholder: 'اسم المورد (اختياري)',
+      supplierLabel: 'المورد: {{name}}',
+      summary: 'مطلوب: {{ordered}} · مستلم: {{received}}',
+      empty: 'لا توجد أوامر شراء بعد.',
       status: {
         OPEN: 'مفتوح',
         PARTIAL: 'جزئي',
@@ -689,11 +706,15 @@ export const arTranslation: TranslationType = {
     arrival: {
       quantity: 'الكمية الواصلة',
       placedAt: 'وُضع في',
+      orderSummary: 'مطلوب: {{ordered}} · مستلم: {{received}} · متبقي: {{outstanding}}',
+      staysPartial: '⚠ {{count}} لا يزال معلقاً → يبقى الطلب جزئياً',
+      markedComplete: '✓ سيتم تحديد الطلب كمكتمل',
     },
     movement: {
       from: 'من',
       to: 'إلى',
       quantity: 'الكمية',
+      insufficientStock: 'مخزون غير كافٍ في المصدر (المتاح: {{available}})',
     },
     recount: {
       expected: 'متوقع',
@@ -701,6 +722,9 @@ export const arTranslation: TranslationType = {
       delta: 'الفرق',
       initialCount: 'العد الأولي',
       progressLabel: '{{done}} / {{total}} عناصر',
+      nowLabel: 'الآن',
+      savedSummary: 'تم تحديث {{count}} عناصر في {{location}}.',
+      submitEarly: 'إرسال {{count}} عناصر معدودة الآن',
     },
   }
 } as const

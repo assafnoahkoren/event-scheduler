@@ -81,7 +81,7 @@ export function PurchaseOrdersPage() {
                     <p className="text-xs text-muted-foreground">{order.supplierName}</p>
                   )}
                   <p className="text-sm text-muted-foreground mt-1">
-                    Ordered: {order.orderedQuantity} · Received: {received}
+                    {t('stock.order.summary', { ordered: order.orderedQuantity, received })}
                   </p>
                 </div>
                 <Badge className={statusColors[order.status]}>
@@ -92,7 +92,7 @@ export function PurchaseOrdersPage() {
           )
         })}
         {orders?.length === 0 && (
-          <p className="text-muted-foreground text-sm">No purchase orders yet.</p>
+          <p className="text-muted-foreground text-sm">{t('stock.order.empty')}</p>
         )}
       </div>
 
@@ -105,7 +105,7 @@ export function PurchaseOrdersPage() {
             <div>
               <Label>{t('stock.item.name')}</Label>
               <Select onValueChange={(v) => setForm((f) => ({ ...f, itemId: v }))}>
-                <SelectTrigger><SelectValue placeholder="Select item…" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={t('stock.common.selectItem')} /></SelectTrigger>
                 <SelectContent>
                   {items?.map((item) => (
                     <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>
@@ -117,14 +117,14 @@ export function PurchaseOrdersPage() {
               <Label>{t('stock.order.orderedQuantity')}</Label>
               <Input
                 type="number"
-                placeholder="e.g. 50"
+                placeholder={t('stock.order.quantityPlaceholder')}
                 onChange={(e) => setForm((f) => ({ ...f, orderedQuantity: Number(e.target.value) }))}
               />
             </div>
             <div>
               <Label>{t('stock.order.supplier')}</Label>
               <Input
-                placeholder="Supplier name (optional)"
+                placeholder={t('stock.order.supplierPlaceholder')}
                 onChange={(e) => setForm((f) => ({ ...f, supplierName: e.target.value }))}
               />
             </div>

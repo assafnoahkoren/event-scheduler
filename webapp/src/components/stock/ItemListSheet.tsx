@@ -76,7 +76,7 @@ export function ItemListSheet({
                 </div>
                 <div className="shrink-0 ms-3">
                   {entry.isCurrent ? (
-                    <span className="text-xs font-bold text-primary">NOW</span>
+                    <span className="text-xs font-bold text-primary">{t('stock.recount.nowLabel')}</span>
                   ) : isDone ? (
                     <div className="flex items-center gap-1">
                       {delta !== null && delta !== 0 && (

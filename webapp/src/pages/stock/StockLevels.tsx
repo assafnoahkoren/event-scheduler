@@ -11,7 +11,7 @@ export function StockLevels() {
   )
 
   if (!currentSite) return null
-  if (isLoading) return <div className="p-4 text-muted-foreground">Loading…</div>
+  if (isLoading) return <div className="p-4 text-muted-foreground">{t('stock.common.loading')}</div>
   if (!data) return null
 
   const { items, locations, balances } = data
@@ -29,7 +29,7 @@ export function StockLevels() {
       <h1 className="text-2xl font-bold mb-4">{t('stock.levels')}</h1>
 
       {items.length === 0 ? (
-        <p className="text-muted-foreground">{t('stock.items')} — none yet.</p>
+        <p className="text-muted-foreground">{t('stock.common.noItemsYet')}</p>
       ) : (
         <table className="w-full border-collapse text-sm">
           <thead>

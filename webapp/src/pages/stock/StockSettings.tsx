@@ -100,11 +100,11 @@ export function StockSettings() {
           <div className="space-y-4">
             <div>
               <Label>{t('stock.item.name')}</Label>
-              <Input value={newItemName} onChange={(e) => setNewItemName(e.target.value)} placeholder="e.g. Coca-Cola 1.5L" />
+              <Input value={newItemName} onChange={(e) => setNewItemName(e.target.value)} placeholder={t('stock.item.namePlaceholder')} />
             </div>
             <div>
               <Label>{t('stock.item.unit')}</Label>
-              <Input value={newItemUnit} onChange={(e) => setNewItemUnit(e.target.value)} placeholder="e.g. bottle, crate, can" />
+              <Input value={newItemUnit} onChange={(e) => setNewItemUnit(e.target.value)} placeholder={t('stock.item.unitPlaceholder')} />
             </div>
             <Button onClick={handleCreateItem} disabled={!newItemName || !newItemUnit || createItem.isPending} className="w-full">
               {createItem.isPending ? t('stock.common.saving') : t('stock.common.addItem')}
@@ -120,7 +120,7 @@ export function StockSettings() {
           <div className="space-y-4">
             <div>
               <Label>{t('stock.location.name')}</Label>
-              <Input value={newLocationName} onChange={(e) => setNewLocationName(e.target.value)} placeholder="e.g. Main Warehouse, Bar A" />
+              <Input value={newLocationName} onChange={(e) => setNewLocationName(e.target.value)} placeholder={t('stock.location.namePlaceholder')} />
             </div>
             <Button onClick={handleCreateLocation} disabled={!newLocationName || createLocation.isPending} className="w-full">
               {createLocation.isPending ? t('stock.common.saving') : t('stock.common.addLocation')}

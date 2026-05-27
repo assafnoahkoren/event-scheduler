@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Minus, Plus } from 'lucide-react'
 
@@ -19,6 +20,7 @@ export function StockStepper({
   label,
   sublabel,
 }: StockStepperProps) {
+  const { t } = useTranslation()
   const decrement = () => onChange(Math.max(min, value - 1))
   const increment = () => onChange(Math.min(max, value + 1))
 
@@ -34,7 +36,7 @@ export function StockStepper({
           className="h-16 w-16 rounded-full border-destructive text-destructive hover:bg-destructive/10"
           onClick={decrement}
           disabled={value <= min}
-          aria-label="Decrease"
+          aria-label={t('stock.common.decrease')}
         >
           <Minus className="h-6 w-6" />
         </Button>
@@ -43,7 +45,7 @@ export function StockStepper({
           className="h-16 w-16 rounded-full"
           onClick={increment}
           disabled={value >= max}
-          aria-label="Increase"
+          aria-label={t('stock.common.increase')}
         >
           <Plus className="h-6 w-6" />
         </Button>

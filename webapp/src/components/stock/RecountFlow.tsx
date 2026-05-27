@@ -91,7 +91,7 @@ export function RecountFlow({ siteId, onClose }: RecountFlowProps) {
           <p className="text-sm text-muted-foreground mb-3">{t('stock.location.name')}</p>
           <Select onValueChange={setLocationId}>
             <SelectTrigger>
-              <SelectValue placeholder="Select location…" />
+              <SelectValue placeholder={t('stock.common.selectLocation')} />
             </SelectTrigger>
             <SelectContent>
               {locations?.map((loc) => (
@@ -115,7 +115,7 @@ export function RecountFlow({ siteId, onClose }: RecountFlowProps) {
             <DialogTitle>{t('stock.common.recountSaved')} ✓</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground mb-4">
-            {doneCount} item{doneCount !== 1 ? 's' : ''} updated at {selectedLocation?.name}.
+            {t('stock.recount.savedSummary', { count: doneCount, location: selectedLocation?.name })}
           </p>
           <Button onClick={onClose}>{t('stock.common.done')}</Button>
         </DialogContent>
@@ -222,7 +222,7 @@ export function RecountFlow({ siteId, onClose }: RecountFlowProps) {
                 onClick={handleSubmit}
                 disabled={createRecount.isPending}
               >
-                Submit {doneCount} counted item{doneCount !== 1 ? 's' : ''} now
+                {t('stock.recount.submitEarly', { count: doneCount })}
               </button>
             </div>
           )}

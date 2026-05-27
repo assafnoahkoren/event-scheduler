@@ -641,6 +641,7 @@ export const enTranslation = {
     common: {
       noChange: 'No change',
       saving: 'Saving…',
+      loading: 'Loading…',
       done: 'Done',
       skip: 'Skip',
       back: 'Back',
@@ -654,7 +655,15 @@ export const enTranslation = {
       addLocation: 'Add Location',
       recountSaved: 'Recount saved',
       noItemsAtLocation: 'No active stock items at this location.',
+      noItemsYet: 'No items yet.',
       vsExpected: 'vs expected',
+      selectItem: 'Select item…',
+      selectLocation: 'Select location…',
+      selectOrder: 'Select purchase order…',
+      fromPlaceholder: 'From…',
+      toPlaceholder: 'To…',
+      decrease: 'Decrease',
+      increase: 'Increase',
     },
     actions: {
       recordArrival: 'Record Arrival',
@@ -668,15 +677,23 @@ export const enTranslation = {
       name: 'Item Name',
       unit: 'Unit',
       description: 'Description',
+      namePlaceholder: 'e.g. Coca-Cola 1.5L',
+      unitPlaceholder: 'e.g. bottle, crate, can',
     },
     location: {
       name: 'Location Name',
+      namePlaceholder: 'e.g. Main Warehouse, Bar A',
     },
     order: {
       orderedQuantity: 'Ordered Quantity',
       supplier: 'Supplier',
       orderDate: 'Order Date',
       expectedDelivery: 'Expected Delivery',
+      quantityPlaceholder: 'e.g. 50',
+      supplierPlaceholder: 'Supplier name (optional)',
+      supplierLabel: 'Supplier: {{name}}',
+      summary: 'Ordered: {{ordered}} · Received: {{received}}',
+      empty: 'No purchase orders yet.',
       status: {
         OPEN: 'Open',
         PARTIAL: 'Partial',
@@ -687,11 +704,15 @@ export const enTranslation = {
     arrival: {
       quantity: 'Quantity Arrived',
       placedAt: 'Placed At',
+      orderSummary: 'Ordered: {{ordered}} · Received: {{received}} · Outstanding: {{outstanding}}',
+      staysPartial: '⚠ {{count}} still outstanding → order stays PARTIAL',
+      markedComplete: '✓ Order will be marked COMPLETE',
     },
     movement: {
       from: 'From',
       to: 'To',
       quantity: 'Quantity',
+      insufficientStock: 'Not enough stock at source ({{available}} available)',
     },
     recount: {
       expected: 'Expected',
@@ -699,6 +720,9 @@ export const enTranslation = {
       delta: 'Delta',
       initialCount: 'Initial Count',
       progressLabel: '{{done}} / {{total}} items',
+      nowLabel: 'NOW',
+      savedSummary: '{{count}} items updated at {{location}}.',
+      submitEarly: 'Submit {{count}} counted items now',
     },
   }
 } as const
