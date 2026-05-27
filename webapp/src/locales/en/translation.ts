@@ -628,5 +628,59 @@ export const enTranslation = {
     templateNamePlaceholder: "Enter template name",
     noTemplates: "No templates yet",
     noTemplatesDescription: "Create a template to design event layouts"
+  },
+  stock: {
+    title: 'Stock',
+    levels: 'Stock Levels',
+    orders: 'Purchase Orders',
+    movements: 'Movements',
+    recounts: 'Recounts',
+    settings: 'Stock Settings',
+    items: 'Stock Items',
+    locations: 'Locations',
+    actions: {
+      recordArrival: 'Record Arrival',
+      moveStock: 'Move Stock',
+      recount: 'Recount',
+      newOrder: 'New Order',
+      newItem: 'New Item',
+      newLocation: 'New Location',
+    },
+    item: {
+      name: 'Item Name',
+      unit: 'Unit',
+      description: 'Description',
+    },
+    location: {
+      name: 'Location Name',
+    },
+    order: {
+      orderedQuantity: 'Ordered Quantity',
+      supplier: 'Supplier',
+      orderDate: 'Order Date',
+      expectedDelivery: 'Expected Delivery',
+      status: {
+        OPEN: 'Open',
+        PARTIAL: 'Partial',
+        COMPLETE: 'Complete',
+        CANCELLED: 'Cancelled',
+      },
+    },
+    arrival: {
+      quantity: 'Quantity Arrived',
+      placedAt: 'Placed At',
+    },
+    movement: {
+      from: 'From',
+      to: 'To',
+      quantity: 'Quantity',
+    },
+    recount: {
+      expected: 'Expected',
+      counted: 'Counted',
+      delta: 'Delta',
+      initialCount: 'Initial Count',
+      progressLabel: '{{done}} / {{total}} items',
+    },
   }
 } as const

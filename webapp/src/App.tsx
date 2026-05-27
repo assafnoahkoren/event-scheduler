@@ -21,6 +21,10 @@ import { FloorPlans } from '@/pages/floor-plans/FloorPlans'
 import { FloorPlanDetail } from '@/pages/floor-plans/FloorPlanDetail'
 import { ComponentTypes } from '@/pages/floor-plans/ComponentTypes'
 import { TemplateEditor } from '@/pages/floor-plans/TemplateEditor'
+import { StockPage } from '@/pages/stock/StockPage'
+import { StockLevels } from '@/pages/stock/StockLevels'
+import { PurchaseOrdersPage } from '@/pages/stock/PurchaseOrdersPage'
+import { StockSettings } from '@/pages/stock/StockSettings'
 import '@/styles/swiper-custom.css'
 
 function App() {
@@ -51,6 +55,10 @@ function App() {
             <Route path="/floor-plans/:floorPlanId" element={<FloorPlanDetail />} />
             <Route path="/templates/:templateId" element={<TemplateEditor />} />
             <Route path="/component-types" element={<ComponentTypes />} />
+            <Route path="/stock" element={<StockPage />} />
+            <Route path="/stock/levels" element={<StockLevels />} />
+            <Route path="/stock/orders" element={<PurchaseOrdersPage />} />
+            <Route path="/stock/settings" element={<StockSettings />} />
           </Route>
         </Route>
 

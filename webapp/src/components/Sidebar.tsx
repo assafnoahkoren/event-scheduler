@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X, Calendar, Settings, User, Plus, Home, Globe, Package, Users, Clock, Building2, Map } from 'lucide-react'
+import { X, Calendar, Settings, User, Plus, Home, Globe, Package, Users, Clock, Building2, Map, Warehouse } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -142,6 +142,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 >
                   <Map className="h-4 w-4 me-2" />
                   {t('floorPlans.title')}
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={() => handleNavigation('/stock')}
+                >
+                  <Warehouse className="h-4 w-4 me-2" />
+                  {t('stock.title')}
                 </Button>
                 <Button
                   variant="ghost"
