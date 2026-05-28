@@ -640,6 +640,7 @@ export const arTranslation: TranslationType = {
     settings: 'إعدادات المخزون',
     items: 'عناصر المخزون',
     locations: 'المواقع',
+    categories: 'الفئات',
     common: {
       noChange: 'لا تغيير',
       saving: 'جاري الحفظ…',
@@ -655,6 +656,7 @@ export const arTranslation: TranslationType = {
       createOrder: 'إنشاء طلب',
       addItem: 'إضافة عنصر',
       addLocation: 'إضافة موقع',
+      addCategory: 'إضافة فئة',
       recountSaved: 'تم حفظ إعادة العد',
       noItemsAtLocation: 'لا توجد عناصر مخزون نشطة في هذا الموقع.',
       noItemsYet: 'لا توجد عناصر بعد.',
@@ -666,6 +668,8 @@ export const arTranslation: TranslationType = {
       toPlaceholder: 'إلى…',
       decrease: 'تقليل',
       increase: 'زيادة',
+      decreaseBy: 'تقليل بمقدار {{amount}}',
+      increaseBy: 'زيادة بمقدار {{amount}}',
     },
     actions: {
       recordArrival: 'تسجيل وصول',
@@ -674,13 +678,21 @@ export const arTranslation: TranslationType = {
       newOrder: 'طلب جديد',
       newItem: 'عنصر جديد',
       newLocation: 'موقع جديد',
+      newCategory: 'فئة جديدة',
     },
     item: {
       name: 'اسم العنصر',
       unit: 'الوحدة',
       description: 'الوصف',
+      category: 'الفئة',
       namePlaceholder: 'مثال: كوكا كولا 1.5 لتر',
       unitPlaceholder: 'مثال: زجاجة، صندوق، علبة',
+      noCategory: 'بدون فئة',
+    },
+    category: {
+      name: 'اسم الفئة',
+      namePlaceholder: 'مثال: مشروبات، طعام، تنظيف',
+      empty: 'لا توجد فئات بعد.',
     },
     location: {
       name: 'اسم الموقع',

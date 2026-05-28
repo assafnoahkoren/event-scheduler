@@ -4,6 +4,7 @@ import { TRPCError } from '@trpc/server'
 
 export const createStockItemSchema = z.object({
   siteId: z.string().uuid(),
+  categoryId: z.string().uuid().optional(),
   name: z.string().min(1),
   description: z.string().optional(),
   unit: z.string().min(1),
@@ -11,6 +12,7 @@ export const createStockItemSchema = z.object({
 
 export const updateStockItemSchema = z.object({
   id: z.string().uuid(),
+  categoryId: z.string().uuid().nullable().optional(),
   name: z.string().min(1).optional(),
   description: z.string().optional(),
   unit: z.string().min(1).optional(),
@@ -35,6 +37,7 @@ class StockItemsService {
     await this.assertSiteAccess(userId, siteId)
     return prisma.stockItem.findMany({
       where: { siteId, isDeleted: false },
+      include: { category: true },
       orderBy: { name: 'asc' },
     })
   }
@@ -42,7 +45,10 @@ class StockItemsService {
   async get(userId: string, id: string) {
     const item = await prisma.stockItem.findFirst({
       where: { id, isDeleted: false },
-      include: { site: { include: { siteUsers: { where: { userId } } } } },
+      include: {
+        category: true,
+        site: { include: { siteUsers: { where: { userId } } } },
+      },
     })
     if (!item || item.site.siteUsers.length === 0) {
       throw new TRPCError({ code: 'NOT_FOUND', message: 'Stock item not found' })

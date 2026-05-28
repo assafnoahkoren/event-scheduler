@@ -4,6 +4,9 @@ model StockItem {
   siteId      String   @map("site_id")
   site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
+  categoryId  String?              @map("category_id")
+  category    StockItemCategory?   @relation(fields: [categoryId], references: [id])
+
   name        String
   description String?
   unit        String   // "bottle", "crate", "can", "liter", etc.
