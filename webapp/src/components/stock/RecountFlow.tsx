@@ -4,13 +4,6 @@ import { trpc } from '@/utils/trpc'
 import { StockStepper } from './StockStepper'
 import { ItemListSheet } from './ItemListSheet'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 interface RecountFlowProps {
@@ -89,18 +82,17 @@ export function RecountFlow({ siteId, onClose }: RecountFlowProps) {
             <DialogTitle>{t('stock.actions.recount')}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground mb-3">{t('stock.location.name')}</p>
-          <Select onValueChange={setLocationId}>
-            <SelectTrigger>
-              <SelectValue placeholder={t('stock.common.selectLocation')} />
-            </SelectTrigger>
-            <SelectContent>
-              {locations?.map((loc) => (
-                <SelectItem key={loc.id} value={loc.id}>
-                  {loc.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="grid grid-cols-2 gap-2">
+            {locations?.map((loc) => (
+              <button
+                key={loc.id}
+                onClick={() => setLocationId(loc.id)}
+                className="px-3 py-4 rounded-lg text-sm font-medium border bg-muted border-transparent hover:border-primary/50 transition-colors text-center"
+              >
+                {loc.name}
+              </button>
+            ))}
+          </div>
         </DialogContent>
       </Dialog>
     )

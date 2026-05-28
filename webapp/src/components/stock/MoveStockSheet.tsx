@@ -91,42 +91,51 @@ export function MoveStockSheet({ siteId, open, onOpenChange }: MoveStockSheetPro
         </div>
 
         {/* From / To */}
-        <div className="flex items-center gap-2">
-          <div className="flex-1">
-            <p className="text-sm font-medium mb-2">{t('stock.movement.from')}</p>
-            <Select onValueChange={setFromLocationId}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('stock.common.fromPlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                {locations
-                  .filter((l) => l.id !== toLocationId)
-                  .map((loc) => (
-                    <SelectItem key={loc.id} value={loc.id}>
-                      {loc.name}
-                      {itemId && ` (${levels?.balances[itemId]?.[loc.id] ?? 0})`}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+        <div>
+          <div className="flex gap-2 mb-2">
+            <p className="flex-1 text-sm font-medium">{t('stock.movement.from')}</p>
+            <div className="shrink-0 w-9" />
+            <p className="flex-1 text-sm font-medium">{t('stock.movement.to')}</p>
           </div>
-          <ArrowRight className="h-4 w-4 text-muted-foreground mt-5 shrink-0" />
-          <div className="flex-1">
-            <p className="text-sm font-medium mb-2">{t('stock.movement.to')}</p>
-            <Select onValueChange={setToLocationId}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('stock.common.toPlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                {locations
-                  .filter((l) => l.id !== fromLocationId)
-                  .map((loc) => (
-                    <SelectItem key={loc.id} value={loc.id}>
-                      {loc.name}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+          <div className="flex items-center gap-2">
+            <div className="flex-1 grid grid-cols-2 gap-1.5">
+              {locations.map((loc) => (
+                <button
+                  key={loc.id}
+                  onClick={() => setFromLocationId(loc.id)}
+                  disabled={loc.id === toLocationId}
+                  className={`px-2 py-2 rounded-lg text-sm font-medium border transition-colors text-center disabled:opacity-40 disabled:cursor-not-allowed ${
+                    fromLocationId === loc.id
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-muted border-transparent hover:border-primary/50'
+                  }`}
+                >
+                  <div>{loc.name}</div>
+                  {itemId && (
+                    <div className="text-xs opacity-70">{levels?.balances[itemId]?.[loc.id] ?? 0}</div>
+                  )}
+                </button>
+              ))}
+            </div>
+            <div className="shrink-0 bg-amber-500 rounded-full p-1.5">
+              <ArrowRight className="h-4 w-4 text-white" />
+            </div>
+            <div className="flex-1 grid grid-cols-2 gap-1.5">
+              {locations.map((loc) => (
+                <button
+                  key={loc.id}
+                  onClick={() => setToLocationId(loc.id)}
+                  disabled={loc.id === fromLocationId}
+                  className={`px-2 py-2 rounded-lg text-sm font-medium border transition-colors text-center disabled:opacity-40 disabled:cursor-not-allowed ${
+                    toLocationId === loc.id
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-muted border-transparent hover:border-primary/50'
+                  }`}
+                >
+                  {loc.name}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
