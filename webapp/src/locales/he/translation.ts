@@ -677,8 +677,11 @@ export const heTranslation: TranslationType = {
       recount: 'ספור מחדש',
       newOrder: 'הזמנה חדשה',
       newItem: 'פריט חדש',
+      editItem: 'ערוך פריט',
       newLocation: 'מיקום חדש',
+      editLocation: 'ערוך מיקום',
       newCategory: 'קטגוריה חדשה',
+      editCategory: 'ערוך קטגוריה',
     },
     item: {
       name: 'שם פריט',

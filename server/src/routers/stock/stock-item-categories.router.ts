@@ -3,6 +3,7 @@ import { router, protectedProcedure } from '../../trpc'
 import {
   stockItemCategoriesService,
   createStockItemCategorySchema,
+  updateStockItemCategorySchema,
 } from '../../services/stock/stock-item-categories.service'
 
 export const stockItemCategoriesRouter = router({
@@ -13,6 +14,10 @@ export const stockItemCategoriesRouter = router({
   create: protectedProcedure
     .input(createStockItemCategorySchema)
     .mutation(({ ctx, input }) => stockItemCategoriesService.create(ctx.user.id, input)),
+
+  update: protectedProcedure
+    .input(updateStockItemCategorySchema)
+    .mutation(({ ctx, input }) => stockItemCategoriesService.update(ctx.user.id, input)),
 
   delete: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))

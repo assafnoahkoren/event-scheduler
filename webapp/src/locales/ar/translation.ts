@@ -677,8 +677,11 @@ export const arTranslation: TranslationType = {
       recount: 'إعادة العد',
       newOrder: 'طلب جديد',
       newItem: 'عنصر جديد',
+      editItem: 'تعديل العنصر',
       newLocation: 'موقع جديد',
+      editLocation: 'تعديل الموقع',
       newCategory: 'فئة جديدة',
+      editCategory: 'تعديل الفئة',
     },
     item: {
       name: 'اسم العنصر',

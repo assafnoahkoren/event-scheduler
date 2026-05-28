@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Pencil } from 'lucide-react'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { Button } from '@/components/ui/button'
@@ -16,22 +16,29 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+type EditingItem = { id: string; name: string; unit: string; categoryId: string }
+type EditingCategory = { id: string; name: string }
+type EditingLocation = { id: string; name: string; description: string }
+
 export function StockSettings() {
   const { t } = useTranslation()
   const { currentSite } = useCurrentSite()
 
   // Item form state
   const [itemSheetOpen, setItemSheetOpen] = useState(false)
+  const [editingItem, setEditingItem] = useState<EditingItem | null>(null)
   const [newItemName, setNewItemName] = useState('')
   const [newItemUnit, setNewItemUnit] = useState('')
   const [newItemCategoryId, setNewItemCategoryId] = useState<string>('')
 
   // Location form state
   const [locationSheetOpen, setLocationSheetOpen] = useState(false)
+  const [editingLocation, setEditingLocation] = useState<EditingLocation | null>(null)
   const [newLocationName, setNewLocationName] = useState('')
 
   // Category form state
   const [categorySheetOpen, setCategorySheetOpen] = useState(false)
+  const [editingCategory, setEditingCategory] = useState<EditingCategory | null>(null)
   const [newCategoryName, setNewCategoryName] = useState('')
 
   const { data: items, refetch: refetchItems } = trpc.stock.items.list.useQuery(
@@ -48,39 +55,97 @@ export function StockSettings() {
   )
 
   const createItem = trpc.stock.items.create.useMutation()
+  const updateItem = trpc.stock.items.update.useMutation()
   const createLocation = trpc.stock.locations.create.useMutation()
+  const updateLocation = trpc.stock.locations.update.useMutation()
   const createCategory = trpc.stock.categories.create.useMutation()
+  const updateCategory = trpc.stock.categories.update.useMutation()
   const deleteCategory = trpc.stock.categories.delete.useMutation()
 
-  const handleCreateItem = async () => {
-    if (!currentSite || !newItemName || !newItemUnit) return
-    await createItem.mutateAsync({
-      siteId: currentSite.id,
-      name: newItemName,
-      unit: newItemUnit,
-      categoryId: newItemCategoryId || undefined,
-    })
-    await refetchItems()
-    setItemSheetOpen(false)
+  // Item handlers
+  const openNewItem = () => {
+    setEditingItem(null)
     setNewItemName('')
     setNewItemUnit('')
     setNewItemCategoryId('')
+    setItemSheetOpen(true)
   }
 
-  const handleCreateLocation = async () => {
+  const openEditItem = (item: NonNullable<typeof items>[0]) => {
+    setEditingItem({ id: item.id, name: item.name, unit: item.unit, categoryId: item.category?.id ?? '' })
+    setNewItemName(item.name)
+    setNewItemUnit(item.unit)
+    setNewItemCategoryId(item.category?.id ?? '')
+    setItemSheetOpen(true)
+  }
+
+  const handleSaveItem = async () => {
+    if (!currentSite || !newItemName || !newItemUnit) return
+    if (editingItem) {
+      await updateItem.mutateAsync({
+        id: editingItem.id,
+        name: newItemName,
+        unit: newItemUnit,
+        categoryId: newItemCategoryId || null,
+      })
+    } else {
+      await createItem.mutateAsync({
+        siteId: currentSite.id,
+        name: newItemName,
+        unit: newItemUnit,
+        categoryId: newItemCategoryId || undefined,
+      })
+    }
+    await refetchItems()
+    setItemSheetOpen(false)
+  }
+
+  // Location handlers
+  const openNewLocation = () => {
+    setEditingLocation(null)
+    setNewLocationName('')
+    setLocationSheetOpen(true)
+  }
+
+  const openEditLocation = (loc: NonNullable<typeof locations>[0]) => {
+    setEditingLocation({ id: loc.id, name: loc.name, description: loc.description ?? '' })
+    setNewLocationName(loc.name)
+    setLocationSheetOpen(true)
+  }
+
+  const handleSaveLocation = async () => {
     if (!currentSite || !newLocationName) return
-    await createLocation.mutateAsync({ siteId: currentSite.id, name: newLocationName })
+    if (editingLocation) {
+      await updateLocation.mutateAsync({ id: editingLocation.id, name: newLocationName })
+    } else {
+      await createLocation.mutateAsync({ siteId: currentSite.id, name: newLocationName })
+    }
     await refetchLocations()
     setLocationSheetOpen(false)
-    setNewLocationName('')
   }
 
-  const handleCreateCategory = async () => {
+  // Category handlers
+  const openNewCategory = () => {
+    setEditingCategory(null)
+    setNewCategoryName('')
+    setCategorySheetOpen(true)
+  }
+
+  const openEditCategory = (cat: NonNullable<typeof categories>[0]) => {
+    setEditingCategory({ id: cat.id, name: cat.name })
+    setNewCategoryName(cat.name)
+    setCategorySheetOpen(true)
+  }
+
+  const handleSaveCategory = async () => {
     if (!currentSite || !newCategoryName) return
-    await createCategory.mutateAsync({ siteId: currentSite.id, name: newCategoryName })
+    if (editingCategory) {
+      await updateCategory.mutateAsync({ id: editingCategory.id, name: newCategoryName })
+    } else {
+      await createCategory.mutateAsync({ siteId: currentSite.id, name: newCategoryName })
+    }
     await refetchCategories()
     setCategorySheetOpen(false)
-    setNewCategoryName('')
   }
 
   const handleDeleteCategory = async (id: string) => {
@@ -89,6 +154,10 @@ export function StockSettings() {
   }
 
   if (!currentSite) return null
+
+  const itemPending = createItem.isPending || updateItem.isPending
+  const locationPending = createLocation.isPending || updateLocation.isPending
+  const categoryPending = createCategory.isPending || updateCategory.isPending
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-lg">
@@ -104,7 +173,7 @@ export function StockSettings() {
         {/* Items tab */}
         <TabsContent value="items" className="mt-4">
           <div className="flex justify-end mb-3">
-            <Button size="sm" onClick={() => setItemSheetOpen(true)}>
+            <Button size="sm" onClick={openNewItem}>
               + {t('stock.actions.newItem')}
             </Button>
           </div>
@@ -122,6 +191,9 @@ export function StockSettings() {
                     )}
                   </div>
                 </div>
+                <Button variant="ghost" size="icon" onClick={() => openEditItem(item)}>
+                  <Pencil className="h-4 w-4" />
+                </Button>
               </div>
             ))}
           </div>
@@ -130,7 +202,7 @@ export function StockSettings() {
         {/* Categories tab */}
         <TabsContent value="categories" className="mt-4">
           <div className="flex justify-end mb-3">
-            <Button size="sm" onClick={() => setCategorySheetOpen(true)}>
+            <Button size="sm" onClick={openNewCategory}>
               + {t('stock.actions.newCategory')}
             </Button>
           </div>
@@ -141,15 +213,20 @@ export function StockSettings() {
             {categories?.map((cat) => (
               <div key={cat.id} className="border rounded-lg px-4 py-3 flex items-center justify-between">
                 <p className="font-medium">{cat.name}</p>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-destructive hover:text-destructive shrink-0"
-                  onClick={() => handleDeleteCategory(cat.id)}
-                  disabled={deleteCategory.isPending}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <Button variant="ghost" size="icon" onClick={() => openEditCategory(cat)}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => handleDeleteCategory(cat.id)}
+                    disabled={deleteCategory.isPending}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
@@ -158,25 +235,32 @@ export function StockSettings() {
         {/* Locations tab */}
         <TabsContent value="locations" className="mt-4">
           <div className="flex justify-end mb-3">
-            <Button size="sm" onClick={() => setLocationSheetOpen(true)}>
+            <Button size="sm" onClick={openNewLocation}>
               + {t('stock.actions.newLocation')}
             </Button>
           </div>
           <div className="space-y-2">
             {locations?.map((loc) => (
-              <div key={loc.id} className="border rounded-lg px-4 py-3">
-                <p className="font-medium">{loc.name}</p>
-                {loc.description && <p className="text-xs text-muted-foreground">{loc.description}</p>}
+              <div key={loc.id} className="border rounded-lg px-4 py-3 flex items-center justify-between">
+                <div>
+                  <p className="font-medium">{loc.name}</p>
+                  {loc.description && <p className="text-xs text-muted-foreground">{loc.description}</p>}
+                </div>
+                <Button variant="ghost" size="icon" onClick={() => openEditLocation(loc)}>
+                  <Pencil className="h-4 w-4" />
+                </Button>
               </div>
             ))}
           </div>
         </TabsContent>
       </Tabs>
 
-      {/* New Item Sheet */}
+      {/* Item Sheet (create + edit) */}
       <Sheet open={itemSheetOpen} onOpenChange={setItemSheetOpen}>
         <SheetContent side="bottom" className="h-[60vh] flex flex-col gap-4">
-          <SheetHeader><SheetTitle>{t('stock.actions.newItem')}</SheetTitle></SheetHeader>
+          <SheetHeader>
+            <SheetTitle>{editingItem ? t('stock.actions.editItem') : t('stock.actions.newItem')}</SheetTitle>
+          </SheetHeader>
           <div className="space-y-4">
             <div>
               <Label>{t('stock.item.name')}</Label>
@@ -212,20 +296,22 @@ export function StockSettings() {
               </div>
             )}
             <Button
-              onClick={handleCreateItem}
-              disabled={!newItemName || !newItemUnit || createItem.isPending}
+              onClick={handleSaveItem}
+              disabled={!newItemName || !newItemUnit || itemPending}
               className="w-full"
             >
-              {createItem.isPending ? t('stock.common.saving') : t('stock.common.addItem')}
+              {itemPending ? t('stock.common.saving') : editingItem ? t('common.save') : t('stock.common.addItem')}
             </Button>
           </div>
         </SheetContent>
       </Sheet>
 
-      {/* New Category Sheet */}
+      {/* Category Sheet (create + edit) */}
       <Sheet open={categorySheetOpen} onOpenChange={setCategorySheetOpen}>
         <SheetContent side="bottom" className="h-[40vh] flex flex-col gap-4">
-          <SheetHeader><SheetTitle>{t('stock.actions.newCategory')}</SheetTitle></SheetHeader>
+          <SheetHeader>
+            <SheetTitle>{editingCategory ? t('stock.actions.editCategory') : t('stock.actions.newCategory')}</SheetTitle>
+          </SheetHeader>
           <div className="space-y-4">
             <div>
               <Label>{t('stock.category.name')}</Label>
@@ -236,20 +322,22 @@ export function StockSettings() {
               />
             </div>
             <Button
-              onClick={handleCreateCategory}
-              disabled={!newCategoryName || createCategory.isPending}
+              onClick={handleSaveCategory}
+              disabled={!newCategoryName || categoryPending}
               className="w-full"
             >
-              {createCategory.isPending ? t('stock.common.saving') : t('stock.common.addCategory')}
+              {categoryPending ? t('stock.common.saving') : editingCategory ? t('common.save') : t('stock.common.addCategory')}
             </Button>
           </div>
         </SheetContent>
       </Sheet>
 
-      {/* New Location Sheet */}
+      {/* Location Sheet (create + edit) */}
       <Sheet open={locationSheetOpen} onOpenChange={setLocationSheetOpen}>
         <SheetContent side="bottom" className="h-[40vh] flex flex-col gap-4">
-          <SheetHeader><SheetTitle>{t('stock.actions.newLocation')}</SheetTitle></SheetHeader>
+          <SheetHeader>
+            <SheetTitle>{editingLocation ? t('stock.actions.editLocation') : t('stock.actions.newLocation')}</SheetTitle>
+          </SheetHeader>
           <div className="space-y-4">
             <div>
               <Label>{t('stock.location.name')}</Label>
@@ -260,11 +348,11 @@ export function StockSettings() {
               />
             </div>
             <Button
-              onClick={handleCreateLocation}
-              disabled={!newLocationName || createLocation.isPending}
+              onClick={handleSaveLocation}
+              disabled={!newLocationName || locationPending}
               className="w-full"
             >
-              {createLocation.isPending ? t('stock.common.saving') : t('stock.common.addLocation')}
+              {locationPending ? t('stock.common.saving') : editingLocation ? t('common.save') : t('stock.common.addLocation')}
             </Button>
           </div>
         </SheetContent>

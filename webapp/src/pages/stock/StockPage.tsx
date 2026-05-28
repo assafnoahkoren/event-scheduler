@@ -80,7 +80,7 @@ export function StockPage() {
         ))}
       </div>
 
-      {/* Stock levels table */}
+      {/* Stock levels */}
       <div>
         <h2 className="text-base font-semibold mb-3 text-muted-foreground">
           {t('stock.levels')}
@@ -91,48 +91,39 @@ export function StockPage() {
         ) : items.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t('stock.common.noItemsYet')}</p>
         ) : (
-          <div className="overflow-x-auto rounded-lg border">
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="border-b bg-muted/40">
-                  <th className="text-start py-2 px-3 font-medium text-muted-foreground">
-                    {t('stock.item.name')}
-                  </th>
-                  {locations.map((loc) => (
-                    <th key={loc.id} className="py-2 px-3 font-medium text-center whitespace-nowrap">
-                      {loc.name}
-                    </th>
-                  ))}
-                  <th className="py-2 px-3 font-medium text-center text-muted-foreground">Σ</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((item) => (
-                  <tr key={item.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
-                    <td className="py-3 px-3">
-                      <p className="font-medium">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">{item.unit}</p>
-                    </td>
-                    {locations.map((loc) => {
-                      const qty = balances[item.id]?.[loc.id] ?? 0
-                      return (
-                        <td
-                          key={loc.id}
-                          className={`py-3 px-3 text-center font-semibold tabular-nums ${
-                            qty === 0 ? 'text-muted-foreground/40' : ''
-                          }`}
-                        >
+          <div className="flex flex-col gap-3">
+            {items.map((item) => (
+              <div key={item.id} className="rounded-xl border bg-card p-3">
+                <div className="flex items-baseline justify-between mb-2">
+                  <p className="font-semibold text-base">{item.name}</p>
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {totals[item.id]} {item.unit}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {locations.map((loc) => {
+                    const qty = balances[item.id]?.[loc.id] ?? 0
+                    return (
+                      <div
+                        key={loc.id}
+                        className={`flex items-center justify-between rounded-lg px-2.5 py-1.5 text-sm ${
+                          qty === 0
+                            ? 'bg-muted/40 text-muted-foreground/50'
+                            : 'bg-muted'
+                        }`}
+                      >
+                        <span className="truncate me-1">{loc.name}</span>
+                        <span className={`font-semibold tabular-nums shrink-0 ${
+                          qty === 0 ? '' : qty <= 3 ? 'text-amber-500' : 'text-foreground'
+                        }`}>
                           {qty}
-                        </td>
-                      )
-                    })}
-                    <td className="py-3 px-3 text-center font-semibold tabular-nums text-muted-foreground">
-                      {totals[item.id]}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

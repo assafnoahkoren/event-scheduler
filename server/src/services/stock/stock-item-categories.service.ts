@@ -44,6 +44,21 @@ class StockItemCategoriesService {
     return prisma.stockItemCategory.create({ data: input })
   }
 
+  async update(userId: string, input: UpdateStockItemCategoryInput) {
+    const category = await prisma.stockItemCategory.findFirst({
+      where: { id: input.id, isDeleted: false },
+      include: { site: { include: { siteUsers: { where: { userId } } } } },
+    })
+    if (!category || category.site.siteUsers.length === 0) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Category not found' })
+    }
+    const siteUser = category.site.siteUsers[0]
+    if (siteUser.role === 'VIEWER') {
+      throw new TRPCError({ code: 'FORBIDDEN', message: 'Insufficient permissions' })
+    }
+    return prisma.stockItemCategory.update({ where: { id: input.id }, data: input })
+  }
+
   async delete(userId: string, id: string) {
     const category = await prisma.stockItemCategory.findFirst({
       where: { id, isDeleted: false },

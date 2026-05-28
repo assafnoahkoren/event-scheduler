@@ -675,8 +675,11 @@ export const enTranslation = {
       recount: 'Recount',
       newOrder: 'New Order',
       newItem: 'New Item',
+      editItem: 'Edit Item',
       newLocation: 'New Location',
+      editLocation: 'Edit Location',
       newCategory: 'New Category',
+      editCategory: 'Edit Category',
     },
     item: {
       name: 'Item Name',
