@@ -60,8 +60,9 @@ export function StockPage() {
           <Warehouse className="h-6 w-6" />
           <h1 className="text-2xl font-bold">{t('stock.title')}</h1>
         </div>
-        <Button variant="ghost" size="icon" onClick={() => navigate('/stock/settings')}>
-          <Settings2 className="h-5 w-5" />
+        <Button variant="ghost" size="sm" onClick={() => navigate('/stock/settings')}>
+          <Settings2 className="h-4 w-4" />
+          {t('stock.settings')}
         </Button>
       </div>
 
