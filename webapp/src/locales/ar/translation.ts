@@ -661,6 +661,8 @@ export const arTranslation: TranslationType = {
       noItemsAtLocation: 'لا توجد عناصر مخزون نشطة في هذا الموقع.',
       noItemsYet: 'لا توجد عناصر بعد.',
       vsExpected: 'مقارنة بالمتوقع',
+      searchItems: 'ابحث بالاسم أو الفئة…',
+      noResults: 'لا توجد عناصر تطابق بحثك.',
       selectItem: 'اختر عنصراً…',
       selectLocation: 'اختر موقعاً…',
       selectOrder: 'اختر أمر شراء…',

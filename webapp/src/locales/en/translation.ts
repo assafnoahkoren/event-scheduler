@@ -659,6 +659,8 @@ export const enTranslation = {
       noItemsAtLocation: 'No active stock items at this location.',
       noItemsYet: 'No items yet.',
       vsExpected: 'vs expected',
+      searchItems: 'Search by name or category…',
+      noResults: 'No items match your search.',
       selectItem: 'Select item…',
       selectLocation: 'Select location…',
       selectOrder: 'Select purchase order…',

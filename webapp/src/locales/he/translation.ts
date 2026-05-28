@@ -661,6 +661,8 @@ export const heTranslation: TranslationType = {
       noItemsAtLocation: 'אין פריטי מלאי פעילים במיקום זה.',
       noItemsYet: 'אין פריטים עדיין.',
       vsExpected: 'לעומת הצפוי',
+      searchItems: 'חפש לפי שם או קטגוריה…',
+      noResults: 'אין פריטים התואמים לחיפוש.',
       selectItem: 'בחר פריט…',
       selectLocation: 'בחר מיקום…',
       selectOrder: 'בחר הזמנת רכש…',

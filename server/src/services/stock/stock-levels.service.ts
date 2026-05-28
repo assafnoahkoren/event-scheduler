@@ -21,7 +21,7 @@ class StockLevelsService {
 
     // Get all items and locations for this site
     const [items, locations] = await Promise.all([
-      prisma.stockItem.findMany({ where: { siteId, isDeleted: false } }),
+      prisma.stockItem.findMany({ where: { siteId, isDeleted: false }, include: { category: true } }),
       prisma.stockLocation.findMany({ where: { siteId, isDeleted: false } }),
     ])
 

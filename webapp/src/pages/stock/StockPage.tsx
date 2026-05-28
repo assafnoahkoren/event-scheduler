@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Warehouse, ArrowRightLeft, ClipboardList, ShoppingCart, Settings2 } from 'lucide-react'
+import { Warehouse, ArrowRightLeft, ClipboardList, ShoppingCart, Settings2, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { MoveStockSheet } from '@/components/stock/MoveStockSheet'
 import { RecountFlow } from '@/components/stock/RecountFlow'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
@@ -14,8 +15,13 @@ export function StockPage() {
   const { currentSite } = useCurrentSite()
   const [moveOpen, setMoveOpen] = useState(false)
   const [recountOpen, setRecountOpen] = useState(false)
+  const [search, setSearch] = useState('')
 
   const { data: levels, isLoading: levelsLoading } = trpc.stock.levels.list.useQuery(
+    { siteId: currentSite?.id ?? '' },
+    { enabled: !!currentSite }
+  )
+  const { data: itemsWithCategories } = trpc.stock.items.list.useQuery(
     { siteId: currentSite?.id ?? '' },
     { enabled: !!currentSite }
   )
@@ -30,6 +36,19 @@ export function StockPage() {
       locations.reduce((sum, loc) => sum + (balances[item.id]?.[loc.id] ?? 0), 0),
     ])
   )
+
+  const categoryByItemId = Object.fromEntries(
+    (itemsWithCategories ?? []).map((item) => [item.id, item.category?.name ?? ''])
+  )
+
+  const q = search.trim().toLowerCase()
+  const filteredItems = q
+    ? items.filter(
+        (item) =>
+          item.name.toLowerCase().includes(q) ||
+          categoryByItemId[item.id]?.toLowerCase().includes(q)
+      )
+    : items
 
   const primaryActions = [
     {
@@ -86,13 +105,25 @@ export function StockPage() {
           {t('stock.levels')}
         </h2>
 
+        <div className="relative mb-3">
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t('stock.common.searchItems')}
+            className="ps-9"
+          />
+        </div>
+
         {levelsLoading ? (
           <p className="text-sm text-muted-foreground">{t('stock.common.loading')}</p>
         ) : items.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t('stock.common.noItemsYet')}</p>
+        ) : filteredItems.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{t('stock.common.noResults')}</p>
         ) : (
           <div className="flex flex-col gap-3">
-            {items.map((item) => (
+            {filteredItems.map((item) => (
               <div key={item.id} className="rounded-xl border bg-card p-3">
                 <div className="flex items-baseline justify-between mb-2">
                   <p className="font-semibold text-base">{item.name}</p>
