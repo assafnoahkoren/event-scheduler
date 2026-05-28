@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, ChevronRight } from 'lucide-react'
 import { trpc } from '@/utils/trpc'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,8 @@ import {
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { cn } from '@/lib/utils'
+import { RecordArrivalSheet } from '@/components/stock/RecordArrivalSheet'
 import type { inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '../../../../server/src/routers/appRouter'
 
@@ -32,7 +34,8 @@ const statusColors: Record<string, string> = {
 export function PurchaseOrdersPage() {
   const { t } = useTranslation()
   const { currentSite } = useCurrentSite()
-  const [sheetOpen, setSheetOpen] = useState(false)
+  const [createSheetOpen, setCreateSheetOpen] = useState(false)
+  const [arrivalOrderId, setArrivalOrderId] = useState<string | null>(null)
   const [supplierName, setSupplierName] = useState('')
   const [orderDate, setOrderDate] = useState('')
   const [lines, setLines] = useState<Partial<OrderLine>[]>([{}])
@@ -43,7 +46,7 @@ export function PurchaseOrdersPage() {
   )
   const { data: items } = trpc.stock.items.list.useQuery(
     { siteId: currentSite?.id ?? '' },
-    { enabled: !!currentSite && sheetOpen }
+    { enabled: !!currentSite && createSheetOpen }
   )
 
   const createOrder = trpc.stock.purchaseOrders.create.useMutation()
@@ -53,7 +56,9 @@ export function PurchaseOrdersPage() {
   const updateLine = (idx: number, patch: Partial<OrderLine>) =>
     setLines((prev) => prev.map((l, i) => (i === idx ? { ...l, ...patch } : l)))
 
-  const linesValid = lines.length > 0 && lines.every((l) => l.itemId && l.orderedQuantity && l.orderedQuantity > 0)
+  const linesValid =
+    lines.length > 0 &&
+    lines.every((l) => l.itemId && l.orderedQuantity && l.orderedQuantity > 0)
 
   const handleCreate = async () => {
     if (!currentSite || !orderDate || !linesValid) return
@@ -64,11 +69,13 @@ export function PurchaseOrdersPage() {
       lines: lines as OrderLine[],
     })
     await refetch()
-    setSheetOpen(false)
+    setCreateSheetOpen(false)
     setSupplierName('')
     setOrderDate('')
     setLines([{}])
   }
+
+  const canReceive = (status: string) => status === 'OPEN' || status === 'PARTIAL'
 
   if (!currentSite) return null
 
@@ -76,7 +83,7 @@ export function PurchaseOrdersPage() {
     <div className="container mx-auto px-4 py-6 max-w-lg">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">{t('stock.orders')}</h1>
-        <Button size="sm" onClick={() => setSheetOpen(true)}>
+        <Button size="sm" onClick={() => setCreateSheetOpen(true)}>
           + {t('stock.actions.newOrder')}
         </Button>
       </div>
@@ -88,8 +95,19 @@ export function PurchaseOrdersPage() {
             (s, l) => s + l.arrivals.reduce((a, arr) => a + arr.quantity, 0),
             0
           )
+          const receivable = canReceive(order.status)
+
           return (
-            <div key={order.id} className="border rounded-lg p-4">
+            <div
+              key={order.id}
+              className={cn(
+                'border rounded-lg p-4 transition-colors',
+                receivable
+                  ? 'cursor-pointer hover:bg-muted/40 active:bg-muted/60'
+                  : 'opacity-60'
+              )}
+              onClick={() => receivable && setArrivalOrderId(order.id)}
+            >
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div>
                   {order.supplierName && (
@@ -99,16 +117,29 @@ export function PurchaseOrdersPage() {
                     {t('stock.order.summary', { ordered: totalOrdered, received: totalReceived })}
                   </p>
                 </div>
-                <Badge className={statusColors[order.status]}>
-                  {t(`stock.order.status.${order.status}`)}
-                </Badge>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Badge className={statusColors[order.status]}>
+                    {t(`stock.order.status.${order.status}`)}
+                  </Badge>
+                  {receivable && (
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </div>
               </div>
-              {/* Lines */}
-              <div className="space-y-1 mt-2 border-t pt-2">
+
+              {/* Lines breakdown */}
+              <div className="space-y-1 border-t pt-2">
                 {order.orderLines.map((line) => {
                   const received = line.arrivals.reduce((s, a) => s + a.quantity, 0)
+                  const isDone = line.status === 'COMPLETE'
                   return (
-                    <div key={line.id} className="flex items-center justify-between text-sm">
+                    <div
+                      key={line.id}
+                      className={cn(
+                        'flex items-center justify-between text-sm',
+                        isDone && 'opacity-40'
+                      )}
+                    >
                       <span className="text-muted-foreground">{line.item.name}</span>
                       <div className="flex items-center gap-2">
                         <span className="tabular-nums">
@@ -130,14 +161,14 @@ export function PurchaseOrdersPage() {
         )}
       </div>
 
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+      {/* Create order sheet */}
+      <Sheet open={createSheetOpen} onOpenChange={setCreateSheetOpen}>
         <SheetContent side="bottom" className="h-[85vh] overflow-y-auto flex flex-col gap-4">
           <SheetHeader>
             <SheetTitle>{t('stock.actions.newOrder')}</SheetTitle>
           </SheetHeader>
 
           <div className="space-y-4">
-            {/* Supplier + Date */}
             <div>
               <Label>{t('stock.order.supplier')}</Label>
               <Input
@@ -155,7 +186,6 @@ export function PurchaseOrdersPage() {
               />
             </div>
 
-            {/* Lines */}
             <div>
               <Label>{t('stock.order.lines')}</Label>
               <div className="space-y-2 mt-1">
@@ -213,11 +243,7 @@ export function PurchaseOrdersPage() {
 
             <Button
               onClick={handleCreate}
-              disabled={
-                createOrder.isPending ||
-                !orderDate ||
-                !linesValid
-              }
+              disabled={createOrder.isPending || !orderDate || !linesValid}
               className="w-full"
             >
               {createOrder.isPending ? t('stock.common.saving') : t('stock.common.createOrder')}
@@ -225,6 +251,14 @@ export function PurchaseOrdersPage() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Arrival sheet — scoped to the tapped order */}
+      <RecordArrivalSheet
+        siteId={currentSite.id}
+        open={arrivalOrderId !== null}
+        onOpenChange={(open) => { if (!open) setArrivalOrderId(null) }}
+        orderId={arrivalOrderId ?? undefined}
+      />
     </div>
   )
 }

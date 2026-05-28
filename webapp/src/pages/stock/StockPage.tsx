@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Warehouse, ArrowRightLeft, ClipboardList, ShoppingCart } from 'lucide-react'
+import { Warehouse, ArrowRightLeft, ClipboardList } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { RecordArrivalSheet } from '@/components/stock/RecordArrivalSheet'
 import { MoveStockSheet } from '@/components/stock/MoveStockSheet'
 import { RecountFlow } from '@/components/stock/RecountFlow'
 import { useCurrentSite } from '@/contexts/CurrentSiteContext'
@@ -12,19 +11,12 @@ export function StockPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { currentSite } = useCurrentSite()
-  const [arrivalOpen, setArrivalOpen] = useState(false)
   const [moveOpen, setMoveOpen] = useState(false)
   const [recountOpen, setRecountOpen] = useState(false)
 
   if (!currentSite) return null
 
   const actions = [
-    {
-      label: t('stock.actions.recordArrival'),
-      icon: ShoppingCart,
-      color: 'bg-green-500 hover:bg-green-600',
-      onClick: () => setArrivalOpen(true),
-    },
     {
       label: t('stock.actions.moveStock'),
       icon: ArrowRightLeft,
@@ -78,7 +70,6 @@ export function StockPage() {
         ))}
       </div>
 
-      <RecordArrivalSheet siteId={currentSite.id} open={arrivalOpen} onOpenChange={setArrivalOpen} />
       <MoveStockSheet siteId={currentSite.id} open={moveOpen} onOpenChange={setMoveOpen} />
       {recountOpen && (
         <RecountFlow siteId={currentSite.id} onClose={() => setRecountOpen(false)} />

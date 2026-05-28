@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { StockStepper } from './StockStepper'
@@ -16,9 +16,11 @@ interface RecordArrivalSheetProps {
   siteId: string
   open: boolean
   onOpenChange: (open: boolean) => void
+  /** When provided, scopes the sheet to lines from this order only. */
+  orderId?: string
 }
 
-export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrivalSheetProps) {
+export function RecordArrivalSheet({ siteId, open, onOpenChange, orderId }: RecordArrivalSheetProps) {
   const { t } = useTranslation()
   const [selectedLineId, setSelectedLineId] = useState<string | null>(null)
   const [locationId, setLocationId] = useState<string | null>(null)
@@ -37,14 +39,33 @@ export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrival
     { enabled: open }
   )
 
-  // Flatten all orders → lines, keeping a reference to the parent order
+  // All outstanding lines across receivable orders
   const allLines = [...(openOrders ?? []), ...(partialOrders ?? [])].flatMap((order) =>
     order.orderLines
       .filter((l) => l.status !== 'COMPLETE')
       .map((line) => ({ ...line, order }))
   )
 
-  const selectedLine = allLines.find((l) => l.id === selectedLineId) ?? null
+  // Scope to a specific order if orderId is provided
+  const scopedLines = orderId ? allLines.filter((l) => l.order.id === orderId) : allLines
+
+  // Auto-select the only line when there's exactly one outstanding in this order
+  useEffect(() => {
+    if (open && scopedLines.length === 1) {
+      setSelectedLineId(scopedLines[0].id)
+    }
+  }, [open, scopedLines.length])
+
+  // Reset all state when the sheet closes
+  useEffect(() => {
+    if (!open) {
+      setSelectedLineId(null)
+      setLocationId(null)
+      setQuantity(0)
+    }
+  }, [open])
+
+  const selectedLine = scopedLines.find((l) => l.id === selectedLineId) ?? null
   const alreadyReceived = selectedLine?.arrivals.reduce((s, a) => s + a.quantity, 0) ?? 0
   const remaining = selectedLine ? selectedLine.orderedQuantity - alreadyReceived : 0
 
@@ -62,9 +83,6 @@ export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrival
     await utils.stock.purchaseOrders.list.invalidate({ siteId })
     await utils.stock.levels.list.invalidate({ siteId })
     onOpenChange(false)
-    setSelectedLineId(null)
-    setLocationId(null)
-    setQuantity(0)
   }
 
   const newLineStatus =
@@ -74,44 +92,52 @@ export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrival
         : 'PARTIAL'
       : null
 
+  // Determine sheet title: when scoped, show the supplier name or generic title
+  const scopedOrder = orderId
+    ? [...(openOrders ?? []), ...(partialOrders ?? [])].find((o) => o.id === orderId)
+    : null
+  const sheetTitle = scopedOrder?.supplierName ?? t('stock.actions.recordArrival')
+
+  const showLinePicker = scopedLines.length > 1 || !orderId
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="h-[80vh] flex flex-col gap-4 overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{t('stock.actions.recordArrival')}</SheetTitle>
+          <SheetTitle>{sheetTitle}</SheetTitle>
         </SheetHeader>
 
-        {/* Line selector */}
-        <div>
-          <p className="text-sm font-medium mb-2">{t('stock.arrival.selectLine')}</p>
-          <Select onValueChange={setSelectedLineId}>
-            <SelectTrigger>
-              <SelectValue placeholder={t('stock.arrival.selectLinePlaceholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              {allLines.map((line) => {
-                const received = line.arrivals.reduce((s, a) => s + a.quantity, 0)
-                const outstanding = line.orderedQuantity - received
-                const orderLabel = line.order.supplierName
-                  ? `${line.order.supplierName} — `
-                  : ''
-                return (
-                  <SelectItem key={line.id} value={line.id}>
-                    {orderLabel}{line.item.name}
-                    {' '}({t('stock.arrival.outstanding', { count: outstanding, unit: line.item.unit })})
-                  </SelectItem>
-                )
-              })}
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Line picker — shown only when multiple outstanding lines or not order-scoped */}
+        {showLinePicker && (
+          <div>
+            <p className="text-sm font-medium mb-2">{t('stock.arrival.selectLine')}</p>
+            <Select value={selectedLineId ?? ''} onValueChange={setSelectedLineId}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('stock.arrival.selectLinePlaceholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                {scopedLines.map((line) => {
+                  const received = line.arrivals.reduce((s, a) => s + a.quantity, 0)
+                  const outstanding = line.orderedQuantity - received
+                  const orderLabel = line.order.supplierName ? `${line.order.supplierName} — ` : ''
+                  return (
+                    <SelectItem key={line.id} value={line.id}>
+                      {orderLabel}{line.item.name}
+                      {' '}({t('stock.arrival.outstanding', { count: outstanding, unit: line.item.unit })})
+                    </SelectItem>
+                  )
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         {selectedLine && (
           <>
             {/* Summary card */}
             <div className="bg-muted rounded-lg p-3 text-sm">
               <p className="font-medium">{selectedLine.item.name}</p>
-              {selectedLine.order.supplierName && (
+              {selectedLine.order.supplierName && !scopedOrder && (
                 <p className="text-muted-foreground">
                   {t('stock.order.supplierLabel', { name: selectedLine.order.supplierName })}
                 </p>
@@ -128,7 +154,7 @@ export function RecordArrivalSheet({ siteId, open, onOpenChange }: RecordArrival
             {/* Location selector */}
             <div>
               <p className="text-sm font-medium mb-2">{t('stock.arrival.placedAt')}</p>
-              <Select onValueChange={setLocationId}>
+              <Select value={locationId ?? ''} onValueChange={setLocationId}>
                 <SelectTrigger>
                   <SelectValue placeholder={t('stock.common.selectLocation')} />
                 </SelectTrigger>
