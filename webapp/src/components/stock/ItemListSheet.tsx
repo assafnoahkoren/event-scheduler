@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Check } from 'lucide-react'
 import {
@@ -6,6 +7,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 
 interface ItemEntry {
@@ -33,21 +35,38 @@ export function ItemListSheet({
   locationName,
 }: ItemListSheetProps) {
   const { t } = useTranslation()
+  const [query, setQuery] = useState('')
   const done = items.filter((i) => i.counted !== undefined).length
+
+  useEffect(() => {
+    if (!open) setQuery('')
+  }, [open])
+
+  const filtered = query
+    ? items.filter((i) => i.itemName.toLowerCase().includes(query.toLowerCase()))
+    : items
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[70vh] flex flex-col">
+      <SheetContent side="bottom" className="h-[100dvh] flex flex-col rounded-none">
         <SheetHeader>
           <SheetTitle>
             {locationName} — {t('stock.recount.progressLabel', { done, total: items.length })}
           </SheetTitle>
         </SheetHeader>
-        <div className="flex-1 overflow-y-auto mt-4 space-y-2">
-          {items.map((entry) => {
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t('stock.common.searchItems')}
+          className="mt-3 shrink-0"
+        />
+        <div className="flex-1 overflow-y-auto mt-3 space-y-2">
+          {filtered.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-6">{t('stock.common.noResults')}</p>
+          )}
+          {filtered.map((entry) => {
             const isDone = entry.counted !== undefined
             const delta = isDone ? entry.counted! - entry.expectedBalance : null
-
             return (
               <button
                 key={entry.itemId}
