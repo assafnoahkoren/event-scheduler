@@ -32,7 +32,7 @@ export function CateringInput({ label, value, onChange, options }: CateringInput
             <button
               key={opt}
               type="button"
-              className="w-full px-3 py-2 text-right text-sm hover:bg-accent"
+              className="w-full px-3 py-2 text-end text-sm hover:bg-accent"
               onMouseDown={() => {
                 onChange(opt)
                 setOpen(false)

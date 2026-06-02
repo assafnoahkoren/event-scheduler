@@ -216,6 +216,12 @@ export const heTranslation: TranslationType = {
     costCalculationError: "לא ניתן לחשב עלויות",
     monthlyProfit: "הכנסות חודשיות",
     noData: "אין נתונים",
+    catering: "קייטרינג",
+    startTime: "שעת התחלה",
+    endTime: "שעת סיום",
+    endTimeHint: "לאחר חצות = יום למחרת",
+    guestCountAdults: "מבוגרים",
+    guestCountChildren: "ילדים",
     activity: {
       create: "יצר אירוע \"{{title}}\" בתאריך {{eventDate}}",
       createWithClient: "יצר אירוע \"{{title}}\" עבור {{client}} בתאריך {{eventDate}}",

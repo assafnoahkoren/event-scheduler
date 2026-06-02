@@ -216,6 +216,12 @@ export const arTranslation: TranslationType = {
     costCalculationError: "غير قادر على حساب التكاليف",
     monthlyProfit: "الربح الشهري",
     noData: "لا توجد بيانات",
+    catering: "تقديم الطعام",
+    startTime: "وقت البدء",
+    endTime: "وقت الانتهاء",
+    endTimeHint: "بعد منتصف الليل = اليوم التالي",
+    guestCountAdults: "بالغون",
+    guestCountChildren: "أطفال",
     activity: {
       create: "أنشأ حدث \"{{title}}\" بتاريخ {{eventDate}}",
       createWithClient: "أنشأ حدث \"{{title}}\" لـ {{client}} بتاريخ {{eventDate}}",

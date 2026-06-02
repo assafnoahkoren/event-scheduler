@@ -405,7 +405,7 @@ export function EventForm({
       <div className="space-y-4">
         {/* Catering */}
         <CateringInput
-          label="קייטרינג"
+          label={t('events.catering')}
           value={catering}
           onChange={setCatering}
           options={cateringOptions}
@@ -414,22 +414,22 @@ export function EventForm({
         {/* Start & End Time */}
         <div className="grid grid-cols-2 gap-4">
           <TimeInput
-            label="שעת התחלה"
+            label={t('events.startTime')}
             value={startTime}
             onChange={setStartTime}
           />
           <TimeInput
-            label="שעת סיום"
+            label={t('events.endTime')}
             value={endTime}
             onChange={setEndTime}
-            hint="לאחר חצות = יום למחרת"
+            hint={t('events.endTimeHint')}
           />
         </div>
 
         {/* Guest Counts */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="guestCountAdults">מבוגרים</Label>
+            <Label htmlFor="guestCountAdults">{t('events.guestCountAdults')}</Label>
             <Input
               id="guestCountAdults"
               type="number"
@@ -440,7 +440,7 @@ export function EventForm({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="guestCountChildren">ילדים</Label>
+            <Label htmlFor="guestCountChildren">{t('events.guestCountChildren')}</Label>
             <Input
               id="guestCountChildren"
               type="number"

@@ -22,8 +22,8 @@ export const createEventSchema = z.object({
   catering: z.string().optional(),
   startTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
   endTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
-  guestCountAdults: z.number().int().min(0).optional(),
-  guestCountChildren: z.number().int().min(0).optional(),
+  guestCountAdults: z.number().int().min(0).nullable().optional(),
+  guestCountChildren: z.number().int().min(0).nullable().optional(),
 })
 
 export const updateEventSchema = createEventSchema.partial().extend({

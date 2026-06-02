@@ -214,6 +214,12 @@ export const enTranslation = {
     costCalculationError: "Unable to calculate costs",
     monthlyProfit: "Monthly Profit",
     noData: "No data",
+    catering: "Catering",
+    startTime: "Start Time",
+    endTime: "End Time",
+    endTimeHint: "After midnight = next day",
+    guestCountAdults: "Adults",
+    guestCountChildren: "Children",
     activity: {
       create: "created event \"{{title}}\" on {{eventDate}}",
       createWithClient: "created event \"{{title}}\" for {{client}} on {{eventDate}}",
