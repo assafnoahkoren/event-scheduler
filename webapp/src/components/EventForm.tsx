@@ -18,6 +18,8 @@ import { ClientForm, type ClientFormData } from '@/components/ClientForm'
 import { trpc } from '@/utils/trpc'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@/../../server/src/routers/appRouter'
+import { TimeInput } from '@/components/ui/TimeInput'
+import { CateringInput } from '@/components/CateringInput'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
 type Event = RouterOutput['events']['get']
@@ -25,6 +27,7 @@ type Event = RouterOutput['events']['get']
 type AutoSaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 
 interface EventFormProps {
+  siteId?: string
   event?: Event | null
   initialDate?: Date
   initialClientId?: string | null
@@ -46,9 +49,15 @@ export interface EventFormData {
   isAllDay: boolean
   clientId?: string | null
   status?: 'DRAFT' | 'SCHEDULED' | 'CANCELLED'
+  catering?: string
+  startTime?: string
+  endTime?: string
+  guestCountAdults?: number | null
+  guestCountChildren?: number | null
 }
 
 export function EventForm({
+  siteId,
   event,
   initialDate,
   initialClientId,
@@ -79,6 +88,11 @@ export function EventForm({
   const [status, setStatus] = useState<'DRAFT' | 'SCHEDULED' | 'CANCELLED'>(
     event?.status || 'DRAFT'
   )
+  const [catering, setCatering] = useState<string | undefined>(event?.catering ?? undefined)
+  const [startTime, setStartTime] = useState<string | undefined>(event?.startTime ?? undefined)
+  const [endTime, setEndTime] = useState<string | undefined>(event?.endTime ?? undefined)
+  const [guestCountAdults, setGuestCountAdults] = useState<number | ''>(event?.guestCountAdults ?? '')
+  const [guestCountChildren, setGuestCountChildren] = useState<number | ''>(event?.guestCountChildren ?? '')
   const [showClientForm, setShowClientForm] = useState(false)
 
   // Drives the auto-save status indicator rendered in the actions row
@@ -149,6 +163,11 @@ export function EventForm({
         isAllDay,
         clientId,
         status,
+        catering: catering || undefined,
+        startTime,
+        endTime,
+        guestCountAdults: guestCountAdults !== '' ? guestCountAdults : null,
+        guestCountChildren: guestCountChildren !== '' ? guestCountChildren : null,
       })
     }, 1000)
 
@@ -158,7 +177,7 @@ export function EventForm({
         debounceRef.current = null
       }
     }
-  }, [type, title, nickname, depositAmount, acumPaid, description, startDate, endDate, isAllDay, clientId, status]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [type, title, nickname, depositAmount, acumPaid, description, startDate, endDate, isAllDay, clientId, status, catering, startTime, endTime, guestCountAdults, guestCountChildren]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch selected client details
   const { data: selectedClient } = trpc.clients.get.useQuery(
@@ -177,6 +196,12 @@ export function EventForm({
       setShowClientForm(false)
     }
   })
+
+  const effectiveSiteId = siteId ?? event?.siteId
+  const { data: cateringOptions = [] } = trpc.events.getCateringOptions.useQuery(
+    { siteId: effectiveSiteId! },
+    { enabled: !!effectiveSiteId }
+  )
 
   const handleUpdateClient = (formData: ClientFormData) => {
     if (!clientId) return
@@ -201,7 +226,12 @@ export function EventForm({
       endDate,
       isAllDay,
       clientId,
-      status
+      status,
+      catering: catering || undefined,
+      startTime,
+      endTime,
+      guestCountAdults: guestCountAdults !== '' ? guestCountAdults : null,
+      guestCountChildren: guestCountChildren !== '' ? guestCountChildren : null,
     })
   }
 
@@ -366,6 +396,58 @@ export function EventForm({
               checked={acumPaid}
               className="h-7 w-7"
               onCheckedChange={(checked) => setAcumPaid(checked === true)}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Catering, Times, Guest Counts */}
+      <div className="space-y-4">
+        {/* Catering */}
+        <CateringInput
+          label="קייטרינג"
+          value={catering}
+          onChange={setCatering}
+          options={cateringOptions}
+        />
+
+        {/* Start & End Time */}
+        <div className="grid grid-cols-2 gap-4">
+          <TimeInput
+            label="שעת התחלה"
+            value={startTime}
+            onChange={setStartTime}
+          />
+          <TimeInput
+            label="שעת סיום"
+            value={endTime}
+            onChange={setEndTime}
+            hint="לאחר חצות = יום למחרת"
+          />
+        </div>
+
+        {/* Guest Counts */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="guestCountAdults">מבוגרים</Label>
+            <Input
+              id="guestCountAdults"
+              type="number"
+              min="0"
+              value={guestCountAdults}
+              onChange={e => setGuestCountAdults(e.target.value === '' ? '' : Number(e.target.value))}
+              placeholder="0"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="guestCountChildren">ילדים</Label>
+            <Input
+              id="guestCountChildren"
+              type="number"
+              min="0"
+              value={guestCountChildren}
+              onChange={e => setGuestCountChildren(e.target.value === '' ? '' : Number(e.target.value))}
+              placeholder="0"
             />
           </div>
         </div>
