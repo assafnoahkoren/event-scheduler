@@ -95,6 +95,11 @@ export function Event() {
       isAllDay: formData.isAllDay,
       clientId: formData.clientId || undefined,
       status: formData.status,
+      catering: formData.catering,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+      guestCountAdults: formData.guestCountAdults,
+      guestCountChildren: formData.guestCountChildren,
     })
   }
 

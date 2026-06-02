@@ -151,6 +151,11 @@ export function EventCalendar() {
       isAllDay: formData.isAllDay,
       clientId: formData.clientId || undefined,
       status: formData.status || 'SCHEDULED',
+      catering: formData.catering,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+      guestCountAdults: formData.guestCountAdults,
+      guestCountChildren: formData.guestCountChildren,
     })
   }
 
