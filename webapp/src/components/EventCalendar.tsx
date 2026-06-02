@@ -321,6 +321,7 @@ export function EventCalendar() {
           </DrawerHeader>
           <div className="px-4 pb-4">
             <EventForm
+              siteId={currentSite?.id}
               initialDate={eventDate}
               onSubmit={handleCreateEvent}
               onCancel={() => setIsDialogOpen(false)}
