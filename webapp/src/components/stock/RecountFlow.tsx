@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { StockStepper } from './StockStepper'
@@ -20,6 +20,7 @@ export function RecountFlow({ siteId, onClose }: RecountFlowProps) {
   const [counted, setCounted] = useState<CountedMap>({})
   const [listOpen, setListOpen] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const blockDialogClose = useRef(false)
 
   const { data: locations } = trpc.stock.locations.list.useQuery({ siteId })
   const { data: levelsByLocation } = trpc.stock.levels.getByLocation.useQuery(
@@ -50,6 +51,17 @@ export function RecountFlow({ siteId, onClose }: RecountFlowProps) {
   const handleJump = (itemId: string) => {
     const idx = items.findIndex((e) => e.item.id === itemId)
     if (idx >= 0) setCurrentIndex(idx)
+  }
+
+  const handleJumpFromSheet = (itemId: string) => {
+    blockDialogClose.current = true
+    setTimeout(() => { blockDialogClose.current = false }, 400)
+    handleJump(itemId)
+  }
+
+  const handleDialogClose = () => {
+    if (blockDialogClose.current) return
+    onClose()
   }
 
   const handleSubmit = async () => {
@@ -133,7 +145,7 @@ export function RecountFlow({ siteId, onClose }: RecountFlowProps) {
 
   return (
     <>
-      <Dialog open onOpenChange={onClose}>
+      <Dialog open onOpenChange={handleDialogClose}>
         <DialogContent className="max-w-sm flex flex-col gap-0 p-0 overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-4 pt-4 pb-2">
@@ -233,7 +245,7 @@ export function RecountFlow({ siteId, onClose }: RecountFlowProps) {
           counted: counted[entry.item.id],
           isCurrent: idx === currentIndex,
         }))}
-        onSelectItem={handleJump}
+        onSelectItem={handleJumpFromSheet}
       />
     </>
   )
