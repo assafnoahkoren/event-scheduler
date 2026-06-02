@@ -670,6 +670,7 @@ export const arTranslation: TranslationType = {
       searchItems: 'ابحث بالاسم أو الفئة…',
       noResults: 'لا توجد عناصر تطابق بحثك.',
       selectItem: 'اختر عنصراً…',
+      switchItem: 'تبديل العنصر',
       selectLocation: 'اختر موقعاً…',
       selectOrder: 'اختر أمر شراء…',
       fromPlaceholder: 'من…',

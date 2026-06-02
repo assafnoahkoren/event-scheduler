@@ -670,6 +670,7 @@ export const heTranslation: TranslationType = {
       searchItems: 'חפש לפי שם או קטגוריה…',
       noResults: 'אין פריטים התואמים לחיפוש.',
       selectItem: 'בחר פריט…',
+      switchItem: 'החלף פריט',
       selectLocation: 'בחר מיקום…',
       selectOrder: 'בחר הזמנת רכש…',
       fromPlaceholder: 'מ…',

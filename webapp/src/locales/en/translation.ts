@@ -668,6 +668,7 @@ export const enTranslation = {
       searchItems: 'Search by name or category…',
       noResults: 'No items match your search.',
       selectItem: 'Select item…',
+      switchItem: 'Switch item',
       selectLocation: 'Select location…',
       selectOrder: 'Select purchase order…',
       fromPlaceholder: 'From…',
