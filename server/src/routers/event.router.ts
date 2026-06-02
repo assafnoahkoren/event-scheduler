@@ -65,4 +65,10 @@ export const eventRouter = router({
     .query(async ({ ctx, input }) => {
       return eventService.searchEvents(ctx.user.id, input)
     }),
+
+  getCateringOptions: protectedProcedure
+    .input(z.object({ siteId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      return eventService.getCateringOptions(ctx.user.id, input.siteId)
+    }),
 })
