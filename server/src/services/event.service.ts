@@ -19,6 +19,11 @@ export const createEventSchema = z.object({
   timezone: z.string().default('UTC'),
   isAllDay: z.boolean().default(false),
   status: z.nativeEnum(EventStatus).default('DRAFT'),
+  catering: z.string().optional(),
+  startTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+  endTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+  guestCountAdults: z.number().int().min(0).optional(),
+  guestCountChildren: z.number().int().min(0).optional(),
 })
 
 export const updateEventSchema = createEventSchema.partial().extend({
@@ -776,6 +781,29 @@ export class EventService {
       profit,
       currency: 'ILS' // Default currency, could be made dynamic
     }
+  }
+
+  async getCateringOptions(userId: string, siteId: string): Promise<string[]> {
+    const siteUser = await prisma.siteUser.findFirst({
+      where: { userId, siteId },
+    })
+    if (!siteUser) {
+      throw new TRPCError({ code: 'FORBIDDEN', message: 'Access denied' })
+    }
+
+    const results = await prisma.event.findMany({
+      where: {
+        siteId,
+        catering: { not: null },
+        isDeleted: false,
+      },
+      select: { catering: true },
+      distinct: ['catering'],
+    })
+
+    return results
+      .map(r => r.catering)
+      .filter((c): c is string => c !== null && c !== '')
   }
 }
 
