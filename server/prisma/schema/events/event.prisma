@@ -16,6 +16,13 @@ model Event {
   depositAmount Float?   @map("deposit_amount")
   acumPaid      Boolean  @default(false) @map("acum_paid")
 
+  // Catering and logistics
+  catering           String?  @map("catering")
+  startTime          String?  @map("start_time")
+  endTime            String?  @map("end_time")
+  guestCountAdults   Int?     @map("guest_count_adults")
+  guestCountChildren Int?     @map("guest_count_children")
+
   // Client relationship (optional)
   clientId    String?  @map("client_id")
   client      Client?  @relation(fields: [clientId], references: [id])
