@@ -5,7 +5,6 @@ import { trpc } from '@/utils/trpc'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -22,7 +21,6 @@ import {
   RotateCw,
   Save,
   Loader2,
-  Trash2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useSignedUrl } from '@/hooks/useSignedUrl'
@@ -527,6 +525,10 @@ export function TemplateEditor() {
     return { snappedX, snappedY, snapLines: newSnapLines }
   }, [localComponents, metersToPixels])
 
+  // Latest snapped drag position, so onDragEnd persists the exact final spot
+  // without depending on a possibly-stale localComponents closure.
+  const lastDragPositionRef = useRef<{ id: string; xInMeters: number; yInMeters: number } | null>(null)
+
   // Move a component so its center sits at the given canvas-space pixel point,
   // applying snapping. Reuses the existing calculateSnap.
   const moveComponentToPixels = (id: string, newPxX: number, newPxY: number) => {
@@ -539,6 +541,8 @@ export function TemplateEditor() {
     )
     setLocalComponents(prev => prev.map(c => (c.id === id ? { ...c, xInMeters: snappedX, yInMeters: snappedY } : c)))
     setSnapLines(snapLines)
+    setHasUnsavedChanges(true)
+    lastDragPositionRef.current = { id, xInMeters: snappedX, yInMeters: snappedY }
   }
 
   // Captures each drag's start pixel position (mirrors the original startPosX/Y)
@@ -567,8 +571,11 @@ export function TemplateEditor() {
         const id = args[0] as string
         setSnapLines([])
         dragStartRef.current = null
-        const c = localComponents.find(x => x.id === id)
-        if (c) bulkUpdateMutation.mutate({ templateId: templateId!, components: [{ id, xInMeters: c.xInMeters, yInMeters: c.yInMeters }] })
+        const pos = lastDragPositionRef.current
+        if (pos && pos.id === id) {
+          bulkUpdateMutation.mutate({ templateId: templateId!, components: [{ id, xInMeters: pos.xInMeters, yInMeters: pos.yInMeters }] })
+          lastDragPositionRef.current = null
+        }
       },
     },
     { drag: { filterTaps: true, pointer: { touch: true } } }
