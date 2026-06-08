@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useSignedUrl } from '@/hooks/useSignedUrl'
+import { ComponentTypeFormDialog } from '@/components/floor-plans/ComponentTypeFormDialog'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@/../../server/src/routers/appRouter'
 
@@ -78,6 +79,7 @@ export function TemplateEditor() {
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [editingComponent, setEditingComponent] = useState<PlacedComponent | null>(null)
   const [editForm, setEditForm] = useState({ label: '', rotation: '0' })
+  const [componentTypeDialogOpen, setComponentTypeDialogOpen] = useState(false)
 
   // Snap lines state
   const [snapLines, setSnapLines] = useState<SnapLine[]>([])
@@ -813,8 +815,16 @@ export function TemplateEditor() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - Component Types */}
         <div className="w-64 border-e bg-muted/30">
-          <div className="p-3 border-b">
+          <div className="p-3 border-b flex items-center justify-between gap-2">
             <h2 className="font-medium">{t('templateEditor.components')}</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setComponentTypeDialogOpen(true)}
+            >
+              <Plus className="h-4 w-4 me-1" />
+              {t('componentTypes.newComponentType')}
+            </Button>
           </div>
           <ScrollArea className="h-[calc(100vh-120px)]">
             <div className="p-2 space-y-4">
@@ -1157,6 +1167,13 @@ export function TemplateEditor() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* New component type dialog (shared with the component types page) */}
+      <ComponentTypeFormDialog
+        open={componentTypeDialogOpen}
+        onOpenChange={setComponentTypeDialogOpen}
+        organizationId={currentOrg?.id || ''}
+      />
 
       {/* Pan hint */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm text-muted-foreground border">
