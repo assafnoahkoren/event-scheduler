@@ -148,6 +148,14 @@ export function TemplateEditor() {
     },
   })
 
+  // Silent variant for inline edits (rotate buttons, drag-persist): no success
+  // toast and no edit-dialog side effects — only surfaces errors.
+  const updateComponentSilent = trpc.floorPlans.templates.updateComponent.useMutation({
+    onError: (error) => {
+      toast.error(t('templateEditor.componentUpdateError'), { description: error.message })
+    },
+  })
+
   // Initialize local components from template
   useEffect(() => {
     if (template?.components) {
@@ -742,7 +750,7 @@ export function TemplateEditor() {
     if (!target) return
     const rotation = ((Math.round(target.rotation) + deltaDeg) % 360 + 360) % 360
     setLocalComponents(prev => prev.map(c => (c.id === id ? { ...c, rotation } : c)))
-    updateComponentMutation.mutate({ id, rotation })
+    updateComponentSilent.mutate({ id, rotation })
   }
 
   if (isLoadingTemplate) {
