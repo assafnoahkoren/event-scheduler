@@ -62,6 +62,7 @@ export function TemplateEditor() {
   const { currentOrg } = useCurrentOrg()
   const canvasRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const imageRef = useRef<HTMLImageElement>(null)
 
   // Canvas state
   const [zoom, setZoom] = useState(1)
@@ -178,6 +179,25 @@ export function TemplateEditor() {
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, [selectedComponentId])
+
+  // Keep renderedImageSize in sync as the image rescales responsively (viewport /
+  // container resize, device rotation). A stale renderedImageSize makes dpiScale —
+  // and therefore every component's position and size — drift out of alignment
+  // with the image. ResizeObserver reports the layout box (unaffected by the
+  // zoom CSS transform), so zooming does not trigger spurious updates.
+  useEffect(() => {
+    const img = imageRef.current
+    if (!img) return
+    const update = () => {
+      if (img.offsetWidth > 0) {
+        setRenderedImageSize({ width: img.offsetWidth, height: img.offsetHeight })
+      }
+    }
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(img)
+    return () => ro.disconnect()
+  }, [imageUrl])
 
   // Calculate DPI scale factor (how much the browser scales down the image due to DPI metadata)
   const dpiScale = useMemo(() => {
@@ -836,6 +856,7 @@ export function TemplateEditor() {
             {/* Floor plan image - let browser render at its DPI-adjusted size */}
             {imageUrl && (
               <img
+                ref={imageRef}
                 src={imageUrl}
                 alt={template.floorPlan?.name}
                 className="pointer-events-none select-none block"
@@ -843,7 +864,7 @@ export function TemplateEditor() {
                 onLoad={(e) => {
                   const img = e.currentTarget
                   setImageSize({ width: img.naturalWidth, height: img.naturalHeight })
-                  setRenderedImageSize({ width: img.width, height: img.height })
+                  setRenderedImageSize({ width: img.offsetWidth, height: img.offsetHeight })
                 }}
               />
             )}
