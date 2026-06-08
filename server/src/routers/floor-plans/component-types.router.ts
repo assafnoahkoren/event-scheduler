@@ -100,14 +100,8 @@ export const componentTypesRouter = router({
   create: protectedProcedure
     .input(componentTypeDataSchema.extend({ organizationId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const { isOwner } = await checkOrganizationAccess(ctx.user.id, input.organizationId)
-
-      if (!isOwner) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Only organization owners can create component types',
-        })
-      }
+      // Any active member of the organization can manage component types
+      await checkOrganizationAccess(ctx.user.id, input.organizationId)
 
       const componentType = await prisma.componentType.create({
         data: input,
@@ -134,14 +128,8 @@ export const componentTypesRouter = router({
         })
       }
 
-      const { isOwner } = await checkOrganizationAccess(ctx.user.id, existingComponentType.organizationId)
-
-      if (!isOwner) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Only organization owners can update component types',
-        })
-      }
+      // Any active member of the organization can manage component types
+      await checkOrganizationAccess(ctx.user.id, existingComponentType.organizationId)
 
       const { id, ...updateData } = input
 
@@ -171,14 +159,8 @@ export const componentTypesRouter = router({
         })
       }
 
-      const { isOwner } = await checkOrganizationAccess(ctx.user.id, existingComponentType.organizationId)
-
-      if (!isOwner) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Only organization owners can delete component types',
-        })
-      }
+      // Any active member of the organization can manage component types
+      await checkOrganizationAccess(ctx.user.id, existingComponentType.organizationId)
 
       // Check if component type is in use
       const [templateComponentsCount, eventComponentsCount] = await Promise.all([
