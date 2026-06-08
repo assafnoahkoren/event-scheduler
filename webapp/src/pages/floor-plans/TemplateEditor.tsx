@@ -24,6 +24,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useSignedUrl } from '@/hooks/useSignedUrl'
+import { useIsMobile } from '@/hooks/useIsMobile'
+import { Drawer, DrawerContent } from '@/components/ui/drawer'
 import { ComponentTypeFormDialog } from '@/components/floor-plans/ComponentTypeFormDialog'
 import { ComponentPalette } from '@/components/floor-plans/ComponentPalette'
 import { ComponentPropertiesPanel } from '@/components/floor-plans/ComponentPropertiesPanel'
@@ -75,6 +77,10 @@ export function TemplateEditor() {
   const [editingComponent, setEditingComponent] = useState<PlacedComponent | null>(null)
   const [editForm, setEditForm] = useState({ label: '', rotation: '0' })
   const [componentTypeDialogOpen, setComponentTypeDialogOpen] = useState(false)
+
+  // Mobile state
+  const isMobile = useIsMobile()
+  const [paletteOpen, setPaletteOpen] = useState(false)
 
   // Snap lines state
   const [snapLines, setSnapLines] = useState<SnapLine[]>([])
@@ -770,7 +776,7 @@ export function TemplateEditor() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 border rounded-md">
+          <div className="hidden md:flex items-center gap-1 border rounded-md">
             <Button variant="ghost" size="icon" onClick={handleZoomOut}>
               <Minus className="h-4 w-4" />
             </Button>
@@ -778,10 +784,16 @@ export function TemplateEditor() {
             <Button variant="ghost" size="icon" onClick={handleZoomIn}>
               <Plus className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleResetZoom}>
-              <RotateCcw className="h-4 w-4" />
-            </Button>
           </div>
+          <Button variant="ghost" size="icon" onClick={handleResetZoom}>
+            <RotateCcw className="h-4 w-4" />
+          </Button>
+          {isMobile && (
+            <Button variant="outline" size="sm" onClick={() => setPaletteOpen(true)}>
+              <Plus className="h-4 w-4 me-1" />
+              {t('templateEditor.components')}
+            </Button>
+          )}
           <Button
             onClick={handleSave}
             disabled={!hasUnsavedChanges || bulkUpdateMutation.isPending}
@@ -1020,6 +1032,38 @@ export function TemplateEditor() {
           />
         </div>
       </div>
+
+      {/* Mobile palette drawer */}
+      {isMobile && (
+        <Drawer open={paletteOpen} onOpenChange={setPaletteOpen}>
+          <DrawerContent className="h-[45vh]">
+            <ComponentPalette
+              componentTypes={componentTypes}
+              onAdd={addComponentAtViewCenter}
+              onNewType={() => { setPaletteOpen(false); setComponentTypeDialogOpen(true) }}
+            />
+          </DrawerContent>
+        </Drawer>
+      )}
+
+      {/* Mobile properties bottom bar */}
+      {isMobile && selectedComponentId && (() => {
+        const selectedId = selectedComponentId
+        return (
+          <div className="fixed bottom-0 inset-x-0 z-20 border-t bg-background">
+            <ComponentPropertiesPanel
+              component={localComponents.find(c => c.id === selectedId) ?? null}
+              compact
+              onRotate={(d) => rotateComponent(selectedId, d)}
+              onDelete={() => deleteComponentMutation.mutate({ id: selectedId })}
+              onEdit={() => {
+                const c = localComponents.find(c => c.id === selectedId)
+                if (c) handleEditComponent(c)
+              }}
+            />
+          </div>
+        )
+      })()}
 
       {/* Edit Component Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
