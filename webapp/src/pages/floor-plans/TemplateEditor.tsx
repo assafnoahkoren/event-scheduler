@@ -29,6 +29,7 @@ import { useSignedUrl } from '@/hooks/useSignedUrl'
 import { ComponentTypeFormDialog } from '@/components/floor-plans/ComponentTypeFormDialog'
 import { ComponentPalette } from '@/components/floor-plans/ComponentPalette'
 import { ComponentPropertiesPanel } from '@/components/floor-plans/ComponentPropertiesPanel'
+import { useGesture } from '@use-gesture/react'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@/../../server/src/routers/appRouter'
 
@@ -65,9 +66,6 @@ export function TemplateEditor() {
   // Canvas state
   const [zoom, setZoom] = useState(1)
   const [pan, setPan] = useState({ x: 0, y: 0 })
-  const [isPanning, setIsPanning] = useState(false)
-  const [isAltPressed, setIsAltPressed] = useState(false)
-  const [panStart, setPanStart] = useState({ x: 0, y: 0 })
 
   // Component state
   const [selectedComponentId, setSelectedComponentId] = useState<string | null>(null)
@@ -163,22 +161,16 @@ export function TemplateEditor() {
     }
   }, [template?.components])
 
-  // Track Alt key for panning
+  // Delete key removes the selected component (desktop convenience)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Alt') setIsAltPressed(true)
       if (e.key === 'Delete' && selectedComponentId) {
         deleteComponentMutation.mutate({ id: selectedComponentId })
       }
     }
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Alt') setIsAltPressed(false)
-    }
     window.addEventListener('keydown', handleKeyDown)
-    window.addEventListener('keyup', handleKeyUp)
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
-      window.removeEventListener('keyup', handleKeyUp)
     }
   }, [selectedComponentId])
 
@@ -265,32 +257,6 @@ export function TemplateEditor() {
       setPan({ x: newPanX, y: newPanY })
     }
   }, [zoom, pan])
-
-  // Handle canvas mouse down for panning
-  const handleCanvasMouseDown = (e: React.MouseEvent) => {
-    if (e.altKey || e.button === 1) {
-      setIsPanning(true)
-      setPanStart({ x: e.clientX - pan.x, y: e.clientY - pan.y })
-      e.preventDefault()
-    } else if (e.target === canvasRef.current) {
-      setSelectedComponentId(null)
-    }
-  }
-
-  // Handle mouse move for panning
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (isPanning) {
-      setPan({
-        x: e.clientX - panStart.x,
-        y: e.clientY - panStart.y,
-      })
-    }
-  }, [isPanning, panStart])
-
-  // Handle mouse up
-  const handleMouseUp = () => {
-    setIsPanning(false)
-  }
 
   // Drops a new component near the center of the visible canvas, with a small
   // cascade offset so repeated taps don't stack on the exact same point.
@@ -561,73 +527,75 @@ export function TemplateEditor() {
     return { snappedX, snappedY, snapLines: newSnapLines }
   }, [localComponents, metersToPixels])
 
-  // Handle component drag
-  const handleComponentDrag = (componentId: string, e: React.MouseEvent) => {
-    if (e.altKey) return // Don't start drag if panning
-
-    e.stopPropagation()
-    setSelectedComponentId(componentId)
-
-    const startX = e.clientX
-    const startY = e.clientY
-    const component = localComponents.find(c => c.id === componentId)
+  // Move a component so its center sits at the given canvas-space pixel point,
+  // applying snapping. Reuses the existing calculateSnap.
+  const moveComponentToPixels = (id: string, newPxX: number, newPxY: number) => {
+    const component = localComponents.find(c => c.id === id)
     if (!component) return
-
-    const startPosX = metersToPixels(component.xInMeters)
-    const startPosY = metersToPixels(component.yInMeters)
-    let finalX = component.xInMeters
-    let finalY = component.yInMeters
-
-    const handleDragMove = (moveEvent: MouseEvent) => {
-      const deltaX = (moveEvent.clientX - startX) / zoom
-      const deltaY = (moveEvent.clientY - startY) / zoom
-
-      const proposedX = pixelsToMeters(startPosX + deltaX)
-      const proposedY = pixelsToMeters(startPosY + deltaY)
-
-      // Calculate snap
-      const { snappedX, snappedY, snapLines: newSnapLines } = calculateSnap(
-        componentId,
-        proposedX,
-        proposedY,
-        component.widthInMeters,
-        component.heightInMeters
-      )
-
-      finalX = snappedX
-      finalY = snappedY
-      setSnapLines(newSnapLines)
-
-      setLocalComponents(prev =>
-        prev.map(c =>
-          c.id === componentId
-            ? { ...c, xInMeters: finalX, yInMeters: finalY }
-            : c
-        )
-      )
-    }
-
-    const handleDragEnd = () => {
-      document.removeEventListener('mousemove', handleDragMove)
-      document.removeEventListener('mouseup', handleDragEnd)
-      setSnapLines([]) // Clear snap lines
-
-      // Auto-save position after drag ends
-      if (finalX !== component.xInMeters || finalY !== component.yInMeters) {
-        bulkUpdateMutation.mutate({
-          templateId: templateId!,
-          components: [{
-            id: componentId,
-            xInMeters: finalX,
-            yInMeters: finalY,
-          }],
-        })
-      }
-    }
-
-    document.addEventListener('mousemove', handleDragMove)
-    document.addEventListener('mouseup', handleDragEnd)
+    const proposedX = pixelsToMeters(newPxX)
+    const proposedY = pixelsToMeters(newPxY)
+    const { snappedX, snappedY, snapLines } = calculateSnap(
+      id, proposedX, proposedY, component.widthInMeters, component.heightInMeters
+    )
+    setLocalComponents(prev => prev.map(c => (c.id === id ? { ...c, xInMeters: snappedX, yInMeters: snappedY } : c)))
+    setSnapLines(snapLines)
   }
+
+  // Captures each drag's start pixel position (mirrors the original startPosX/Y)
+  // so we apply TOTAL movement, not accumulated deltas, avoiding snap drift.
+  const dragStartRef = useRef<{ id: string; startPxX: number; startPxY: number } | null>(null)
+
+  // Per-component drag: move that component; stopPropagation so the canvas doesn't pan.
+  const bindComponent = useGesture(
+    {
+      onDragStart: ({ args, event }) => {
+        const id = args[0] as string
+        event.stopPropagation()
+        setSelectedComponentId(id)
+        const c = localComponents.find(x => x.id === id)
+        if (c) dragStartRef.current = { id, startPxX: metersToPixels(c.xInMeters), startPxY: metersToPixels(c.yInMeters) }
+      },
+      onDrag: ({ args, movement: [mx, my], tap, event }) => {
+        const id = args[0] as string
+        event.stopPropagation()
+        if (tap) { setSelectedComponentId(id); return } // tap = select only
+        const start = dragStartRef.current
+        if (!start || start.id !== id) return
+        moveComponentToPixels(id, start.startPxX + mx / zoom, start.startPxY + my / zoom)
+      },
+      onDragEnd: ({ args }) => {
+        const id = args[0] as string
+        setSnapLines([])
+        dragStartRef.current = null
+        const c = localComponents.find(x => x.id === id)
+        if (c) bulkUpdateMutation.mutate({ templateId: templateId!, components: [{ id, xInMeters: c.xInMeters, yInMeters: c.yInMeters }] })
+      },
+    },
+    { drag: { filterTaps: true, pointer: { touch: true } } }
+  )
+
+  // Canvas-level: 1-pointer drag on empty space pans; pinch zooms around its midpoint.
+  const bindCanvas = useGesture(
+    {
+      onDrag: ({ delta: [dx, dy], pinching, tap }) => {
+        if (pinching) return
+        if (tap) { setSelectedComponentId(null); return } // tap empty = deselect
+        setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }))
+      },
+      onPinch: ({ origin: [ox, oy], offset: [scale] }) => {
+        const rect = containerRef.current?.getBoundingClientRect()
+        if (!rect) return
+        const newZoom = Math.max(0.1, Math.min(8, scale))
+        const cx = ox - rect.left
+        const cy = oy - rect.top
+        const canvasX = (cx - pan.x) / zoom
+        const canvasY = (cy - pan.y) / zoom
+        setPan({ x: cx - canvasX * newZoom, y: cy - canvasY * newZoom })
+        setZoom(newZoom)
+      },
+    },
+    { drag: { filterTaps: true, pointer: { touch: true } }, pinch: { from: () => [zoom, 0] as [number, number] } }
+  )
 
   // Handle component rotation
   const handleComponentRotation = (componentId: string, e: React.MouseEvent) => {
@@ -826,14 +794,10 @@ export function TemplateEditor() {
         {/* Canvas */}
         <div
           ref={containerRef}
-          className={`flex-1 overflow-hidden bg-muted/50 ${
-            isPanning ? 'cursor-grabbing' : isAltPressed ? 'cursor-grab' : 'cursor-default'
-          }`}
-          onMouseDown={handleCanvasMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+          className="flex-1 overflow-hidden bg-muted/50 cursor-grab"
+          style={{ touchAction: 'none' }}
           onWheel={handleWheel}
+          {...bindCanvas()}
         >
           <div
             ref={canvasRef}
@@ -896,7 +860,7 @@ export function TemplateEditor() {
                           ? '1px solid #3b82f6'
                           : '1px solid transparent',
                       }}
-                      onMouseDown={(e) => handleComponentDrag(component.id, e)}
+                      {...bindComponent(component.id)}
                       onDoubleClick={() => handleEditComponent(component)}
                     >
                       <span
@@ -925,6 +889,7 @@ export function TemplateEditor() {
                           top: -8,
                           transform: 'translate(50%, -50%)',
                         }}
+                        onPointerDown={(e) => e.stopPropagation()}
                         onMouseDown={(e) => handleComponentRotation(component.id, e)}
                       >
                         <div
