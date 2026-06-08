@@ -4,7 +4,7 @@ import { trpc } from '@/utils/trpc'
 import { useTranslation } from 'react-i18next'
 import { useIsRtl } from '@/hooks/useIsRtl'
 import { Button } from '@/components/ui/button'
-import { Clock, FileText, Package, Briefcase, CheckSquare, DollarSign, FolderOpen, Calendar, User } from 'lucide-react'
+import { FileText, Calendar, User, Map } from 'lucide-react'
 import { useFormatDayMonth } from '@/hooks/useDateFormatter'
 import { RelativeTimeBadge } from '@/components/RelativeTimeBadge'
 import { DayOfWeekBadge } from '@/components/DayOfWeekBadge'
@@ -22,12 +22,14 @@ import {
 import { Tabs, TabsContent } from '@/components/ui/tabs'
 import { type EventFormData } from '@/components/EventForm'
 import { EventDetailsTab } from '@/components/event-tabs/EventDetailsTab'
-import { EventProductsTab } from '@/components/event-tabs/EventProductsTab'
-import { EventServicesTab } from '@/components/event-tabs/EventServicesTab'
-import { EventTasksTab } from '@/components/event-tabs/EventTasksTab'
-import { EventFinancesTab } from '@/components/event-tabs/EventFinancesTab'
-import { EventFilesTab } from '@/components/event-tabs/EventFilesTab'
-import { EventWaitingListTab } from '@/components/event-tabs/EventWaitingListTab'
+import { EventFloorPlanTab } from '@/components/event-tabs/EventFloorPlanTab'
+// Temporarily disabled tabs (only Details + Floor Plan are in use):
+// import { EventProductsTab } from '@/components/event-tabs/EventProductsTab'
+// import { EventServicesTab } from '@/components/event-tabs/EventServicesTab'
+// import { EventTasksTab } from '@/components/event-tabs/EventTasksTab'
+// import { EventFinancesTab } from '@/components/event-tabs/EventFinancesTab'
+// import { EventFilesTab } from '@/components/event-tabs/EventFilesTab'
+// import { EventWaitingListTab } from '@/components/event-tabs/EventWaitingListTab'
 
 export function Event() {
   const { eventId } = useParams<{ eventId: string }>()
@@ -180,6 +182,11 @@ export function Event() {
               )}
             </TabsContent>
 
+            <TabsContent value="floor-plan" className="mt-6">
+              {eventId && <EventFloorPlanTab eventId={eventId} siteId={event.siteId} />}
+            </TabsContent>
+
+            {/* Temporarily disabled tabs (only Details + Floor Plan are in use):
             <TabsContent value="products" className="mt-6">
               <EventProductsTab event={event} />
             </TabsContent>
@@ -203,6 +210,7 @@ export function Event() {
             <TabsContent value="files" className="mt-6">
               {eventId && <EventFilesTab eventId={eventId} />}
             </TabsContent>
+            */}
           </Tabs>
         </div>
       </div>
@@ -210,7 +218,7 @@ export function Event() {
       {/* Footer Tab Navigation */}
       <div className="fixed bottom-0 start-0 end-0 bg-background border-t z-40">
         <div className="max-w-2xl mx-auto">
-          <div className="grid grid-cols-7 gap-1">
+          <div className="grid grid-cols-2 gap-1">
             <Button
               variant={activeTab === 'details' ? 'default' : 'ghost'}
               className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
@@ -220,52 +228,12 @@ export function Event() {
               {activeTab === 'details' && <span className="text-xs">{t('events.details')}</span>}
             </Button>
             <Button
-              variant={activeTab === 'products' ? 'default' : 'ghost'}
+              variant={activeTab === 'floor-plan' ? 'default' : 'ghost'}
               className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
-              onClick={() => setActiveTab('products')}
+              onClick={() => setActiveTab('floor-plan')}
             >
-              <Package className="h-5 w-5" />
-              {activeTab === 'products' && <span className="text-xs">{t('events.products')}</span>}
-            </Button>
-            <Button
-              variant={activeTab === 'services' ? 'default' : 'ghost'}
-              className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
-              onClick={() => setActiveTab('services')}
-            >
-              <Briefcase className="h-5 w-5" />
-              {activeTab === 'services' && <span className="text-xs">{t('events.services')}</span>}
-            </Button>
-            <Button
-              variant={activeTab === 'tasks' ? 'default' : 'ghost'}
-              className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
-              onClick={() => setActiveTab('tasks')}
-            >
-              <CheckSquare className="h-5 w-5" />
-              {activeTab === 'tasks' && <span className="text-xs">{t('tasks.title')}</span>}
-            </Button>
-            <Button
-              variant={activeTab === 'finances' ? 'default' : 'ghost'}
-              className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
-              onClick={() => setActiveTab('finances')}
-            >
-              <DollarSign className="h-5 w-5" />
-              {activeTab === 'finances' && <span className="text-xs">{t('finances.title')}</span>}
-            </Button>
-            <Button
-              variant={activeTab === 'files' ? 'default' : 'ghost'}
-              className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
-              onClick={() => setActiveTab('files')}
-            >
-              <FolderOpen className="h-5 w-5" />
-              {activeTab === 'files' && <span className="text-xs">{t('files.title')}</span>}
-            </Button>
-            <Button
-              variant={activeTab === 'waiting' ? 'default' : 'ghost'}
-              className="flex flex-col items-center gap-1 h-auto py-2 rounded-none"
-              onClick={() => setActiveTab('waiting')}
-            >
-              <Clock className="h-5 w-5" />
-              {activeTab === 'waiting' && <span className="text-xs">{t('waitingList.title')}</span>}
+              <Map className="h-5 w-5" />
+              {activeTab === 'floor-plan' && <span className="text-xs">{t('eventFloorPlan.tab')}</span>}
             </Button>
           </div>
         </div>
