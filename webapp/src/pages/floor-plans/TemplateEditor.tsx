@@ -28,6 +28,7 @@ import { toast } from 'sonner'
 import { useSignedUrl } from '@/hooks/useSignedUrl'
 import { ComponentTypeFormDialog } from '@/components/floor-plans/ComponentTypeFormDialog'
 import { ComponentPalette } from '@/components/floor-plans/ComponentPalette'
+import { ComponentPropertiesPanel } from '@/components/floor-plans/ComponentPropertiesPanel'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@/../../server/src/routers/appRouter'
 
@@ -736,6 +737,14 @@ export function TemplateEditor() {
     )
   }
 
+  const rotateComponent = (id: string, deltaDeg: number) => {
+    const target = localComponents.find(c => c.id === id)
+    if (!target) return
+    const rotation = ((Math.round(target.rotation) + deltaDeg) % 360 + 360) % 360
+    setLocalComponents(prev => prev.map(c => (c.id === id ? { ...c, rotation } : c)))
+    updateComponentMutation.mutate({ id, rotation })
+  }
+
   if (isLoadingTemplate) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -1007,61 +1016,18 @@ export function TemplateEditor() {
           </div>
         </div>
 
-        {/* Properties panel - always visible to prevent layout shift */}
-        <div className="w-64 border-s bg-background p-4">
+        {/* Properties panel (desktop) */}
+        <div className="w-64 border-s bg-background p-4 hidden md:block">
           <h3 className="font-medium mb-4">{t('templateEditor.properties')}</h3>
-          {selectedComponentId ? (
-            (() => {
-              const component = localComponents.find(c => c.id === selectedComponentId)
-              if (!component) return <p className="text-sm text-muted-foreground">Select a component</p>
-              return (
-                <div className="space-y-4">
-                  <div>
-                    <Label className="text-muted-foreground">{t('templateEditor.type')}</Label>
-                    <p className="font-medium">{component.componentType?.name}</p>
-                  </div>
-                  <div>
-                    <Label className="text-muted-foreground">{t('templateEditor.position')}</Label>
-                    <p className="text-sm">
-                      X: {component.xInMeters.toFixed(2)}m, Y: {component.yInMeters.toFixed(2)}m
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-muted-foreground">{t('templateEditor.size')}</Label>
-                    <p className="text-sm">
-                      {component.widthInMeters.toFixed(2)}m × {component.heightInMeters.toFixed(2)}m
-                    </p>
-                  </div>
-                  {component.label && (
-                    <div>
-                      <Label className="text-muted-foreground">{t('templateEditor.label')}</Label>
-                      <p className="font-medium">{component.label}</p>
-                    </div>
-                  )}
-                  <div className="flex gap-2 pt-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => handleEditComponent(component)}
-                    >
-                      {t('common.edit')}
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => deleteComponentMutation.mutate({ id: component.id })}
-                      disabled={deleteComponentMutation.isPending}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )
-            })()
-          ) : (
-            <p className="text-sm text-muted-foreground">Select a component to view its properties</p>
-          )}
+          <ComponentPropertiesPanel
+            component={localComponents.find(c => c.id === selectedComponentId) ?? null}
+            onRotate={(d) => selectedComponentId && rotateComponent(selectedComponentId, d)}
+            onDelete={() => selectedComponentId && deleteComponentMutation.mutate({ id: selectedComponentId })}
+            onEdit={() => {
+              const c = localComponents.find(c => c.id === selectedComponentId)
+              if (c) handleEditComponent(c)
+            }}
+          />
         </div>
       </div>
 

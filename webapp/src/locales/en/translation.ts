@@ -633,7 +633,8 @@ export const enTranslation = {
     templateName: "Template Name",
     templateNamePlaceholder: "Enter template name",
     noTemplates: "No templates yet",
-    noTemplatesDescription: "Create a template to design event layouts"
+    noTemplatesDescription: "Create a template to design event layouts",
+    selectComponent: "Select a component to view its properties"
   },
   stock: {
     title: 'Stock',

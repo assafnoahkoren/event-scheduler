@@ -635,7 +635,8 @@ export const heTranslation: TranslationType = {
     templateName: "שם התבנית",
     templateNamePlaceholder: "הזן שם תבנית",
     noTemplates: "אין תבניות עדיין",
-    noTemplatesDescription: "צור תבנית לעיצוב פריסות אירועים"
+    noTemplatesDescription: "צור תבנית לעיצוב פריסות אירועים",
+    selectComponent: "בחר רכיב כדי לראות את מאפייניו"
   },
   stock: {
     title: 'מלאי',

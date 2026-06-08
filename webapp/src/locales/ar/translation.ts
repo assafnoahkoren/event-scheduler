@@ -635,7 +635,8 @@ export const arTranslation: TranslationType = {
     templateName: "اسم القالب",
     templateNamePlaceholder: "أدخل اسم القالب",
     noTemplates: "لا توجد قوالب بعد",
-    noTemplatesDescription: "أنشئ قالباً لتصميم تخطيطات الأحداث"
+    noTemplatesDescription: "أنشئ قالباً لتصميم تخطيطات الأحداث",
+    selectComponent: "اختر عنصرًا لعرض خصائصه"
   },
   stock: {
     title: 'المخزون',
