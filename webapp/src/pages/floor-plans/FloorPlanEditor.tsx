@@ -18,7 +18,6 @@ import {
   Plus,
   Minus,
   RotateCcw,
-  RotateCw,
   Save,
   Loader2,
   Users,
@@ -115,6 +114,7 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
   const [editingComponent, setEditingComponent] = useState<PlacedComponent | null>(null)
   const [editForm, setEditForm] = useState({ label: '', rotation: '0' })
   const [componentTypeDialogOpen, setComponentTypeDialogOpen] = useState(false)
+  const [editingComponentType, setEditingComponentType] = useState<ComponentType | null>(null)
 
   // Mobile state
   const isMobile = useIsMobile()
@@ -656,71 +656,6 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
     { drag: { filterTaps: true, pointer: { touch: true } }, pinch: { from: () => [zoom, 0] as [number, number] } }
   )
 
-  // Handle component rotation
-  const handleComponentRotation = (componentId: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    e.preventDefault()
-
-    const component = localComponents.find(c => c.id === componentId)
-    if (!component) return
-
-    const centerX = metersToPixels(component.xInMeters)
-    const centerY = metersToPixels(component.yInMeters)
-
-    // Get the canvas position to calculate correct coordinates
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const rect = canvas.getBoundingClientRect()
-
-    let finalRotation = component.rotation
-
-    const handleRotateMove = (moveEvent: MouseEvent) => {
-      // Calculate mouse position relative to canvas (accounting for pan and zoom)
-      const mouseX = (moveEvent.clientX - rect.left) / zoom
-      const mouseY = (moveEvent.clientY - rect.top) / zoom
-
-      // Calculate angle from component center to mouse position
-      const deltaX = mouseX - centerX
-      const deltaY = mouseY - centerY
-      let angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI)
-
-      // Adjust angle (atan2 gives angle from positive X axis, we want from top-right)
-      angle = angle + 45 // Offset since handle is at top-right corner
-
-      // Normalize to 0-360
-      angle = ((angle % 360) + 360) % 360
-
-      // Always snap to 15-degree increments
-      angle = Math.round(angle / 15) * 15
-
-      finalRotation = angle
-
-      setLocalComponents(prev =>
-        prev.map(c =>
-          c.id === componentId
-            ? { ...c, rotation: finalRotation }
-            : c
-        )
-      )
-    }
-
-    const handleRotateEnd = () => {
-      document.removeEventListener('mousemove', handleRotateMove)
-      document.removeEventListener('mouseup', handleRotateEnd)
-
-      // Auto-save rotation after drag ends
-      if (finalRotation !== component.rotation) {
-        editor.bulkUpdate([{
-          id: componentId,
-          rotation: finalRotation,
-        }])
-      }
-    }
-
-    document.addEventListener('mousemove', handleRotateMove)
-    document.addEventListener('mouseup', handleRotateEnd)
-  }
-
   // Handle save
   const handleSave = () => {
     const updates = localComponents.map(c => ({
@@ -859,7 +794,8 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
           <ComponentPalette
             componentTypes={componentTypes}
             onAdd={addComponentAtViewCenter}
-            onNewType={() => setComponentTypeDialogOpen(true)}
+            onEdit={(ct) => { setEditingComponentType(ct); setComponentTypeDialogOpen(true) }}
+            onNewType={() => { setEditingComponentType(null); setComponentTypeDialogOpen(true) }}
           />
         </div>
 
@@ -901,6 +837,7 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
               const width = metersToPixels(component.widthInMeters)
               const height = metersToPixels(component.heightInMeters)
               const isSelected = selectedComponentId === component.id
+              const seats = component.componentType?.occupancy ?? 0
 
               return (
                 <div
@@ -920,14 +857,10 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
                     }}
                   >
                     <div
-                      className="flex items-center justify-center text-xs font-medium cursor-move select-none overflow-hidden"
+                      className="flex flex-col items-center justify-center text-xs font-medium cursor-move select-none overflow-hidden"
                       style={{
                         width,
                         height,
-                        // Keep a tap-friendly minimum size on touch so very small
-                        // components remain selectable/draggable with a fingertip.
-                        minWidth: isMobile ? 16 : undefined,
-                        minHeight: isMobile ? 16 : undefined,
                         backgroundColor: component.componentType?.color || '#E5E7EB',
                         borderRadius: component.componentType?.borderRadius
                           ? `${component.componentType.borderRadius}px`
@@ -945,30 +878,14 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
                       <FitText
                         text={component.label || component.componentType?.name || ''}
                         boxWidth={width}
-                        boxHeight={height}
+                        boxHeight={seats > 0 ? height * 0.5 : height}
                       />
-                    </div>
-
-                    {/* Rotation handle - attached to top-right corner */}
-                    {isSelected && (
-                      <div
-                        className="absolute cursor-grab active:cursor-grabbing"
-                        style={{
-                          right: -8,
-                          top: -8,
-                          transform: 'translate(50%, -50%)',
-                        }}
-                        onPointerDown={(e) => e.stopPropagation()}
-                        onMouseDown={(e) => handleComponentRotation(component.id, e)}
-                      >
-                        <div
-                          className="w-5 h-5 bg-blue-500 rounded-full border-2 border-white shadow-md flex items-center justify-center"
-                          title="Drag to rotate (hold Shift for 15° increments)"
-                        >
-                          <RotateCw className="w-3 h-3 text-white" />
+                      {seats > 0 && (
+                        <div className="mt-0.5 flex w-full justify-center">
+                          <FitText text={`${seats}`} boxWidth={width * 0.95} boxHeight={height * 0.45} />
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
               )
@@ -1076,12 +993,13 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
       {/* Mobile palette drawer */}
       {isMobile && (
         <Drawer open={paletteOpen} onOpenChange={setPaletteOpen}>
-          <DrawerContent className="h-[45vh]">
+          <DrawerContent>
             <DrawerTitle className="sr-only">{t('templateEditor.components')}</DrawerTitle>
             <ComponentPalette
               componentTypes={componentTypes}
               onAdd={(componentType) => { addComponentAtViewCenter(componentType); setPaletteOpen(false) }}
-              onNewType={() => { setPaletteOpen(false); setComponentTypeDialogOpen(true) }}
+              onEdit={(ct) => { setPaletteOpen(false); setEditingComponentType(ct); setComponentTypeDialogOpen(true) }}
+              onNewType={() => { setPaletteOpen(false); setEditingComponentType(null); setComponentTypeDialogOpen(true) }}
             />
           </DrawerContent>
         </Drawer>
@@ -1152,6 +1070,7 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
         open={componentTypeDialogOpen}
         onOpenChange={setComponentTypeDialogOpen}
         organizationId={currentOrg?.id || ''}
+        editingComponentType={editingComponentType}
       />
 
       {/* Pan hint (desktop only — references Alt/drag and would be covered by the mobile bottom bar) */}

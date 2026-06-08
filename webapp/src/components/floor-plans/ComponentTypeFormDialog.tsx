@@ -12,7 +12,17 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { Loader2 } from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { Loader2, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@/../../server/src/routers/appRouter'
@@ -75,6 +85,7 @@ export function ComponentTypeFormDialog({
   const { t } = useTranslation()
   const utils = trpc.useUtils()
   const [formData, setFormData] = useState<ComponentTypeFormData>(defaultFormData)
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
 
   const { data: categories } = trpc.floorPlans.componentTypes.listCategories.useQuery(
     { organizationId },
@@ -129,7 +140,19 @@ export function ComponentTypeFormDialog({
     },
   })
 
-  const isPending = createMutation.isPending || updateMutation.isPending
+  const deleteMutation = trpc.floorPlans.componentTypes.delete.useMutation({
+    onSuccess: () => {
+      toast.success(t('componentTypes.deleteSuccess'))
+      invalidate()
+      setDeleteConfirmOpen(false)
+      onOpenChange(false)
+    },
+    onError: (error) => {
+      toast.error(t('componentTypes.deleteError'), { description: error.message })
+    },
+  })
+
+  const isPending = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending
 
   const isFormValid = () => {
     return (
@@ -329,16 +352,51 @@ export function ComponentTypeFormDialog({
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t('common.cancel')}
-          </Button>
-          <Button onClick={handleSubmit} disabled={!isFormValid() || isPending}>
-            {isPending && <Loader2 className="h-4 w-4 me-2 animate-spin" />}
-            {editingComponentType ? t('common.save') : t('common.create')}
-          </Button>
+        <DialogFooter className="sm:justify-between">
+          {editingComponentType ? (
+            <Button
+              variant="ghost"
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => setDeleteConfirmOpen(true)}
+              disabled={isPending}
+            >
+              <Trash2 className="h-4 w-4 me-2" />
+              {t('common.delete')}
+            </Button>
+          ) : (
+            <span />
+          )}
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button onClick={handleSubmit} disabled={!isFormValid() || isPending}>
+              {isPending && <Loader2 className="h-4 w-4 me-2 animate-spin" />}
+              {editingComponentType ? t('common.save') : t('common.create')}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
+
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('componentTypes.confirmDeleteTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('componentTypes.confirmDeleteDescription', { name: editingComponentType?.name })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => editingComponentType && deleteMutation.mutate({ id: editingComponentType.id })}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t('common.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   )
 }
