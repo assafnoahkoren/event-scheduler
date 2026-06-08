@@ -162,29 +162,8 @@ export const componentTypesRouter = router({
       // Any active member of the organization can manage component types
       await checkOrganizationAccess(ctx.user.id, existingComponentType.organizationId)
 
-      // Check if component type is in use
-      const [templateComponentsCount, eventComponentsCount] = await Promise.all([
-        prisma.floorPlanTemplateComponent.count({
-          where: {
-            componentTypeId: input.id,
-            isDeleted: false,
-          },
-        }),
-        prisma.eventLayoutComponent.count({
-          where: {
-            componentTypeId: input.id,
-            isDeleted: false,
-          },
-        }),
-      ])
-
-      if (templateComponentsCount > 0 || eventComponentsCount > 0) {
-        throw new TRPCError({
-          code: 'PRECONDITION_FAILED',
-          message: 'Cannot delete component type that is in use',
-        })
-      }
-
+      // Soft delete even when in use: already-placed components keep their
+      // reference to this type and still render; it just leaves the palette.
       await prisma.componentType.update({
         where: { id: input.id },
         data: {
