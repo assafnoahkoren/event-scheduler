@@ -106,6 +106,7 @@ export function TemplateEditor() {
   const addComponentMutation = trpc.floorPlans.templates.addComponent.useMutation({
     onSuccess: (newComponent) => {
       setLocalComponents(prev => [...prev, newComponent])
+      setSelectedComponentId(newComponent.id)
       toast.success(t('templateEditor.componentAdded'))
     },
     onError: (error) => {
