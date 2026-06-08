@@ -6,7 +6,6 @@ import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Dialog,
   DialogContent,
@@ -24,11 +23,11 @@ import {
   Save,
   Loader2,
   Trash2,
-  GripVertical,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useSignedUrl } from '@/hooks/useSignedUrl'
 import { ComponentTypeFormDialog } from '@/components/floor-plans/ComponentTypeFormDialog'
+import { ComponentPalette } from '@/components/floor-plans/ComponentPalette'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@/../../server/src/routers/appRouter'
 
@@ -71,7 +70,6 @@ export function TemplateEditor() {
 
   // Component state
   const [selectedComponentId, setSelectedComponentId] = useState<string | null>(null)
-  const [draggedComponentType, setDraggedComponentType] = useState<ComponentType | null>(null)
   const [localComponents, setLocalComponents] = useState<PlacedComponent[]>([])
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
@@ -285,31 +283,26 @@ export function TemplateEditor() {
     setIsPanning(false)
   }
 
-  // Handle drop from sidebar
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    if (!draggedComponentType || !canvasRef.current || !templateId) return
-
-    const rect = canvasRef.current.getBoundingClientRect()
-    // Convert screen coordinates to image coordinates
-    // rect already includes the transform, so we just need to account for zoom
-    const x = (e.clientX - rect.left) / zoom
-    const y = (e.clientY - rect.top) / zoom
-
-    const xInMeters = pixelsToMeters(x)
-    const yInMeters = pixelsToMeters(y)
-
+  // Drops a new component near the center of the visible canvas, with a small
+  // cascade offset so repeated taps don't stack on the exact same point.
+  const addComponentAtViewCenter = (componentType: ComponentType) => {
+    if (!templateId || !containerRef.current) return
+    const rect = containerRef.current.getBoundingClientRect()
+    const screenCenterX = rect.width / 2
+    const screenCenterY = rect.height / 2
+    const canvasX = (screenCenterX - pan.x) / zoom
+    const canvasY = (screenCenterY - pan.y) / zoom
+    const cascade = (localComponents.length % 6) * 12 // px, in canvas space
+    const xInMeters = pixelsToMeters(canvasX + cascade)
+    const yInMeters = pixelsToMeters(canvasY + cascade)
     addComponentMutation.mutate({
       templateId,
-      componentTypeId: draggedComponentType.id,
+      componentTypeId: componentType.id,
       xInMeters,
       yInMeters,
-      widthInMeters: draggedComponentType.defaultWidthInMeters,
-      heightInMeters: draggedComponentType.defaultHeightInMeters,
-      rotation: 0,
+      widthInMeters: componentType.defaultWidthInMeters,
+      heightInMeters: componentType.defaultHeightInMeters,
     })
-
-    setDraggedComponentType(null)
   }
 
   // Calculate snap points for a component being dragged
@@ -743,15 +736,6 @@ export function TemplateEditor() {
     )
   }
 
-  // Group component types by category
-  const groupedComponentTypes = componentTypes?.reduce((acc, ct) => {
-    if (!acc[ct.category]) {
-      acc[ct.category] = []
-    }
-    acc[ct.category].push(ct)
-    return acc
-  }, {} as Record<string, ComponentType[]>)
-
   if (isLoadingTemplate) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -813,54 +797,13 @@ export function TemplateEditor() {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar - Component Types */}
-        <div className="w-64 border-e bg-muted/30">
-          <div className="p-3 border-b flex items-center justify-between gap-2">
-            <h2 className="font-medium">{t('templateEditor.components')}</h2>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setComponentTypeDialogOpen(true)}
-            >
-              <Plus className="h-4 w-4 me-1" />
-              {t('componentTypes.newComponentType')}
-            </Button>
-          </div>
-          <ScrollArea className="h-[calc(100vh-120px)]">
-            <div className="p-2 space-y-4">
-              {groupedComponentTypes && Object.entries(groupedComponentTypes).map(([category, types]) => (
-                <div key={category}>
-                  <h3 className="text-xs font-medium text-muted-foreground mb-2 px-2">{category}</h3>
-                  <div className="space-y-1">
-                    {types.map(ct => (
-                      <div
-                        key={ct.id}
-                        draggable
-                        onDragStart={() => setDraggedComponentType(ct)}
-                        onDragEnd={() => setDraggedComponentType(null)}
-                        className="flex items-center gap-2 p-2 rounded-md hover:bg-muted cursor-grab active:cursor-grabbing"
-                      >
-                        <div
-                          className="w-6 h-6 flex-shrink-0 border"
-                          style={{
-                            backgroundColor: ct.color || '#E5E7EB',
-                            borderRadius: ct.borderRadius ? `${Math.min(ct.borderRadius, 12)}px` : '2px',
-                          }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm truncate">{ct.name}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {ct.defaultWidthInMeters}m × {ct.defaultHeightInMeters}m
-                          </div>
-                        </div>
-                        <GripVertical className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
+        {/* Sidebar - Component Types (desktop) */}
+        <div className="w-64 border-e bg-muted/30 hidden md:block">
+          <ComponentPalette
+            componentTypes={componentTypes}
+            onAdd={addComponentAtViewCenter}
+            onNewType={() => setComponentTypeDialogOpen(true)}
+          />
         </div>
 
         {/* Canvas */}
@@ -874,8 +817,6 @@ export function TemplateEditor() {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
           onWheel={handleWheel}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDrop}
         >
           <div
             ref={canvasRef}
