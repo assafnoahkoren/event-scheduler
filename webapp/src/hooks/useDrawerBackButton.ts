@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 /**
  * Hook to handle back button behavior for drawers on mobile
@@ -9,6 +9,16 @@ export function useDrawerBackButton(
   onClose: () => void,
   identifier?: string
 ) {
+  // Keep the latest onClose in a ref so the effect below depends only on the
+  // open/close transition, not on the callback's identity. Callers (and the
+  // Drawer wrapper) recreate onClose every render; including it in the deps
+  // would re-run this effect on every render, and each cleanup's
+  // history.back() fires a popstate that closes the drawer — which made a
+  // drawer auto-close whenever something re-rendered it right after opening
+  // (e.g. a data fetch resolving on first open).
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
+
   useEffect(() => {
     if (!isOpen) return
 
@@ -23,7 +33,7 @@ export function useDrawerBackButton(
       // Check if we're navigating away from our drawer state
       if (!event.state || !event.state[stateId]) {
         // Close the drawer without navigating further back
-        onClose()
+        onCloseRef.current()
       }
     }
 
@@ -39,5 +49,5 @@ export function useDrawerBackButton(
         window.history.back()
       }
     }
-  }, [isOpen, onClose, identifier])
+  }, [isOpen, identifier])
 }
