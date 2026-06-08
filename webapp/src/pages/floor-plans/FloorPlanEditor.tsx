@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
@@ -21,6 +21,7 @@ import {
   RotateCw,
   Save,
   Loader2,
+  Users,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useSignedUrl } from '@/hooks/useSignedUrl'
@@ -57,6 +58,34 @@ type SnapLine = {
   gapStart?: number // in pixels
   gapEnd?: number // in pixels
   gapSizeMeters?: number // gap size in meters for display
+}
+
+/**
+ * Renders a component label sized to fit its parent box on a single line: it
+ * measures the text at a base size and scales the font so the label fits the
+ * box's width and height. Labels can get small in tiny components — the canvas
+ * zoom makes them readable. Re-fits when the text or the box size changes.
+ */
+function FitText({ text, boxWidth, boxHeight }: { text: string; boxWidth: number; boxHeight: number }) {
+  const ref = useRef<HTMLSpanElement>(null)
+
+  useLayoutEffect(() => {
+    const span = ref.current
+    if (!span) return
+    const BASE = 50
+    span.style.fontSize = `${BASE}px`
+    const textWidth = span.scrollWidth
+    const textHeight = span.scrollHeight
+    if (!textWidth || !textHeight) return
+    const fit = BASE * Math.min((boxWidth * 0.9) / textWidth, (boxHeight * 0.9) / textHeight)
+    span.style.fontSize = `${Math.max(1, fit)}px`
+  }, [text, boxWidth, boxHeight])
+
+  return (
+    <span ref={ref} className="block whitespace-nowrap leading-none">
+      {text}
+    </span>
+  )
 }
 
 interface FloorPlanEditorProps {
@@ -743,6 +772,12 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
     editor.updateComponentSilent({ id, rotation })
   }
 
+  // Total seats across all placed components (sum of each component type's occupancy).
+  const totalSeats = useMemo(
+    () => localComponents.reduce((sum, c) => sum + (c.componentType?.occupancy ?? 0), 0),
+    [localComponents]
+  )
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -762,8 +797,9 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
   return (
     <div className="flex flex-col h-[100dvh] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 border-b bg-background">
-        <div className="flex items-center gap-4">
+      <div className="border-b bg-background">
+        {/* Row 1: back + title */}
+        <div className="flex items-center gap-4 px-4 py-2">
           <Button
             variant="ghost"
             size="icon"
@@ -776,36 +812,44 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
             <p className="text-sm text-muted-foreground">{data.floorPlan?.name}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="hidden md:flex items-center gap-1 border rounded-md">
-            <Button variant="ghost" size="icon" onClick={handleZoomOut}>
-              <Minus className="h-4 w-4" />
+        {/* Row 2: total seats at the start, controls at the end */}
+        <div className="flex items-center justify-between gap-2 px-4 py-2 border-t">
+          <div className="flex items-center gap-1.5 text-sm">
+            <Users className="h-4 w-4 text-muted-foreground" />
+            <span className="text-muted-foreground">{t('templateEditor.totalSeats')}</span>
+            <span className="font-semibold tabular-nums">{totalSeats}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-1 border rounded-md">
+              <Button variant="ghost" size="icon" onClick={handleZoomOut}>
+                <Minus className="h-4 w-4" />
+              </Button>
+              <span className="text-sm w-16 text-center">{Math.round(zoom * 100)}%</span>
+              <Button variant="ghost" size="icon" onClick={handleZoomIn}>
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            <Button variant="ghost" size="icon" onClick={handleResetZoom}>
+              <RotateCcw className="h-4 w-4" />
             </Button>
-            <span className="text-sm w-16 text-center">{Math.round(zoom * 100)}%</span>
-            <Button variant="ghost" size="icon" onClick={handleZoomIn}>
-              <Plus className="h-4 w-4" />
+            {isMobile && (
+              <Button variant="outline" size="sm" onClick={() => setPaletteOpen(true)}>
+                <Plus className="h-4 w-4 me-1" />
+                {t('templateEditor.components')}
+              </Button>
+            )}
+            <Button
+              onClick={handleSave}
+              disabled={!hasUnsavedChanges || editor.bulkUpdatePending}
+            >
+              {editor.bulkUpdatePending ? (
+                <Loader2 className="h-4 w-4 me-2 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 me-2" />
+              )}
+              {t('common.save')}
             </Button>
           </div>
-          <Button variant="ghost" size="icon" onClick={handleResetZoom}>
-            <RotateCcw className="h-4 w-4" />
-          </Button>
-          {isMobile && (
-            <Button variant="outline" size="sm" onClick={() => setPaletteOpen(true)}>
-              <Plus className="h-4 w-4 me-1" />
-              {t('templateEditor.components')}
-            </Button>
-          )}
-          <Button
-            onClick={handleSave}
-            disabled={!hasUnsavedChanges || editor.bulkUpdatePending}
-          >
-            {editor.bulkUpdatePending ? (
-              <Loader2 className="h-4 w-4 me-2 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4 me-2" />
-            )}
-            {t('common.save')}
-          </Button>
         </div>
       </div>
 
@@ -898,21 +942,11 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
                       onPointerDownCapture={() => setSelectedComponentId(component.id)}
                       onDoubleClick={() => handleEditComponent(component)}
                     >
-                      <span
-                        className="text-center leading-none break-words"
-                        style={{
-                          maxWidth: '95%',
-                          maxHeight: '90%',
-                          overflow: 'hidden',
-                          fontSize: `${Math.max(4, Math.min(10, Math.min(width, height) * 0.2))}px`,
-                          wordBreak: 'break-word',
-                          display: '-webkit-box',
-                          WebkitLineClamp: Math.max(1, Math.floor(height / 8)),
-                          WebkitBoxOrient: 'vertical',
-                        }}
-                      >
-                        {component.label || component.componentType?.name}
-                      </span>
+                      <FitText
+                        text={component.label || component.componentType?.name || ''}
+                        boxWidth={width}
+                        boxHeight={height}
+                      />
                     </div>
 
                     {/* Rotation handle - attached to top-right corner */}

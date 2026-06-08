@@ -590,6 +590,8 @@ export const enTranslation = {
     remove: 'Remove',
     items_one: '{{count}} item',
     items_other: '{{count}} items',
+    seats_one: '{{count}} seat',
+    seats_other: '{{count}} seats',
     removeTitle: 'Remove floor plan?',
     removeDescription: "This deletes this event's floor plan layout. The original template is not affected.",
     created: 'Floor plan added',
@@ -632,6 +634,7 @@ export const enTranslation = {
   },
   templateEditor: {
     components: "Components",
+    totalSeats: "Seats",
     properties: "Properties",
     type: "Type",
     position: "Position",

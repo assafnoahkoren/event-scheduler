@@ -592,6 +592,8 @@ export const arTranslation: TranslationType = {
     remove: 'إزالة',
     items_one: 'عنصر واحد',
     items_other: '{{count}} عناصر',
+    seats_one: 'مقعد واحد',
+    seats_other: '{{count}} مقاعد',
     removeTitle: 'إزالة المخطط؟',
     removeDescription: 'هذا يحذف مخطط الأرضية لهذا الحدث. القالب الأصلي لا يتأثر.',
     created: 'تمت إضافة المخطط',
@@ -634,6 +636,7 @@ export const arTranslation: TranslationType = {
   },
   templateEditor: {
     components: "المكونات",
+    totalSeats: "المقاعد",
     properties: "الخصائص",
     type: "النوع",
     position: "الموقع",

@@ -592,6 +592,8 @@ export const heTranslation: TranslationType = {
     remove: 'הסר',
     items_one: 'פריט אחד',
     items_other: '{{count}} פריטים',
+    seats_one: 'מקום אחד',
+    seats_other: '{{count}} מקומות',
     removeTitle: 'להסיר את התרשים?',
     removeDescription: 'פעולה זו מוחקת את פריסת התרשים של האירוע. התבנית המקורית אינה מושפעת.',
     created: 'התרשים נוסף',
@@ -634,6 +636,7 @@ export const heTranslation: TranslationType = {
   },
   templateEditor: {
     components: "רכיבים",
+    totalSeats: "מקומות",
     properties: "מאפיינים",
     type: "סוג",
     position: "מיקום",

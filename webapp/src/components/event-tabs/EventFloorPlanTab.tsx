@@ -82,6 +82,7 @@ export function EventFloorPlanTab({ eventId, siteId }: EventFloorPlanTabProps) {
   }
 
   const itemCount = layout.components?.length ?? 0
+  const totalSeats = layout.components?.reduce((sum, c) => sum + (c.componentType?.occupancy ?? 0), 0) ?? 0
 
   return (
     <div className="px-4 space-y-4">
@@ -93,7 +94,9 @@ export function EventFloorPlanTab({ eventId, siteId }: EventFloorPlanTabProps) {
           <Map className="h-8 w-8 text-muted-foreground" />
           <div>
             <p className="font-medium">{layout.name}</p>
-            <p className="text-sm text-muted-foreground">{t('eventFloorPlan.items', { count: itemCount })}</p>
+            <p className="text-sm text-muted-foreground">
+              {t('eventFloorPlan.items', { count: itemCount })} · {t('eventFloorPlan.seats', { count: totalSeats })}
+            </p>
           </div>
         </button>
         <div className="flex items-center gap-2">
