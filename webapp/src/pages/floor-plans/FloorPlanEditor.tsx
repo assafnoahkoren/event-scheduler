@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { trpc } from '@/utils/trpc'
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext'
@@ -32,13 +32,17 @@ import { ComponentPropertiesPanel } from '@/components/floor-plans/ComponentProp
 import { useGesture } from '@use-gesture/react'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@/../../server/src/routers/appRouter'
+import {
+  useFloorPlanEditorData,
+  type Source,
+  type FloorPlanEditorData,
+  type FloorPlanEditorComponent,
+} from '@/hooks/useFloorPlanEditorData'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
-type Template = RouterOutput['floorPlans']['templates']['get']
-type TemplateComponent = Template['components'][0]
 type ComponentType = RouterOutput['floorPlans']['componentTypes']['list'][0]
 
-type PlacedComponent = TemplateComponent & {
+type PlacedComponent = FloorPlanEditorComponent & {
   isDragging?: boolean
 }
 
@@ -55,8 +59,12 @@ type SnapLine = {
   gapSizeMeters?: number // gap size in meters for display
 }
 
-export function TemplateEditor() {
-  const { templateId } = useParams<{ templateId: string }>()
+interface FloorPlanEditorProps {
+  source: Source
+  getBackHref: (data: FloorPlanEditorData) => string
+}
+
+export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { currentOrg } = useCurrentOrg()
@@ -90,13 +98,39 @@ export function TemplateEditor() {
   const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null)
   const [renderedImageSize, setRenderedImageSize] = useState<{ width: number; height: number } | null>(null)
 
-  const utils = trpc.useUtils()
-
-  // Fetch template data
-  const { data: template, isLoading: isLoadingTemplate } = trpc.floorPlans.templates.get.useQuery(
-    { id: templateId! },
-    { enabled: !!templateId }
-  )
+  // Data + mutations, abstracted over template vs event-layout source.
+  const editor = useFloorPlanEditorData({
+    source,
+    callbacks: {
+      onComponentAdded: (component) => {
+        setLocalComponents(prev => [...prev, component])
+        setSelectedComponentId(component.id)
+        toast.success(t('templateEditor.componentAdded'))
+      },
+      onComponentUpdated: () => {
+        toast.success(t('templateEditor.componentUpdated'))
+        setEditDialogOpen(false)
+        setEditingComponent(null)
+      },
+      onComponentDeleted: (id) => {
+        setLocalComponents(prev => prev.filter(c => c.id !== id))
+        setSelectedComponentId(prev => (prev === id ? null : prev))
+        toast.success(t('templateEditor.componentDeleted'))
+      },
+      onBulkUpdated: () => {
+        setHasUnsavedChanges(false)
+      },
+      onError: (op, message) => {
+        const msg =
+          op === 'add' ? t('templateEditor.componentAddError') :
+          op === 'delete' ? t('templateEditor.componentDeleteError') :
+          op === 'bulk' ? t('templateEditor.saveError') :
+          t('templateEditor.componentUpdateError')
+        toast.error(msg, { description: message })
+      },
+    },
+  })
+  const { data, isLoading } = editor
 
   // Fetch component types for the sidebar
   const { data: componentTypes } = trpc.floorPlans.componentTypes.list.useQuery(
@@ -106,72 +140,21 @@ export function TemplateEditor() {
 
   // Get signed URL for floor plan image
   const { signedUrl: imageUrl } = useSignedUrl({
-    fileId: template?.floorPlan?.imageFile?.id,
+    fileId: data?.floorPlan?.imageFile?.id,
   })
 
-  // Mutations
-  const addComponentMutation = trpc.floorPlans.templates.addComponent.useMutation({
-    onSuccess: (newComponent) => {
-      setLocalComponents(prev => [...prev, newComponent])
-      setSelectedComponentId(newComponent.id)
-      toast.success(t('templateEditor.componentAdded'))
-    },
-    onError: (error) => {
-      toast.error(t('templateEditor.componentAddError'), { description: error.message })
-    },
-  })
-
-  const updateComponentMutation = trpc.floorPlans.templates.updateComponent.useMutation({
-    onSuccess: () => {
-      toast.success(t('templateEditor.componentUpdated'))
-      setEditDialogOpen(false)
-      setEditingComponent(null)
-    },
-    onError: (error) => {
-      toast.error(t('templateEditor.componentUpdateError'), { description: error.message })
-    },
-  })
-
-  const deleteComponentMutation = trpc.floorPlans.templates.deleteComponent.useMutation({
-    onSuccess: () => {
-      setLocalComponents(prev => prev.filter(c => c.id !== selectedComponentId))
-      setSelectedComponentId(null)
-      toast.success(t('templateEditor.componentDeleted'))
-    },
-    onError: (error) => {
-      toast.error(t('templateEditor.componentDeleteError'), { description: error.message })
-    },
-  })
-
-  const bulkUpdateMutation = trpc.floorPlans.templates.bulkUpdateComponents.useMutation({
-    onSuccess: () => {
-      setHasUnsavedChanges(false)
-    },
-    onError: (error) => {
-      toast.error(t('templateEditor.saveError'), { description: error.message })
-    },
-  })
-
-  // Silent variant for inline edits (rotate buttons, drag-persist): no success
-  // toast and no edit-dialog side effects — only surfaces errors.
-  const updateComponentSilent = trpc.floorPlans.templates.updateComponent.useMutation({
-    onError: (error) => {
-      toast.error(t('templateEditor.componentUpdateError'), { description: error.message })
-    },
-  })
-
-  // Initialize local components from template
+  // Initialize local components from the loaded source
   useEffect(() => {
-    if (template?.components) {
-      setLocalComponents(template.components)
+    if (data?.components) {
+      setLocalComponents(data.components)
     }
-  }, [template?.components])
+  }, [data?.components])
 
   // Delete key removes the selected component (desktop convenience)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Delete' && selectedComponentId) {
-        deleteComponentMutation.mutate({ id: selectedComponentId })
+        editor.deleteComponent({ id: selectedComponentId })
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -209,18 +192,18 @@ export function TemplateEditor() {
   // Convert pixel coordinates to meters (accounting for DPI scaling)
   // Input pixels are in "displayed" space, need to convert to "natural" space first
   const pixelsToMeters = useCallback((pixels: number) => {
-    if (!template?.floorPlan?.pixelsPerMeter) return pixels / 100
+    if (!data?.floorPlan?.pixelsPerMeter) return pixels / 100
     // Divide by dpiScale to convert from displayed pixels to natural pixels
-    return (pixels / dpiScale) / template.floorPlan.pixelsPerMeter
-  }, [template?.floorPlan?.pixelsPerMeter, dpiScale])
+    return (pixels / dpiScale) / data.floorPlan.pixelsPerMeter
+  }, [data?.floorPlan?.pixelsPerMeter, dpiScale])
 
   // Convert meters to pixels (accounting for DPI scaling)
   // Output is in "displayed" space
   const metersToPixels = useCallback((meters: number) => {
-    if (!template?.floorPlan?.pixelsPerMeter) return meters * 100
+    if (!data?.floorPlan?.pixelsPerMeter) return meters * 100
     // Scale down by DPI factor so components match the displayed image size
-    return meters * template.floorPlan.pixelsPerMeter * dpiScale
-  }, [template?.floorPlan?.pixelsPerMeter, dpiScale])
+    return meters * data.floorPlan.pixelsPerMeter * dpiScale
+  }, [data?.floorPlan?.pixelsPerMeter, dpiScale])
 
   // Zoom to center of viewport
   const zoomToCenter = useCallback((newZoom: number) => {
@@ -286,7 +269,7 @@ export function TemplateEditor() {
   // Drops a new component near the center of the visible canvas, with a small
   // cascade offset so repeated taps don't stack on the exact same point.
   const addComponentAtViewCenter = useCallback((componentType: ComponentType) => {
-    if (!templateId || !containerRef.current) return
+    if (!containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
     const screenCenterX = rect.width / 2
     const screenCenterY = rect.height / 2
@@ -295,15 +278,14 @@ export function TemplateEditor() {
     const cascade = (localComponents.length % 6) * 12 // px, in canvas space
     const xInMeters = pixelsToMeters(canvasX + cascade)
     const yInMeters = pixelsToMeters(canvasY + cascade)
-    addComponentMutation.mutate({
-      templateId,
+    editor.addComponent({
       componentTypeId: componentType.id,
       xInMeters,
       yInMeters,
       widthInMeters: componentType.defaultWidthInMeters,
       heightInMeters: componentType.defaultHeightInMeters,
     })
-  }, [templateId, pan, zoom, localComponents, pixelsToMeters, addComponentMutation])
+  }, [pan, zoom, localComponents, pixelsToMeters, editor])
 
   // Calculate snap points for a component being dragged
   const calculateSnap = useCallback((
@@ -600,7 +582,7 @@ export function TemplateEditor() {
         dragStartRef.current = null
         const pos = lastDragPositionRef.current
         if (pos && pos.id === id) {
-          bulkUpdateMutation.mutate({ templateId: templateId!, components: [{ id, xInMeters: pos.xInMeters, yInMeters: pos.yInMeters }] })
+          editor.bulkUpdate([{ id, xInMeters: pos.xInMeters, yInMeters: pos.yInMeters }])
           lastDragPositionRef.current = null
         }
       },
@@ -695,13 +677,10 @@ export function TemplateEditor() {
 
       // Auto-save rotation after drag ends
       if (finalRotation !== component.rotation) {
-        bulkUpdateMutation.mutate({
-          templateId: templateId!,
-          components: [{
-            id: componentId,
-            rotation: finalRotation,
-          }],
-        })
+        editor.bulkUpdate([{
+          id: componentId,
+          rotation: finalRotation,
+        }])
       }
     }
 
@@ -711,8 +690,6 @@ export function TemplateEditor() {
 
   // Handle save
   const handleSave = () => {
-    if (!templateId) return
-
     const updates = localComponents.map(c => ({
       id: c.id,
       xInMeters: c.xInMeters,
@@ -722,10 +699,7 @@ export function TemplateEditor() {
       rotation: c.rotation,
     }))
 
-    bulkUpdateMutation.mutate({
-      templateId,
-      components: updates,
-    })
+    editor.bulkUpdate(updates)
   }
 
   // Open edit dialog
@@ -742,7 +716,7 @@ export function TemplateEditor() {
   const handleSaveEdit = () => {
     if (!editingComponent) return
 
-    updateComponentMutation.mutate({
+    editor.updateComponent({
       id: editingComponent.id,
       label: editForm.label || null,
       rotation: parseFloat(editForm.rotation) || 0,
@@ -762,10 +736,10 @@ export function TemplateEditor() {
     if (!target) return
     const rotation = ((Math.round(target.rotation) + deltaDeg) % 360 + 360) % 360
     setLocalComponents(prev => prev.map(c => (c.id === id ? { ...c, rotation } : c)))
-    updateComponentSilent.mutate({ id, rotation })
+    editor.updateComponentSilent({ id, rotation })
   }
 
-  if (isLoadingTemplate) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -773,7 +747,7 @@ export function TemplateEditor() {
     )
   }
 
-  if (!template) {
+  if (!data) {
     return (
       <div className="flex items-center justify-center h-screen">
         <p className="text-muted-foreground">{t('templateEditor.notFound')}</p>
@@ -789,13 +763,13 @@ export function TemplateEditor() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate(`/floor-plans/${template.floorPlanId}`)}
+            onClick={() => navigate(getBackHref(data))}
           >
             <ArrowLeft className="h-5 w-5 rtl:rotate-180" />
           </Button>
           <div>
-            <h1 className="font-semibold">{template.name}</h1>
-            <p className="text-sm text-muted-foreground">{template.floorPlan?.name}</p>
+            <h1 className="font-semibold">{data.name}</h1>
+            <p className="text-sm text-muted-foreground">{data.floorPlan?.name}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -819,9 +793,9 @@ export function TemplateEditor() {
           )}
           <Button
             onClick={handleSave}
-            disabled={!hasUnsavedChanges || bulkUpdateMutation.isPending}
+            disabled={!hasUnsavedChanges || editor.bulkUpdatePending}
           >
-            {bulkUpdateMutation.isPending ? (
+            {editor.bulkUpdatePending ? (
               <Loader2 className="h-4 w-4 me-2 animate-spin" />
             ) : (
               <Save className="h-4 w-4 me-2" />
@@ -861,7 +835,7 @@ export function TemplateEditor() {
               <img
                 ref={imageRef}
                 src={imageUrl}
-                alt={template.floorPlan?.name}
+                alt={data.floorPlan?.name}
                 className="pointer-events-none select-none block"
                 draggable={false}
                 onLoad={(e) => {
@@ -1052,7 +1026,7 @@ export function TemplateEditor() {
           <ComponentPropertiesPanel
             component={localComponents.find(c => c.id === selectedComponentId) ?? null}
             onRotate={(d) => selectedComponentId && rotateComponent(selectedComponentId, d)}
-            onDelete={() => selectedComponentId && deleteComponentMutation.mutate({ id: selectedComponentId })}
+            onDelete={() => selectedComponentId && editor.deleteComponent({ id: selectedComponentId })}
             onEdit={() => {
               const c = localComponents.find(c => c.id === selectedComponentId)
               if (c) handleEditComponent(c)
@@ -1082,7 +1056,7 @@ export function TemplateEditor() {
             component={localComponents.find(c => c.id === selectedComponentId) ?? null}
             compact
             onRotate={(d) => rotateComponent(selectedComponentId, d)}
-            onDelete={() => deleteComponentMutation.mutate({ id: selectedComponentId })}
+            onDelete={() => editor.deleteComponent({ id: selectedComponentId })}
             onEdit={() => {
               const c = localComponents.find(c => c.id === selectedComponentId)
               if (c) handleEditComponent(c)
@@ -1127,8 +1101,8 @@ export function TemplateEditor() {
             <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
               {t('common.cancel')}
             </Button>
-            <Button onClick={handleSaveEdit} disabled={updateComponentMutation.isPending}>
-              {updateComponentMutation.isPending && <Loader2 className="h-4 w-4 me-2 animate-spin" />}
+            <Button onClick={handleSaveEdit} disabled={editor.updateComponentPending}>
+              {editor.updateComponentPending && <Loader2 className="h-4 w-4 me-2 animate-spin" />}
               {t('common.save')}
             </Button>
           </DialogFooter>

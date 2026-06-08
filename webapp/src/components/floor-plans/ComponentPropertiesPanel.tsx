@@ -2,14 +2,10 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { RotateCcw, RotateCw, Trash2, Pencil } from 'lucide-react'
-import type { inferRouterOutputs } from '@trpc/server'
-import type { AppRouter } from '@/../../server/src/routers/appRouter'
-
-type RouterOutput = inferRouterOutputs<AppRouter>
-type TemplateComponent = RouterOutput['floorPlans']['templates']['get']['components'][0]
+import type { FloorPlanEditorComponent } from '@/hooks/useFloorPlanEditorData'
 
 interface ComponentPropertiesPanelProps {
-  component: TemplateComponent | null
+  component: FloorPlanEditorComponent | null
   /** Rotate by a signed delta in degrees (e.g. +15, -15, +90). */
   onRotate: (deltaDeg: number) => void
   onDelete: () => void
