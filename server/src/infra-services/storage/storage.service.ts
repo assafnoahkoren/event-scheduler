@@ -43,6 +43,10 @@ export class StorageService {
       region: config.region, // Use explicit region for signed URLs
       credentials: config.credentials,
       forcePathStyle: config.forcePathStyle, // Required for MinIO and Backblaze B2
+      // AWS SDK v3 (>=3.729) defaults to WHEN_SUPPORTED, which injects a CRC32
+      // checksum query param into presigned PUT URLs that browser uploads can't
+      // satisfy (fails as an opaque CORS/checksum error). Only add it when asked.
+      requestChecksumCalculation: 'WHEN_REQUIRED',
     })
 
     console.log(`🔧 S3Client initialized with endpoint: ${config.endpoint}, region: ${config.region}`)
