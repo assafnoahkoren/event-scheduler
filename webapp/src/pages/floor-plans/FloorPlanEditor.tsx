@@ -760,7 +760,7 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
   }
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-[100dvh] overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b bg-background">
         <div className="flex items-center gap-4">
@@ -1046,7 +1046,7 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
             <DrawerTitle className="sr-only">{t('templateEditor.components')}</DrawerTitle>
             <ComponentPalette
               componentTypes={componentTypes}
-              onAdd={addComponentAtViewCenter}
+              onAdd={(componentType) => { addComponentAtViewCenter(componentType); setPaletteOpen(false) }}
               onNewType={() => { setPaletteOpen(false); setComponentTypeDialogOpen(true) }}
             />
           </DrawerContent>

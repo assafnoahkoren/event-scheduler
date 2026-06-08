@@ -54,14 +54,17 @@ function App() {
             <Route path="/service-categories" element={<ServiceCategories />} />
             <Route path="/floor-plans" element={<FloorPlans />} />
             <Route path="/floor-plans/:floorPlanId" element={<FloorPlanDetail />} />
-            <Route path="/templates/:templateId" element={<TemplateEditorRoute />} />
-            <Route path="/event/:eventId/floor-plan/:layoutId" element={<EventLayoutEditorRoute />} />
             <Route path="/component-types" element={<ComponentTypes />} />
             <Route path="/stock" element={<StockPage />} />
             <Route path="/stock/levels" element={<StockLevels />} />
             <Route path="/stock/orders" element={<PurchaseOrdersPage />} />
             <Route path="/stock/settings" element={<StockSettings />} />
           </Route>
+
+          {/* Full-screen editors: rendered outside the Shell so they own the
+              whole viewport (no app header above them, nothing to scroll). */}
+          <Route path="/templates/:templateId" element={<TemplateEditorRoute />} />
+          <Route path="/event/:eventId/floor-plan/:layoutId" element={<EventLayoutEditorRoute />} />
         </Route>
 
         {/* Catch all redirect */}
