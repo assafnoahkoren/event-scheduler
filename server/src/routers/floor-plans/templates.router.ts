@@ -107,7 +107,7 @@ export const templatesRouter = router({
 
   // List all templates across every floor plan of a site (for the event picker)
   listBySite: protectedProcedure
-    .input(z.object({ siteId: z.string().uuid() }))
+    .input(z.object({ siteId: z.uuid() }))
     .query(async ({ ctx, input }) => {
       await checkSiteAccess(ctx.user.id, input.siteId)
 
