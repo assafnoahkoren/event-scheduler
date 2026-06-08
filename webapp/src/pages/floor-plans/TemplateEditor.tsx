@@ -613,14 +613,17 @@ export function TemplateEditor() {
     {
       onDrag: ({ delta: [dx, dy], pinching, tap, event }) => {
         if (pinching) return
+        // If the gesture started on a component, let the component's own drag handle
+        // it — don't pan or deselect the canvas. On touch the two gesture instances
+        // both receive the move (stopPropagation isn't honored across them), so we
+        // disambiguate by target: touch events keep their original touchstart target.
+        const tgt = event?.target as HTMLElement | null
+        const onComponent = !!(tgt && tgt.closest && tgt.closest('[data-placed-component]'))
         if (tap) {
-          // Only deselect when the tap landed on empty canvas, not on a component
-          // (a component tap is handled by its own onPointerDownCapture selection).
-          const tgt = event?.target as HTMLElement | null
-          if (tgt && tgt.closest('[data-placed-component]')) return
-          setSelectedComponentId(null)
+          if (!onComponent) setSelectedComponentId(null)
           return
         }
+        if (onComponent) return
         setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }))
       },
       onPinch: ({ origin: [ox, oy], offset: [scale] }) => {
