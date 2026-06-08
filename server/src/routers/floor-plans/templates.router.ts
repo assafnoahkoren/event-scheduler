@@ -105,6 +105,34 @@ export const templatesRouter = router({
       return templates
     }),
 
+  // List all templates across every floor plan of a site (for the event picker)
+  listBySite: protectedProcedure
+    .input(z.object({ siteId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      await checkSiteAccess(ctx.user.id, input.siteId)
+
+      const templates = await prisma.floorPlanTemplate.findMany({
+        where: {
+          isDeleted: false,
+          floorPlan: {
+            siteId: input.siteId,
+            isDeleted: false,
+          },
+        },
+        include: {
+          floorPlan: {
+            select: { id: true, name: true },
+          },
+        },
+        orderBy: [
+          { floorPlan: { sortOrder: 'asc' } },
+          { sortOrder: 'asc' },
+        ],
+      })
+
+      return templates
+    }),
+
   // Get a single template by ID
   get: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
