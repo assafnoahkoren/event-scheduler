@@ -99,7 +99,7 @@ export function EventFloorPlanTab({ eventId, siteId }: EventFloorPlanTabProps) {
           <Button onClick={() => navigate(`/event/${eventId}/floor-plan/${layout.id}`)}>
             {t('eventFloorPlan.open')}
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setRemoveOpen(true)}>
+          <Button variant="ghost" size="icon" onClick={() => setRemoveOpen(true)} disabled={removeMutation.isPending}>
             <Trash2 className="h-4 w-4 text-destructive" />
           </Button>
         </div>
@@ -115,8 +115,10 @@ export function EventFloorPlanTab({ eventId, siteId }: EventFloorPlanTabProps) {
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => removeMutation.mutate({ id: layout.id })}
+              disabled={removeMutation.isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
+              {removeMutation.isPending && <Loader2 className="h-4 w-4 me-2 animate-spin" />}
               {t('eventFloorPlan.remove')}
             </AlertDialogAction>
           </AlertDialogFooter>

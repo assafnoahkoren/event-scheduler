@@ -26,10 +26,17 @@ export function EventFloorPlanPicker({ open, onOpenChange, eventId, siteId }: Ev
 
   const createMutation = trpc.floorPlans.eventLayouts.createFromTemplate.useMutation({
     onSuccess: (layout) => {
+      // createFromTemplate re-reads via findFirst, so the type is nullable. A null
+      // here means the layout couldn't be loaded back — treat it as a failure
+      // rather than silently closing on a "success" the user can't see.
+      if (!layout) {
+        toast.error(t('eventFloorPlan.createError'))
+        return
+      }
       utils.floorPlans.eventLayouts.list.invalidate({ eventId })
       toast.success(t('eventFloorPlan.created'))
       onOpenChange(false)
-      if (layout) navigate(`/event/${eventId}/floor-plan/${layout.id}`)
+      navigate(`/event/${eventId}/floor-plan/${layout.id}`)
     },
     onError: (error) => {
       toast.error(t('eventFloorPlan.createError'), { description: error.message })
@@ -38,10 +45,10 @@ export function EventFloorPlanPicker({ open, onOpenChange, eventId, siteId }: Ev
 
   // Group templates by floor plan for a labelled-but-flat list.
   const groups = useMemo(() => {
-    const byPlan = new Map<string, { name: string; rows: NonNullable<typeof templates> }>()
+    const byPlan = new Map<string, { id: string; name: string; rows: NonNullable<typeof templates> }>()
     for (const tpl of templates ?? []) {
       const key = tpl.floorPlan.id
-      if (!byPlan.has(key)) byPlan.set(key, { name: tpl.floorPlan.name, rows: [] })
+      if (!byPlan.has(key)) byPlan.set(key, { id: key, name: tpl.floorPlan.name, rows: [] })
       byPlan.get(key)!.rows.push(tpl)
     }
     return Array.from(byPlan.values())
@@ -67,7 +74,7 @@ export function EventFloorPlanPicker({ open, onOpenChange, eventId, siteId }: Ev
             </p>
           )}
           {groups.map((group) => (
-            <div key={group.name} className="mb-4">
+            <div key={group.id} className="mb-4">
               <h4 className="text-xs font-medium text-muted-foreground mb-1 px-1">{group.name}</h4>
               <div className="flex flex-col gap-1">
                 {group.rows.map((tpl) => (
