@@ -602,6 +602,9 @@ export const heTranslation: TranslationType = {
     removeError: 'הסרת הסקיצה נכשלה',
     notFound: 'הסקיצה לא נמצאה',
     alreadyExists: 'לסקיצה זו כבר קיימת פריסה עבור אירוע זה.',
+    download: 'הורד תמונה',
+    share: 'שלח',
+    exportError: 'ייצוא התמונה נכשל',
   },
   componentTypes: {
     title: "סוגי רכיבים",

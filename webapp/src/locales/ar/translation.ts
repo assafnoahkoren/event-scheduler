@@ -602,6 +602,9 @@ export const arTranslation: TranslationType = {
     removeError: 'فشلت إزالة المخطط',
     notFound: 'لم يتم العثور على المخطط',
     alreadyExists: 'هذا المخطط لديه بالفعل تخطيط لهذا الحدث.',
+    download: 'تنزيل صورة',
+    share: 'إرسال',
+    exportError: 'فشل تصدير الصورة',
   },
   componentTypes: {
     title: "أنواع المكونات",

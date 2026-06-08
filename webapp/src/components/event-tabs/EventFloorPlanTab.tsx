@@ -14,7 +14,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Loader2, Map, Plus, Trash2 } from 'lucide-react'
+import { Download, Loader2, Map, Plus, Share2, Trash2 } from 'lucide-react'
+import { useSignedUrl } from '@/hooks/useSignedUrl'
+import { renderEventLayoutToBlob } from '@/utils/renderLayoutImage'
 import { EventFloorPlanPicker } from './EventFloorPlanPicker'
 import { LayoutPreview } from './LayoutPreview'
 
@@ -29,6 +31,7 @@ export function EventFloorPlanTab({ eventId, siteId }: EventFloorPlanTabProps) {
   const utils = trpc.useUtils()
   const [pickerOpen, setPickerOpen] = useState(false)
   const [removeOpen, setRemoveOpen] = useState(false)
+  const [exporting, setExporting] = useState(false)
 
   const { data: layouts, isLoading } = trpc.floorPlans.eventLayouts.list.useQuery(
     { eventId },
@@ -37,6 +40,8 @@ export function EventFloorPlanTab({ eventId, siteId }: EventFloorPlanTabProps) {
 
   // One layout per event (YAGNI): we only ever read/operate on the first.
   const layout = layouts?.[0] ?? null
+
+  const { signedUrl } = useSignedUrl({ fileId: layout?.floorPlan?.imageFile?.id })
 
   const removeMutation = trpc.floorPlans.eventLayouts.delete.useMutation({
     onSuccess: () => {
@@ -83,6 +88,51 @@ export function EventFloorPlanTab({ eventId, siteId }: EventFloorPlanTabProps) {
 
   const itemCount = layout.components?.length ?? 0
   const totalSeats = layout.components?.reduce((sum, c) => sum + (c.componentType?.occupancy ?? 0), 0) ?? 0
+  const filename = `${layout.name || 'floor-plan'}.png`
+
+  const exportBlob = async () => {
+    if (!signedUrl) throw new Error('Image not ready')
+    return renderEventLayoutToBlob(layout, signedUrl)
+  }
+
+  const handleDownload = async () => {
+    try {
+      setExporting(true)
+      const blob = await exportBlob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      toast.error(t('eventFloorPlan.exportError'), { description: (err as Error).message })
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  const handleShare = async () => {
+    try {
+      setExporting(true)
+      const blob = await exportBlob()
+      const file = new File([blob], filename, { type: 'image/png' })
+      await navigator.share({ files: [file], title: layout.name ?? '' })
+    } catch (err) {
+      if ((err as Error).name !== 'AbortError') {
+        toast.error(t('eventFloorPlan.exportError'), { description: (err as Error).message })
+      }
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  const canShareFiles =
+    typeof navigator !== 'undefined' &&
+    typeof navigator.canShare === 'function' &&
+    navigator.canShare({ files: [new File([new Blob()], 'x.png', { type: 'image/png' })] })
 
   return (
     <div className="px-4 space-y-4">
@@ -113,6 +163,33 @@ export function EventFloorPlanTab({ eventId, siteId }: EventFloorPlanTabProps) {
         layout={layout}
         onClick={() => navigate(`/event/${eventId}/floor-plan/${layout.id}`)}
       />
+
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          className="flex-1"
+          onClick={handleDownload}
+          disabled={exporting || !signedUrl}
+        >
+          {exporting ? (
+            <Loader2 className="h-4 w-4 me-2 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4 me-2" />
+          )}
+          {t('eventFloorPlan.download')}
+        </Button>
+        {canShareFiles && (
+          <Button
+            variant="outline"
+            className="flex-1"
+            onClick={handleShare}
+            disabled={exporting || !signedUrl}
+          >
+            <Share2 className="h-4 w-4 me-2" />
+            {t('eventFloorPlan.share')}
+          </Button>
+        )}
+      </div>
 
       <AlertDialog open={removeOpen} onOpenChange={setRemoveOpen}>
         <AlertDialogContent>

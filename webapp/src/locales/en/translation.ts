@@ -600,6 +600,9 @@ export const enTranslation = {
     removeError: 'Failed to remove floor plan',
     notFound: 'Floor plan not found',
     alreadyExists: 'This floor plan already has a layout for this event.',
+    download: 'Download image',
+    share: 'Send',
+    exportError: 'Failed to export image',
   },
   componentTypes: {
     title: "Component Types",
