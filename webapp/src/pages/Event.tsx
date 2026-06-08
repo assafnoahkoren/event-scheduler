@@ -39,7 +39,12 @@ export function Event() {
   const formatDayMonth = useFormatDayMonth()
   const [searchParams, setSearchParams] = useSearchParams()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'details')
+  // Only Details and Floor Plan are currently enabled; fall back to details so a
+  // stale ?tab= deep link (e.g. an old ?tab=files bookmark) doesn't render a blank pane.
+  const [activeTab, setActiveTab] = useState(() => {
+    const tab = searchParams.get('tab') || 'details'
+    return tab === 'details' || tab === 'floor-plan' ? tab : 'details'
+  })
 
   // Update URL when tab changes
   useEffect(() => {
