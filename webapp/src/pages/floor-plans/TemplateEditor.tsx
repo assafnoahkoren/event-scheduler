@@ -285,7 +285,7 @@ export function TemplateEditor() {
 
   // Drops a new component near the center of the visible canvas, with a small
   // cascade offset so repeated taps don't stack on the exact same point.
-  const addComponentAtViewCenter = (componentType: ComponentType) => {
+  const addComponentAtViewCenter = useCallback((componentType: ComponentType) => {
     if (!templateId || !containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
     const screenCenterX = rect.width / 2
@@ -303,7 +303,7 @@ export function TemplateEditor() {
       widthInMeters: componentType.defaultWidthInMeters,
       heightInMeters: componentType.defaultHeightInMeters,
     })
-  }
+  }, [templateId, pan, zoom, localComponents, pixelsToMeters, addComponentMutation])
 
   // Calculate snap points for a component being dragged
   const calculateSnap = useCallback((
