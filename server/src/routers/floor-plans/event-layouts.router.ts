@@ -4,6 +4,40 @@ import { prisma } from '../../db'
 import { TRPCError } from '@trpc/server'
 import { checkSiteAccess, canEdit, isAdminOrOwner } from '../../lib/access'
 
+/**
+ * Hard-deletes any soft-deleted layout (and its components) occupying the
+ * (eventId, floorPlanId) slot. The @@unique([eventId, floorPlanId]) constraint
+ * is enforced on EVERY row, including soft-deleted ones — so a previously
+ * "deleted" layout (which the soft-delete extension hides from reads and can't
+ * un-delete via update) would otherwise block creating a fresh layout for the
+ * same event + floor plan. Raw SQL is required because the extension rewrites
+ * delete -> soft delete; the FK on event_layout_components is ON DELETE CASCADE,
+ * but we delete components first to be robust if that cascade is ever absent.
+ */
+async function purgeSoftDeletedLayoutSlot(
+  tx: { $executeRaw: typeof prisma.$executeRaw },
+  eventId: string,
+  floorPlanId: string
+) {
+  // id/event_id/floor_plan_id are Prisma String columns => Postgres `text`
+  // (not `uuid`), so the bound text params compare directly — no ::uuid cast.
+  await tx.$executeRaw`
+    DELETE FROM "event_layout_components"
+    WHERE "layout_id" IN (
+      SELECT "id" FROM "event_floor_plan_layouts"
+      WHERE "event_id" = ${eventId}
+        AND "floor_plan_id" = ${floorPlanId}
+        AND "is_deleted" = true
+    )
+  `
+  await tx.$executeRaw`
+    DELETE FROM "event_floor_plan_layouts"
+    WHERE "event_id" = ${eventId}
+      AND "floor_plan_id" = ${floorPlanId}
+      AND "is_deleted" = true
+  `
+}
+
 // ==================== Schemas ====================
 
 const layoutDataSchema = z.object({
@@ -192,21 +226,26 @@ export const eventLayoutsRouter = router({
         return existingLayout
       }
 
-      const layout = await prisma.eventFloorPlanLayout.create({
-        data: input,
-        include: {
-          floorPlan: {
-            include: {
-              imageFile: true,
+      const layout = await prisma.$transaction(async (tx) => {
+        // Free the unique (event, floor plan) slot from any prior soft-deleted layout.
+        await purgeSoftDeletedLayoutSlot(tx, input.eventId, input.floorPlanId)
+
+        return tx.eventFloorPlanLayout.create({
+          data: input,
+          include: {
+            floorPlan: {
+              include: {
+                imageFile: true,
+              },
+            },
+            components: {
+              where: { isDeleted: false },
+              include: {
+                componentType: true,
+              },
             },
           },
-          components: {
-            where: { isDeleted: false },
-            include: {
-              componentType: true,
-            },
-          },
-        },
+        })
       })
 
       return layout
@@ -268,6 +307,9 @@ export const eventLayoutsRouter = router({
 
       // Create the layout and copy components in a transaction
       const layout = await prisma.$transaction(async (tx) => {
+        // Free the unique (event, floor plan) slot from any prior soft-deleted layout.
+        await purgeSoftDeletedLayoutSlot(tx, input.eventId, template.floorPlanId)
+
         const newLayout = await tx.eventFloorPlanLayout.create({
           data: {
             eventId: input.eventId,
