@@ -25,7 +25,7 @@ import {
 import { toast } from 'sonner'
 import { useSignedUrl } from '@/hooks/useSignedUrl'
 import { useIsMobile } from '@/hooks/useIsMobile'
-import { Drawer, DrawerContent } from '@/components/ui/drawer'
+import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer'
 import { ComponentTypeFormDialog } from '@/components/floor-plans/ComponentTypeFormDialog'
 import { ComponentPalette } from '@/components/floor-plans/ComponentPalette'
 import { ComponentPropertiesPanel } from '@/components/floor-plans/ComponentPropertiesPanel'
@@ -1037,6 +1037,7 @@ export function TemplateEditor() {
       {isMobile && (
         <Drawer open={paletteOpen} onOpenChange={setPaletteOpen}>
           <DrawerContent className="h-[45vh]">
+            <DrawerTitle className="sr-only">{t('templateEditor.components')}</DrawerTitle>
             <ComponentPalette
               componentTypes={componentTypes}
               onAdd={addComponentAtViewCenter}
@@ -1047,23 +1048,20 @@ export function TemplateEditor() {
       )}
 
       {/* Mobile properties bottom bar */}
-      {isMobile && selectedComponentId && (() => {
-        const selectedId = selectedComponentId
-        return (
-          <div className="fixed bottom-0 inset-x-0 z-20 border-t bg-background">
-            <ComponentPropertiesPanel
-              component={localComponents.find(c => c.id === selectedId) ?? null}
-              compact
-              onRotate={(d) => rotateComponent(selectedId, d)}
-              onDelete={() => deleteComponentMutation.mutate({ id: selectedId })}
-              onEdit={() => {
-                const c = localComponents.find(c => c.id === selectedId)
-                if (c) handleEditComponent(c)
-              }}
-            />
-          </div>
-        )
-      })()}
+      {isMobile && selectedComponentId && (
+        <div className="fixed bottom-0 inset-x-0 z-20 border-t bg-background">
+          <ComponentPropertiesPanel
+            component={localComponents.find(c => c.id === selectedComponentId) ?? null}
+            compact
+            onRotate={(d) => rotateComponent(selectedComponentId, d)}
+            onDelete={() => deleteComponentMutation.mutate({ id: selectedComponentId })}
+            onEdit={() => {
+              const c = localComponents.find(c => c.id === selectedComponentId)
+              if (c) handleEditComponent(c)
+            }}
+          />
+        </div>
+      )}
 
       {/* Edit Component Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
@@ -1116,8 +1114,8 @@ export function TemplateEditor() {
         organizationId={currentOrg?.id || ''}
       />
 
-      {/* Pan hint */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm text-muted-foreground border">
+      {/* Pan hint (desktop only — references Alt/drag and would be covered by the mobile bottom bar) */}
+      <div className="hidden md:block absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm text-muted-foreground border">
         {t('floorPlans.panHint')}
       </div>
 
