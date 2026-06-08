@@ -577,9 +577,16 @@ export function TemplateEditor() {
   // Canvas-level: 1-pointer drag on empty space pans; pinch zooms around its midpoint.
   const bindCanvas = useGesture(
     {
-      onDrag: ({ delta: [dx, dy], pinching, tap }) => {
+      onDrag: ({ delta: [dx, dy], pinching, tap, event }) => {
         if (pinching) return
-        if (tap) { setSelectedComponentId(null); return } // tap empty = deselect
+        if (tap) {
+          // Only deselect when the tap landed on empty canvas, not on a component
+          // (a component tap is handled by its own onPointerDownCapture selection).
+          const tgt = event?.target as HTMLElement | null
+          if (tgt && tgt.closest('[data-placed-component]')) return
+          setSelectedComponentId(null)
+          return
+        }
         setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }))
       },
       onPinch: ({ origin: [ox, oy], offset: [scale] }) => {
@@ -861,6 +868,8 @@ export function TemplateEditor() {
                           : '1px solid transparent',
                       }}
                       {...bindComponent(component.id)}
+                      data-placed-component=""
+                      onPointerDownCapture={() => setSelectedComponentId(component.id)}
                       onDoubleClick={() => handleEditComponent(component)}
                     >
                       <span
