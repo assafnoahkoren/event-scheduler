@@ -878,6 +878,10 @@ export function TemplateEditor() {
                       style={{
                         width,
                         height,
+                        // Keep a tap-friendly minimum size on touch so very small
+                        // components remain selectable/draggable with a fingertip.
+                        minWidth: isMobile ? 16 : undefined,
+                        minHeight: isMobile ? 16 : undefined,
                         backgroundColor: component.componentType?.color || '#E5E7EB',
                         borderRadius: component.componentType?.borderRadius
                           ? `${component.componentType.borderRadius}px`

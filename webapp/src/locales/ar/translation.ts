@@ -579,7 +579,7 @@ export const arTranslation: TranslationType = {
     calibrationSuccess: "تمت معايرة مخطط الطابق بنجاح",
     calibrationError: "فشل معايرة مخطط الطابق",
     applyCalibration: "تطبيق المعايرة",
-    panHint: "اضغط Alt + اسحب للتحريك"
+    panHint: "اسحب للتحريك · Ctrl + تمرير للتكبير"
   },
   componentTypes: {
     title: "أنواع المكونات",

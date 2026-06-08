@@ -579,7 +579,7 @@ export const heTranslation: TranslationType = {
     calibrationSuccess: "תוכנית הקומה כויילה בהצלחה",
     calibrationError: "כיול תוכנית הקומה נכשל",
     applyCalibration: "החל כיול",
-    panHint: "החזק Alt + גרור להזזה"
+    panHint: "גרור להזזה · Ctrl + גלילה לזום"
   },
   componentTypes: {
     title: "סוגי רכיבים",

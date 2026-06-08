@@ -577,7 +577,7 @@ export const enTranslation = {
     calibrationSuccess: "Floor plan calibrated successfully",
     calibrationError: "Failed to calibrate floor plan",
     applyCalibration: "Apply Calibration",
-    panHint: "Hold Alt + drag to pan"
+    panHint: "Drag to pan · Ctrl + scroll to zoom"
   },
   componentTypes: {
     title: "Component Types",
