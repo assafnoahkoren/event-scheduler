@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Loader2, Map, Plus, Trash2 } from 'lucide-react'
 import { EventFloorPlanPicker } from './EventFloorPlanPicker'
+import { LayoutPreview } from './LayoutPreview'
 
 interface EventFloorPlanTabProps {
   eventId: string
@@ -83,7 +84,7 @@ export function EventFloorPlanTab({ eventId, siteId }: EventFloorPlanTabProps) {
   const itemCount = layout.components?.length ?? 0
 
   return (
-    <div className="px-4">
+    <div className="px-4 space-y-4">
       <div className="flex items-center justify-between border rounded-lg p-4">
         <button
           className="flex items-center gap-3 text-start flex-1"
@@ -104,6 +105,11 @@ export function EventFloorPlanTab({ eventId, siteId }: EventFloorPlanTabProps) {
           </Button>
         </div>
       </div>
+
+      <LayoutPreview
+        layout={layout}
+        onClick={() => navigate(`/event/${eventId}/floor-plan/${layout.id}`)}
+      />
 
       <AlertDialog open={removeOpen} onOpenChange={setRemoveOpen}>
         <AlertDialogContent>
