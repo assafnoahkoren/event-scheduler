@@ -838,6 +838,9 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
               const height = metersToPixels(component.heightInMeters)
               const isSelected = selectedComponentId === component.id
               const seats = component.componentType?.occupancy ?? 0
+              const labelText = component.label || component.componentType?.name || ''
+              // Too thin to fit a readable label inside → show the label above it.
+              const labelOutside = Math.min(component.widthInMeters, component.heightInMeters) < 0.5
 
               return (
                 <div
@@ -849,6 +852,14 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
                     transform: 'translate(-50%, -50%)',
                   }}
                 >
+                  {labelOutside && (labelText || seats > 0) && (
+                    <div className="absolute bottom-full left-1/2 mb-0.5 -translate-x-1/2 flex flex-col items-center pointer-events-none">
+                      <FitText text={labelText} boxWidth={width} boxHeight={13} />
+                      {seats > 0 && (
+                        <FitText text={`${seats}`} boxWidth={width} boxHeight={11} />
+                      )}
+                    </div>
+                  )}
                   {/* Component body with rotation wrapper */}
                   <div
                     className="relative"
@@ -875,15 +886,19 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
                       onPointerDownCapture={() => setSelectedComponentId(component.id)}
                       onDoubleClick={() => handleEditComponent(component)}
                     >
-                      <FitText
-                        text={component.label || component.componentType?.name || ''}
-                        boxWidth={width}
-                        boxHeight={seats > 0 ? height * 0.5 : height}
-                      />
-                      {seats > 0 && (
-                        <div className="mt-0.5 flex w-full justify-center">
-                          <FitText text={`${seats}`} boxWidth={width * 0.95} boxHeight={height * 0.45} />
-                        </div>
+                      {!labelOutside && (
+                        <>
+                          <FitText
+                            text={labelText}
+                            boxWidth={width}
+                            boxHeight={seats > 0 ? height * 0.5 : height}
+                          />
+                          {seats > 0 && (
+                            <div className="mt-0.5 flex w-full justify-center">
+                              <FitText text={`${seats}`} boxWidth={width * 0.95} boxHeight={height * 0.45} />
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
