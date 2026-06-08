@@ -15,7 +15,10 @@ type TemplateGet = NonNullable<RouterOutput['floorPlans']['templates']['get']>
 // stays source-agnostic. The `as unknown as` casts below are confined to this
 // boundary on purpose.
 export type FloorPlanEditorComponent = Omit<TemplateGet['components'][number], 'templateId'>
-export type FloorPlanEditorData = Omit<TemplateGet, 'components'> & {
+// EventFloorPlanLayout.name is nullable (String?) while FloorPlanTemplate.name is
+// non-null; widen to string | null so consumers handle the null case explicitly.
+export type FloorPlanEditorData = Omit<TemplateGet, 'components' | 'name'> & {
+  name: string | null
   components: FloorPlanEditorComponent[]
 }
 
