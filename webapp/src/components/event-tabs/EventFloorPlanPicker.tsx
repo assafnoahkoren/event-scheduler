@@ -39,6 +39,12 @@ export function EventFloorPlanPicker({ open, onOpenChange, eventId, siteId }: Ev
       navigate(`/event/${eventId}/floor-plan/${layout.id}`)
     },
     onError: (error) => {
+      // A CONFLICT means this floor plan already has a layout for the event
+      // (the one-layout-per-floor-plan constraint) — give a clear message.
+      if (error.data?.code === 'CONFLICT') {
+        toast.error(t('eventFloorPlan.alreadyExists'))
+        return
+      }
       toast.error(t('eventFloorPlan.createError'), { description: error.message })
     },
   })

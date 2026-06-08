@@ -150,18 +150,22 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
     }
   }, [data?.components])
 
-  // Delete key removes the selected component (desktop convenience)
+  // Delete key removes the selected component (desktop convenience). A ref keeps
+  // the handler fresh without re-subscribing the listener every render (the
+  // editor's mutation objects change identity each render).
+  const deleteSelectedRef = useRef<() => void>(() => {})
+  deleteSelectedRef.current = () => {
+    if (selectedComponentId) editor.deleteComponent({ id: selectedComponentId })
+  }
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Delete' && selectedComponentId) {
-        editor.deleteComponent({ id: selectedComponentId })
-      }
+      if (e.key === 'Delete') deleteSelectedRef.current()
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [selectedComponentId])
+  }, [])
 
   // Keep renderedImageSize in sync as the image rescales responsively (viewport /
   // container resize, device rotation). A stale renderedImageSize makes dpiScale —
@@ -750,7 +754,7 @@ export function FloorPlanEditor({ source, getBackHref }: FloorPlanEditorProps) {
   if (!data) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p className="text-muted-foreground">{t('templateEditor.notFound')}</p>
+        <p className="text-muted-foreground">{source.kind === 'template' ? t('templateEditor.notFound') : t('eventFloorPlan.notFound')}</p>
       </div>
     )
   }

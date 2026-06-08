@@ -596,6 +596,8 @@ export const enTranslation = {
     createError: 'Failed to add floor plan',
     removed: 'Floor plan removed',
     removeError: 'Failed to remove floor plan',
+    notFound: 'Floor plan not found',
+    alreadyExists: 'This floor plan already has a layout for this event.',
   },
   componentTypes: {
     title: "Component Types",

@@ -598,6 +598,8 @@ export const arTranslation: TranslationType = {
     createError: 'فشلت إضافة المخطط',
     removed: 'تمت إزالة المخطط',
     removeError: 'فشلت إزالة المخطط',
+    notFound: 'لم يتم العثور على المخطط',
+    alreadyExists: 'هذا المخطط لديه بالفعل تخطيط لهذا الحدث.',
   },
   componentTypes: {
     title: "أنواع المكونات",

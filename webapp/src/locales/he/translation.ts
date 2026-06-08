@@ -598,6 +598,8 @@ export const heTranslation: TranslationType = {
     createError: 'הוספת התרשים נכשלה',
     removed: 'התרשים הוסר',
     removeError: 'הסרת התרשים נכשלה',
+    notFound: 'התרשים לא נמצא',
+    alreadyExists: 'לתרשים זה כבר קיימת פריסה עבור אירוע זה.',
   },
   componentTypes: {
     title: "סוגי רכיבים",
